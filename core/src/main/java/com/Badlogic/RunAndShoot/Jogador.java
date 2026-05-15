@@ -48,11 +48,12 @@ public class Jogador extends ObjetoJogo{
             posicao.x = 0;
         }
 
+
 // Borda Direita: Impede o X de passar do fim do mapa
 // (4160 é a largura total. Subtraímos a largura do boneco, ex: 32, para ele não sumir um pedaço)
-
-        if (posicao.x > LARGURA_TOTAL_MAPA - 32f) {
-            posicao.x = LARGURA_TOTAL_MAPA - 32f;
+        float larguraDoMapaEmPixels = 4160f;
+        if (posicao.x > larguraDoMapaEmPixels - 32f) {
+            posicao.x = larguraDoMapaEmPixels- 32f;
         }
 
         // 5. Chão Falso Temporário (Simulação enquanto não fazemos a colisão com o Tiled)

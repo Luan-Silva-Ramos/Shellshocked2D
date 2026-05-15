@@ -30,6 +30,9 @@ public class TelaDeJogo extends ScreenAdapter {
         // Usamos o batch unificado do jogo para evitar conflitos de OpenGL
         this.batch = jogo.getBatch();
 
+        this.camera = new OrthographicCamera();
+        this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
+
         // Cria o jogador em cima do asfalto (X=100, Y=60)
         this.jogador = new Jogador(150, 60);
 
@@ -45,8 +48,7 @@ public class TelaDeJogo extends ScreenAdapter {
         float larguraDoMapaEmPixels = 4160f;
         float limiteMaximoCamera = larguraDoMapaEmPixels - (camera.viewportWidth / 2f);
 
-        camera = new OrthographicCamera();
-        cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
+
 
         // Coloca a câmera no centro inicial da resolução virtual
         camera.position.x = jogador.getPosicao().x;
