@@ -34,7 +34,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
 
         // Cria o jogador em cima do asfalto (X=100, Y=60)
-        this.jogador = new Jogador(150, 60);
+        this.jogador = new Jogador(100, 60);
 
         // Passamos o 'batch' do jogo no construtor para unificar o pipeline gráfico
         this.cenario = new TmxMapLoader().load("cenario/mapa/metalslugm5.tmx");
@@ -109,15 +109,15 @@ public class TelaDeJogo extends ScreenAdapter {
         batch.draw(texJogador,
             jogador.getPosicao().x,
             jogador.getPosicao().y,
-            32,
-            32);
+            48,
+            48);
 
         batch.end();
 
-        System.out.println("--- DADOS DE RENDERIZAÇÃO ---");
-        System.out.println("Posição do Jogador: X=" + jogador.getPosicao().x + " Y=" + jogador.getPosicao().y);
-        System.out.println("Posição da Câmera: X=" + camera.position.x + " Y=" + camera.position.y);
-        System.out.println("Zoom da Câmera: " + camera.zoom);
+        //System.out.println("--- DADOS DE RENDERIZAÇÃO ---");
+        //System.out.println("Posição do Jogador: X=" + jogador.getPosicao().x + " Y=" + jogador.getPosicao().y);
+        //System.out.println("Posição da Câmera: X=" + camera.position.x + " Y=" + camera.position.y);
+        //System.out.println("Zoom da Câmera: " + camera.zoom);
     }
 
     @Override
