@@ -1,0 +1,82 @@
+{
+    "activeFile": "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/metalslugm5.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Todos os Ficheiros (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Barril1.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Barril2.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/BarrilTNT.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Plataforma10.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Plataforma11.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Plataforma12.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/Plataforma13.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/metalslugm5.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1061,
+                "y": -246
+            }
+        },
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/metalslugm5.tmx#BGDMetalSlug": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "CenarioProjeto/Barril1.tsx": {
+            "scaleInDock": 1
+        },
+        "CenarioProjeto/RnsCenario.tmx": {
+            "expandedGroupLayers": [
+                3
+            ],
+            "scale": 4,
+            "selectedLayer": -1,
+            "viewCenter": {
+                "x": 142.625,
+                "y": 101.5
+            }
+        },
+        "CenarioProjeto/RnsCenario.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
+            "scaleInDock": 1
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/novo_cenario/CenarioProjeto",
+    "last.imagePath": "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/novo_cenario/Assets/background",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/metalslugm5.tmx"
+    ],
+    "project": "RnSCenarioProjeto.tiled-project",
+    "recentFiles": [
+        "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/cenario/mapa/metalslugm5.tmx",
+        "CenarioProjeto/RnsCenario.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFilter": "Ficheiros de conjunto de tiles Tiled (*.tsx *.xml)",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.transparentColor": "#ffffff",
+    "tileset.useTransparentColor": true
+}
