@@ -1,4 +1,4 @@
-package com.Badlogic.RunAndShoot;
+package com.Badlogic.runandshoot2d;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -9,9 +9,6 @@ public abstract class ObjetoJogo {
 
     protected Vector2 velocidade;
     protected Vector2 posicao;
-    protected float largura;
-    protected float altura;
-
     protected final Rectangle rect;
     protected final Texture textura;
 
@@ -61,6 +58,11 @@ public abstract class ObjetoJogo {
     }
 
     // --- MÉTODOS SETTERS ---
+
+    public void setPosicao(float x, float y) {
+        this.posicao.set(x, y);
+        this.rect.setPosition(x, y);
+    }
 
     public void setX(float x) {
         this.rect.x = x;

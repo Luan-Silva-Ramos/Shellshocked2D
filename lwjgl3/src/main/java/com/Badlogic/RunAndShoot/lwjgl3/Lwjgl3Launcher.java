@@ -2,7 +2,7 @@ package com.Badlogic.RunAndShoot.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.Badlogic.RunAndShoot.RnsJogo;
+import com.Badlogic.runandshoot2d.RnsJogo;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {

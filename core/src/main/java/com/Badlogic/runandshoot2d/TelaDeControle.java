@@ -1,4 +1,4 @@
-package com.Badlogic.RunAndShoot;
+package com.Badlogic.runandshoot2d;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -34,7 +34,7 @@ public class TelaDeControle extends ScreenAdapter {
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             rnsJogo.setScreen(new TelaDeJogo(rnsJogo));
-            dispose();
+            this.dispose();
             return;
         }
         ScreenUtils.clear(Color.BLACK);
