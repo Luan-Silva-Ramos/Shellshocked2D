@@ -1,0 +1,56 @@
+{
+    "activeFile": "cenario2d_v1.0.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos os Ficheiros (*)",
+    "fileStates": {
+        "#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
+            "dynamicWrapping": false
+        },
+        "cenario2d_v1.0.tmx": {
+            "scale": 2,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 433.75,
+                "y": 202.5
+            }
+        },
+        "cenario2d_v1.0.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
+            "scaleInDock": 1
+        },
+        "cenario2d_v1.2.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2762,
+                "y": 288
+            }
+        },
+        "cenario2d_v1.2.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/thelu/Documents/Jogo2DRunAndShoot/assets/recursos/background",
+    "map.height": 14,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 269,
+    "openFiles": [
+        "cenario2d_v1.2.tmx",
+        "cenario2d_v1.0.tmx"
+    ],
+    "project": "cenario2d.tiled-project",
+    "recentFiles": [
+        "cenario2d_v1.2.tmx",
+        "cenario2d_v1.0.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.transparentColor": "#ffffff",
+    "tileset.useTransparentColor": true
+}

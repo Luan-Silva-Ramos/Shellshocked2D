@@ -1,0 +1,36 @@
+tamanho do mapa :
+w = 269
+H = 14
+
+Tamanho bloco:
+
+w = 16px
+H = 16px
+
+------ Objetos -------
+
+Barril:
+
+barril cinza = 
+W 30,0
+H 48,0
+
+barril vermelho = 
+W 30,0
+H 48,0
+
+barril tnt = 
+W 30,0
+H 48,0
+
+Plataformas:
+
+pequena = 96 x 80
+pequenalonga = 129 x 80
+media = 94 x 137
+alta = 88 x 128
+
+
+
+
+
