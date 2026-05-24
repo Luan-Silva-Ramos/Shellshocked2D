@@ -56,23 +56,24 @@ public class TelaDeJogo extends ScreenAdapter {
 
         // Inicializa o dicionário de Barris
         texturasBarris = new HashMap<>();
-        texturasBarris.put("col_barril2", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilVermelhoSujo.png")));
-        texturasBarris.put("col_barril1", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilSujo.png")));
-        texturasBarris.put("col_barriltnt", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilTNT.png")));
+        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilVermelhoSujo.png")));
+        texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilSujo.png")));
+        texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilTNT.png")));
 
         // Inicializa o dicionário de Plataformas
         texturasPlataformas = new HashMap<>();
-        texturasPlataformas.put("col_plataforma_pequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma13.png")));
-        texturasPlataformas.put("col_plataforma_alta", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma10.png")));
-        texturasPlataformas.put("col_plataforma_media", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma11.png")));
-        texturasPlataformas.put("col_plataforma_longapequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma12.png")));
+        texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma13.png")));
+        texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma10.png")));
+        texturasPlataformas.put("col_plat_media", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma11.png")));
+        texturasPlataformas.put("col_plat_pequena2", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma12.png")));
 
         listaBarris = new Array<>();
         listaPlataformas = new Array<>();
         listaChao = new Array<>();
 
         // Carregando CENÁRIO
-        this.cenario = new TmxMapLoader().load("cenario/mapa/metalslugm5.tmx");
+        this.cenario = new TmxMapLoader().load("cenario2d/cenario2d_v1.0.tmx");
+        System.out.println("Caminho real que o jogo está lendo: " + com.badlogic.gdx.Gdx.files.internal("cenario2d/cenario2d_v1.0.tmx").file().getAbsolutePath());
         renderizarMapa = new OrthogonalTiledMapRenderer(cenario, 1f, batch);
 
         // Garante o carregamento da imagem do boneco
@@ -90,9 +91,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
         //retangulosColisao = new Array<>();
 
-        carregarCamadaObstaculos("colisoes_chao", listaChao, null);
-        carregarCamadaObstaculos("colisoes_plataformas", listaPlataformas, texturasPlataformas);
-        carregarCamadaObstaculos("colisoes_barris", listaBarris, texturasBarris);
+        carregarCamadaObstaculos("colisao_chao", listaChao, null);
+        carregarCamadaObstaculos("colisao_plataforma", listaPlataformas, texturasPlataformas);
+        carregarCamadaObstaculos("colisao_barril", listaBarris, texturasBarris);
 
         // Toda a configuração de "câmara" necessária
 
@@ -177,25 +178,24 @@ public class TelaDeJogo extends ScreenAdapter {
             }
         }
     }
-
     private void carregarCamadaInimigos(String nomeCamada) {
-        var camada = cenario.getLayers().get(nomeCamada);
+        com.badlogic.gdx.maps.MapLayer camada = cenario.getLayers().get(nomeCamada);
+
         if (camada != null) {
-            System.out.println("🤖 Camada de inimigos encontrada! Total de objetos: " + camada.getObjects().getCount());
+            System.out.println("🤖 SUCESSO: A camada 'inimigos' foi encontrada de forma organizada!");
             for (MapObject objeto : camada.getObjects()) {
-                float x = objeto.getProperties().get("x", 0f, Float.class);
-                float y = objeto.getProperties().get("y", 0f, Float.class);
                 String tipo = objeto.getName();
 
-                System.out.println("-> Tentando carregar inimigo: Nome no Tiled = '" + tipo + "' em X:" + x + " Y:" + y);
+                if (tipo != null && "soldado".equalsIgnoreCase(tipo.trim())) {
+                    float x = objeto.getProperties().get("x", 0f, Float.class);
+                    float y = objeto.getProperties().get("y", 0f, Float.class);
 
-                if ("soldado".equalsIgnoreCase(tipo)) {
                     listaInimigos.add(new SoldadoRebelde(x, y, texInimigoSoldado));
-                    System.out.println("   ✅ Soldado adicionado com sucesso!");
+                    System.out.println("   ✅ Soldado spawnado com sucesso em X: " + x + " Y: " + y);
                 }
             }
         } else {
-            System.out.println("❌ ERRO: A camada '" + nomeCamada + "' não foi encontrada no mapa!");
+            System.out.println("❌ ERRO: O Java ainda não achou a camada '" + nomeCamada + "'. Verifique o passo 1 e 2.");
         }
     }
     @Override

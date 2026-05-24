@@ -3,6 +3,11 @@ package com.Badlogic.runandshoot2d;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 public class Jogador extends ObjetoJogo{
 
@@ -12,8 +17,49 @@ public class Jogador extends ObjetoJogo{
     private boolean noChao = true;
     public static final float LARGURA_TOTAL_MAPA = 270f * 16f;
 
+    // Controles de Animação do Jogador
+
+    private Animation<TextureRegion> animacaoCorrer;
+    private TextureRegion frameEstatico;
+    private TextureRegion frameAtual;
+    private float tempoDaAnimacao;
+
+    // Física básica que você já deve ter aí
+    private Vector2 velocidade;
+    private boolean olhandoParaDireita = true;
+
     public Jogador(float x, float y, Texture textura) {
-        super(x, y, 48, 48, textura);
+        super(x, y, 48, 48, null);
+        this.velocidade = new Vector2(0, 0);
+        this.tempoDaAnimacao = 0f;
+
+        // -------------------------------------------------------------------------
+        // TRATAMENTO DA SPRITE SHEET DO LIBRESPRITE
+        // -------------------------------------------------------------------------
+        // 1. Carrega a folha de sprites completa
+        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/spriteAnimation/Soldado_andando_pistola_spritesheet.png"));
+
+        // 2. Fatia a folha.
+        // IMPORTANTE: Mude 48, 48 para o tamanho exato de UM frame seu no LibreSprite!
+        TextureRegion[][] matrizDeFrames = TextureRegion.split(folhaSprites, 70, 100);
+
+        // 3. Supondo que sua folha tenha todos os frames na primeira linha (linha 0)
+        // Vamos criar um array para guardar a sequência da animação de corrida (ex: 4 frames)
+        int totalDeFrames = 4; // Ajuste para a quantidade de frames que sua animação tem
+        TextureRegion[] framesCorrida = new TextureRegion[totalDeFrames];
+
+        for (int i = 0; i < totalDeFrames; i++) {
+            framesCorrida[i] = matrizDeFrames[0][i]; // Linha 0, Coluna i
+        }
+
+        // 4. Configura a animação para mudar de frame a cada 0.1 segundos em LOOP
+        animacaoCorrer = new Animation<TextureRegion>(0.1f, framesCorrida);
+        animacaoCorrer.setPlayMode(Animation.PlayMode.LOOP);
+
+        // 5. Guarda o primeiro frame separado para usar quando o jogador estiver parado
+        frameEstatico = matrizDeFrames[0][0];
+        frameAtual = frameEstatico;
+
     }
 
     @Override
@@ -29,19 +75,14 @@ public class Jogador extends ObjetoJogo{
         else {
             velocidade.x = 0;
         }
-
         // 2. PULO
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) && noChao) {
             velocidade.y = FORCA_PULO; // Valor positivo para subir (ex: 300)
             noChao = false;
         }
-
         // 3. APLICANDO GRAVIDADE (Eixo Y: para baixo é negativo)
 
         velocidade.y -= GRAVIDADE * delta; // Subtrai para puxar o boneco para baixo
-
-
-        // 4. CHAMA O UPDATE DA MÃE (Aplica velocidade e move o Rectangle)
 
         // 4. APLICAÇÃO FINAL DO MOVIMENTO NA POSIÇÃO
         posicao.x += velocidade.x * delta;
@@ -58,16 +99,33 @@ public class Jogador extends ObjetoJogo{
         if (posicao.x > larguraDoMapaEmPixels - rect.width) {
             setPosicao(larguraDoMapaEmPixels - rect.width, posicao.y);
         }
-        /*
-        // 6. Chão Falso Temporário (Simulação enquanto não fazemos a colisão com o Tiled)
-        // Se a posição Y cair abaixo de 32 (altura do chão do cenário, por exemplo)
-        if (posicao.y <= 32f) {
-            setPosicao(posicao.x, 32f);
-            velocidade.y = 0;
-            noChao = true;
+        // -------------------------------------------------------------------------
+        // LÓGICA DE TROCA DE SPRITES
+        // -------------------------------------------------------------------------
+        if (velocidade.x != 0) {
+            // Se estiver se movendo, avança o cronômetro e pega o frame da corrida
+            tempoDaAnimacao += delta;
+            frameAtual = animacaoCorrer.getKeyFrame(tempoDaAnimacao);
+
+            // Descobre para onde ele está olhando baseado na velocidade horizontal
+            if (velocidade.x > 0) olhandoParaDireita = true;
+            if (velocidade.x < 0) olhandoParaDireita = false;
+        } else {
+            // Se parou de andar, reseta o tempo e usa o frame dele parado
+            tempoDaAnimacao = 0f;
+            frameAtual = frameEstatico;
         }
 
-         */
+        // CONTROLAR A DIREÇÃO DO OLHAR (Efeito Espelho)
+        // Se ele estiver indo para a esquerda e o sprite não estiver invertido, inverte!
+        if (!olhandoParaDireita && !frameAtual.isFlipX()) {
+            frameAtual.flip(true, false); // true para o eixo X (horizontal)
+        }
+        // Se ele estiver indo para a direita e o sprite estiver invertido, desinverte!
+        else if (olhandoParaDireita && frameAtual.isFlipX()) {
+            frameAtual.flip(true, false);
+        }
+
     }
     public void resetarPulo() {
         this.velocidade.y = 0;
@@ -83,4 +141,13 @@ public class Jogador extends ObjetoJogo{
         super.setY(y);
         this.posicao.y = y;
     }
+    @Override
+    public void draw(Batch batch) {
+        // Em vez de desenhar a textura estática antiga, desenha o frame atual calculado no update
+        if (frameAtual != null) {
+            batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
+        }
+    }
 }
+
+
