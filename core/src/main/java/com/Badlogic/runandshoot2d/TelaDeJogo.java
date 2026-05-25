@@ -190,7 +190,7 @@ public class TelaDeJogo extends ScreenAdapter {
                     float x = objeto.getProperties().get("x", 0f, Float.class);
                     float y = objeto.getProperties().get("y", 0f, Float.class);
 
-                    listaInimigos.add(new SoldadoRebelde(x, y, texInimigoSoldado));
+                    listaInimigos.add(new SoldadoRebelde(x, y, null));
                     System.out.println("   ✅ Soldado spawnado com sucesso em X: " + x + " Y: " + y);
                 }
             }
