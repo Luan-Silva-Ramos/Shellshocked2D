@@ -126,6 +126,8 @@ public class Jogador extends ObjetoJogo{
             frameAtual.flip(true, false);
         }
 
+
+
     }
     public void resetarPulo() {
         this.velocidade.y = 0;
@@ -147,6 +149,9 @@ public class Jogador extends ObjetoJogo{
         if (frameAtual != null) {
             batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
         }
+    }
+    public boolean isOlhandoParaDireita() {
+        return olhandoParaDireita;
     }
 }
 
