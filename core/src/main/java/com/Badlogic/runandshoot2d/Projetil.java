@@ -13,7 +13,7 @@ public class Projetil extends ObjetoJogo{
         super(x,y, 12, 2, texturaTiro);
 
         // Define a velocidade e a direção do tiro (ex: 500 pixels por segundo)
-        float velocidadeX = indoParaDireita ? 300f : -300f;
+        float velocidadeX = indoParaDireita ? 200f : -200f;
         this.velocidade = new Vector2(velocidadeX, 0);
     }
 

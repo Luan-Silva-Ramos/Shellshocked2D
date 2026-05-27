@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -24,9 +23,18 @@ public class Jogador extends ObjetoJogo{
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
 
-    // Física básica que você já deve ter aí
+    // Física básica
     private Vector2 velocidade;
     private boolean olhandoParaDireita = true;
+
+    // Vida do jogador
+    private int hpMaximo = 100;
+    private int hpAtual = 100;
+
+    private float tempoInvulneravel = 0f;
+    private boolean estaInvulneravel = false;
+
+
 
     public Jogador(float x, float y, Texture textura) {
         super(x, y, 48, 48, null);
@@ -125,9 +133,13 @@ public class Jogador extends ObjetoJogo{
         else if (olhandoParaDireita && frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
         }
-
-
-
+        // Dentro do update do Jogador.java:
+        if (estaInvulneravel) {
+            tempoInvulneravel -= delta;
+            if (tempoInvulneravel <= 0) {
+                estaInvulneravel = false;
+            }
+        }
     }
     public void resetarPulo() {
         this.velocidade.y = 0;
@@ -145,13 +157,47 @@ public class Jogador extends ObjetoJogo{
     }
     @Override
     public void draw(Batch batch) {
-        // Em vez de desenhar a textura estática antiga, desenha o frame atual calculado no update
-        if (frameAtual != null) {
-            batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
+        // No draw do Jogador.java, mude para:
+        if (estaInvulneravel) {
+            // Faz o Jogador piscar enquanto estiver imune
+            if ((int)(tempoInvulneravel * 100) % 2 == 0) {
+                return;
+            }
         }
+        batch.draw(frameAtual, rect.x, rect.y, 48, 52); // Seu desenho padrão
     }
     public boolean isOlhandoParaDireita() {
         return olhandoParaDireita;
+    }
+
+    public void tomarDano(int dano) {
+        if (!estaInvulneravel) {
+            this.hpAtual -= dano;
+            if (this.hpAtual < 0) this.hpAtual = 0;
+
+            estaInvulneravel = true;
+            tempoInvulneravel = 1.5f; // 1 segundo e meio de imunidade após o golpe
+        }
+    }
+
+    public boolean isEstaInvulneravel() {
+        return estaInvulneravel;
+    }
+
+    public int getHpAtual() {
+        return hpAtual;
+    }
+
+    public int getHpMaximo() {
+        return hpMaximo;
+    }
+
+    public void resetarHP() {
+        this.hpAtual = this.hpMaximo;
+    }
+
+    public boolean estaSemVida() {
+        return this.hpAtual <= 0;
     }
 }
 

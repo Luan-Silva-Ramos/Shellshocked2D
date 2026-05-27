@@ -9,6 +9,11 @@ public abstract class Inimigo extends ObjetoJogo {
     protected float velocidadeMovimento = 40f; // Velocidade de caminhada
     protected static final float GRAVIDADE = -400f;
 
+    // Atributos para ataque dos inimigos
+    protected float tempoProximoTiro = 0f;
+    protected float taxaDeDisparo = 2.0f; // Tempo em segundos entre os tiros (2 segundos)
+    protected boolean desejaAtirar = false;
+
     protected int vida = 5;
 
     // Colocando efeito de piscar (efeito de arcade)
@@ -62,6 +67,11 @@ public abstract class Inimigo extends ObjetoJogo {
                 estaPiscando = false;
             }
         }
+        tempoProximoTiro += deltaTime;
+        if (tempoProximoTiro >= taxaDeDisparo) {
+            desejaAtirar = true;
+            tempoProximoTiro = 0f; // Reseta o cronômetro
+        }
     }
 
     public Vector2 getVelocidade() {
@@ -79,5 +89,20 @@ public abstract class Inimigo extends ObjetoJogo {
     }
     public boolean isEstaPiscando() {
         return this.estaPiscando;
+    }
+
+    // Métodos auxiliares para a Tela de Jogo gerenciar o disparo
+    public boolean seDesejaAtirar() {
+        return desejaAtirar;
+    }
+
+    public void resetarDisparo() {
+        this.desejaAtirar = false;
+    }
+
+    // descobrindo para onde o soldado está andando/olhando
+    // Se a velocidade X for positiva, ele olha para a direita. Se não, para a esquerda.
+    public boolean isOlhandoParaDireita() {
+        return velocidade.x > 0;
     }
 }
