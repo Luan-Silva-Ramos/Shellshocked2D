@@ -5,14 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-<<<<<<< HEAD
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-=======
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class Jogador extends ObjetoJogo{
+public class Jogador extends ObjetoJogo {
 
     private final float VELOCIDADE_MOVIMENTO = 150f;
     private final float FORCA_PULO = 350f;
@@ -21,18 +17,11 @@ public class Jogador extends ObjetoJogo{
     public static final float LARGURA_TOTAL_MAPA = 270f * 16f;
 
     // Controles de Animação do Jogador
-
     private Animation<TextureRegion> animacaoCorrer;
     private TextureRegion frameEstatico;
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
 
-<<<<<<< HEAD
-    // Física básica que você já deve ter aí
-    private Vector2 velocidade;
-    private boolean olhandoParaDireita = true;
-
-=======
     // Física básica
     private Vector2 velocidade;
     private boolean olhandoParaDireita = true;
@@ -44,9 +33,6 @@ public class Jogador extends ObjetoJogo{
     private float tempoInvulneravel = 0f;
     private boolean estaInvulneravel = false;
 
-
-
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
     public Jogador(float x, float y, Texture textura) {
         super(x, y, 48, 48, null);
         this.velocidade = new Vector2(0, 0);
@@ -78,13 +64,12 @@ public class Jogador extends ObjetoJogo{
         // 5. Guarda o primeiro frame separado para usar quando o jogador estiver parado
         frameEstatico = matrizDeFrames[0][0];
         frameAtual = frameEstatico;
-
     }
 
     @Override
     public void update(float delta) {
         // Movimentação do jogador (2D puro)
-        // 1. MOVIMENTAÇÃO HORIZONTAL (Trocado para isKeyPressed)
+        // 1. MOVIMENTAÇÃO HORIZONTAL
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             velocidade.x = -VELOCIDADE_MOVIMENTO;
         }
@@ -94,13 +79,14 @@ public class Jogador extends ObjetoJogo{
         else {
             velocidade.x = 0;
         }
+
         // 2. PULO
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) && noChao) {
-            velocidade.y = FORCA_PULO; // Valor positivo para subir (ex: 300)
+            velocidade.y = FORCA_PULO; // Valor positivo para subir
             noChao = false;
         }
-        // 3. APLICANDO GRAVIDADE (Eixo Y: para baixo é negativo)
 
+        // 3. APLICANDO GRAVIDADE
         velocidade.y -= GRAVIDADE * delta; // Subtrai para puxar o boneco para baixo
 
         // 4. APLICAÇÃO FINAL DO MOVIMENTO NA POSIÇÃO
@@ -109,7 +95,7 @@ public class Jogador extends ObjetoJogo{
 
         this.rect.setPosition(posicao.x, posicao.y);
 
-        // 5. LIMITES DO MAPA (Tratados no próprio objeto por enquanto)
+        // 5. LIMITES DO MAPA
         if (posicao.x < 0) {
             posicao.x = 0;
         }
@@ -118,6 +104,7 @@ public class Jogador extends ObjetoJogo{
         if (posicao.x > larguraDoMapaEmPixels - rect.width) {
             setPosicao(larguraDoMapaEmPixels - rect.width, posicao.y);
         }
+
         // -------------------------------------------------------------------------
         // LÓGICA DE TROCA DE SPRITES
         // -------------------------------------------------------------------------
@@ -136,57 +123,54 @@ public class Jogador extends ObjetoJogo{
         }
 
         // CONTROLAR A DIREÇÃO DO OLHAR (Efeito Espelho)
-        // Se ele estiver indo para a esquerda e o sprite não estiver invertido, inverte!
         if (!olhandoParaDireita && !frameAtual.isFlipX()) {
             frameAtual.flip(true, false); // true para o eixo X (horizontal)
         }
-        // Se ele estiver indo para a direita e o sprite estiver invertido, desinverte!
         else if (olhandoParaDireita && frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
         }
-<<<<<<< HEAD
 
-=======
-        // Dentro do update do Jogador.java:
+        // Lógica de tempo invulnerável
         if (estaInvulneravel) {
             tempoInvulneravel -= delta;
             if (tempoInvulneravel <= 0) {
                 estaInvulneravel = false;
             }
         }
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
     }
+
     public void resetarPulo() {
         this.velocidade.y = 0;
         this.noChao = true;
     }
+
     @Override
     public void setX(float x) {
         super.setX(x);
         this.posicao.x = x;
     }
+
     @Override
     public void setY(float y) {
         super.setY(y);
         this.posicao.y = y;
     }
+
     @Override
     public void draw(Batch batch) {
-<<<<<<< HEAD
-        // Em vez de desenhar a textura estática antiga, desenha o frame atual calculado no update
-        if (frameAtual != null) {
-            batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
-        }
-=======
-        // No draw do Jogador.java, mude para:
         if (estaInvulneravel) {
-            // Faz o Jogador piscar enquanto estiver imune
+            // Faz o Jogador piscar enquanto estiver imune (pula frames de render se o resto da divisão por 2 for 0)
             if ((int)(tempoInvulneravel * 100) % 2 == 0) {
                 return;
             }
         }
-        batch.draw(frameAtual, rect.x, rect.y, 48, 52); // Seu desenho padrão
+
+        if (frameAtual != null) {
+            // Mantido o ajuste opcional de X (caso prefira centralizar melhor a sprite)
+            batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
+        }
     }
+
     public boolean isOlhandoParaDireita() {
         return olhandoParaDireita;
     }
@@ -219,8 +203,5 @@ public class Jogador extends ObjetoJogo{
 
     public boolean estaSemVida() {
         return this.hpAtual <= 0;
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
     }
 }
-
-

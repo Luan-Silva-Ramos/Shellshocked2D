@@ -58,9 +58,6 @@ public class SoldadoRebelde extends Inimigo {
     @Override
     public void draw(Batch batch) {
         if (frameAtual != null) {
-<<<<<<< HEAD
-            batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
-=======
             if (isEstaPiscando()) {
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE);
 
@@ -74,6 +71,8 @@ public class SoldadoRebelde extends Inimigo {
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
                 batch.setColor(1f, 1f, 1f, 1f);
             }
+
+            // Desenha o sprite padrão
             batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
 
             if (isEstaPiscando()) {
@@ -81,10 +80,6 @@ public class SoldadoRebelde extends Inimigo {
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
                 batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
             }
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
         }
     }
-
-    // Você pode customizar o comportamento dele aqui se quiser,
-    // ou apenas herdar o update básico da patrulha
 }
