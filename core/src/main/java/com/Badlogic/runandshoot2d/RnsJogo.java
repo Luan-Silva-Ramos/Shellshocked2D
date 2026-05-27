@@ -22,7 +22,11 @@ public class RnsJogo extends Game {
         fonte = gerador.generateFont(parametrosFonte);
         gerador.dispose();
 
+<<<<<<< HEAD
         setScreen(new TelaMenuPrincipal(this));
+=======
+        setScreen(new TelaDeControle(this));
+>>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
 
     }
 

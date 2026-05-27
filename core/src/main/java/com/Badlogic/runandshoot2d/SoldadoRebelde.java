@@ -58,7 +58,30 @@ public class SoldadoRebelde extends Inimigo {
     @Override
     public void draw(Batch batch) {
         if (frameAtual != null) {
+<<<<<<< HEAD
             batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
+=======
+            if (isEstaPiscando()) {
+                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE);
+
+                // Colocamos o batch em preto para anular as cores originais, mas mantemos o alpha em 1
+                batch.setColor(0f, 0f, 0f, 1f);
+
+                // Desenha a silhueta de fundo
+                batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
+
+                // Agora mudamos o blend para somar o brilho máximo, transformando tudo em BRANCO PURO e SÓLIDO!
+                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
+                batch.setColor(1f, 1f, 1f, 1f);
+            }
+            batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
+
+            if (isEstaPiscando()) {
+                // RESETAR O BATCH (Obrigatório para não quebrar o resto do jogo)
+                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
+                batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
+            }
+>>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
         }
     }
 
