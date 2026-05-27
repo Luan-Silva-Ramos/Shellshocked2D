@@ -9,8 +9,7 @@ public abstract class Inimigo extends ObjetoJogo {
     protected float velocidadeMovimento = 40f; // Velocidade de caminhada
     protected static final float GRAVIDADE = -400f;
 
-<<<<<<< HEAD
-=======
+
     // Atributos para ataque dos inimigos
     protected float tempoProximoTiro = 0f;
     protected float taxaDeDisparo = 2.0f; // Tempo em segundos entre os tiros (2 segundos)
@@ -22,7 +21,7 @@ public abstract class Inimigo extends ObjetoJogo {
     protected float tempoPiscando = 0f;
     protected boolean estaPiscando = false;
 
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
+
     // Variáveis para IA simples (patrulha)
     protected float limiteEsquerda;
     protected float limiteDireita;
@@ -62,8 +61,7 @@ public abstract class Inimigo extends ObjetoJogo {
 
         // 4. Sincroniza o retângulo de colisão com a nova posição
         this.rect.setPosition(posicao.x, posicao.y);
-<<<<<<< HEAD
-=======
+
 
         // efeito arcade
         if (estaPiscando) {
@@ -77,14 +75,13 @@ public abstract class Inimigo extends ObjetoJogo {
             desejaAtirar = true;
             tempoProximoTiro = 0f; // Reseta o cronômetro
         }
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
+
     }
 
     public Vector2 getVelocidade() {
         return velocidade;
     }
-<<<<<<< HEAD
-=======
+
 
     public void receberDano(int dano) {
         this.vida -= dano;
@@ -113,5 +110,5 @@ public abstract class Inimigo extends ObjetoJogo {
     public boolean isOlhandoParaDireita() {
         return velocidade.x > 0;
     }
->>>>>>> 1b4c8005409b9a8ac07f23118160bc520e165b4d
+
 }
