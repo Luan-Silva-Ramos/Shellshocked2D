@@ -9,6 +9,7 @@ public abstract class Inimigo extends ObjetoJogo {
     protected float velocidadeMovimento = 40f; // Velocidade de caminhada
     protected static final float GRAVIDADE = -400f;
 
+
     // Atributos para ataque dos inimigos
     protected float tempoProximoTiro = 0f;
     protected float taxaDeDisparo = 2.0f; // Tempo em segundos entre os tiros (2 segundos)
@@ -19,6 +20,7 @@ public abstract class Inimigo extends ObjetoJogo {
     // Colocando efeito de piscar (efeito de arcade)
     protected float tempoPiscando = 0f;
     protected boolean estaPiscando = false;
+
 
     // Variáveis para IA simples (patrulha)
     protected float limiteEsquerda;
@@ -60,6 +62,7 @@ public abstract class Inimigo extends ObjetoJogo {
         // 4. Sincroniza o retângulo de colisão com a nova posição
         this.rect.setPosition(posicao.x, posicao.y);
 
+
         // efeito arcade
         if (estaPiscando) {
             tempoPiscando -= deltaTime;
@@ -72,11 +75,13 @@ public abstract class Inimigo extends ObjetoJogo {
             desejaAtirar = true;
             tempoProximoTiro = 0f; // Reseta o cronômetro
         }
+
     }
 
     public Vector2 getVelocidade() {
         return velocidade;
     }
+
 
     public void receberDano(int dano) {
         this.vida -= dano;
@@ -105,4 +110,5 @@ public abstract class Inimigo extends ObjetoJogo {
     public boolean isOlhandoParaDireita() {
         return velocidade.x > 0;
     }
+
 }

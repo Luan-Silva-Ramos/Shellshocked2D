@@ -22,14 +22,15 @@ public class RnsJogo extends Game {
         fonte = gerador.generateFont(parametrosFonte);
         gerador.dispose();
 
-        setScreen(new TelaDeControle(this));
-
+        // Escolha qual tela deve abrir primeiro (Menu Principal mantido por padrão):
+        setScreen(new TelaMenuPrincipal(this));
+        // Se quiserem testar a tela de controles do seu amigo, mude para:
+        // setScreen(new TelaDeControle(this));
     }
 
     @Override
     public void render() {
         super.render();
-
     }
 
     @Override
@@ -37,7 +38,6 @@ public class RnsJogo extends Game {
         super.dispose();
         batch.dispose();
         fonte.dispose();
-
     }
 
     // GETTERS para a classe

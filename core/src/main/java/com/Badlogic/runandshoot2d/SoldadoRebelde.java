@@ -71,6 +71,8 @@ public class SoldadoRebelde extends Inimigo {
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
                 batch.setColor(1f, 1f, 1f, 1f);
             }
+
+            // Desenha o sprite padrão
             batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
 
             if (isEstaPiscando()) {
@@ -80,7 +82,4 @@ public class SoldadoRebelde extends Inimigo {
             }
         }
     }
-
-    // Você pode customizar o comportamento dele aqui se quiser,
-    // ou apenas herdar o update básico da patrulha
 }
