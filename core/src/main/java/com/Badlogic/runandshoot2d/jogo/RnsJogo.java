@@ -1,5 +1,6 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.jogo;
 
+import com.Badlogic.runandshoot2d.telas.TelaMenuPrincipal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

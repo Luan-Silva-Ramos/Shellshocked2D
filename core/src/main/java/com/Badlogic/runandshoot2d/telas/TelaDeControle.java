@@ -1,5 +1,6 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.telas;
 
+import com.Badlogic.runandshoot2d.jogo.RnsJogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
