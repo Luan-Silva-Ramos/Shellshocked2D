@@ -1,4 +1,4 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.objetos;
 
 import com.badlogic.gdx.graphics.Texture;
 

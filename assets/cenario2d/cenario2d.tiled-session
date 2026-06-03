@@ -9,11 +9,11 @@
             "dynamicWrapping": false
         },
         "cenario2d_v1.0.tmx": {
-            "scale": 2,
-            "selectedLayer": 4,
+            "scale": 1.5,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 433.75,
-                "y": 202.5
+                "x": 1217,
+                "y": 55.33333333333334
             }
         },
         "cenario2d_v1.0.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
@@ -23,8 +23,8 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2762,
-                "y": 288
+                "x": 2686.6666666666665,
+                "y": 124
             }
         },
         "cenario2d_v1.2.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {
@@ -38,13 +38,12 @@
     "map.tileWidth": 16,
     "map.width": 269,
     "openFiles": [
-        "cenario2d_v1.2.tmx",
         "cenario2d_v1.0.tmx"
     ],
     "project": "cenario2d.tiled-project",
     "recentFiles": [
-        "cenario2d_v1.2.tmx",
-        "cenario2d_v1.0.tmx"
+        "cenario2d_v1.0.tmx",
+        "cenario2d_v1.2.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
