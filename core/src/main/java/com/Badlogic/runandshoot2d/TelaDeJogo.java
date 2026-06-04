@@ -319,7 +319,7 @@ public class TelaDeJogo extends ScreenAdapter {
             }
         }
 
-        // ATUALIZAÇÃO E DESENHO DOS PROJÉTEIS INIMIGOS
+        // ATUALIZAÇÃO E DESENHO DOS PROJÉTEIS INIMIGOS // Entender o que está ocorrendo?
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
@@ -359,6 +359,8 @@ public class TelaDeJogo extends ScreenAdapter {
         shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
         shapeRenderer.end();
 
+
+        // Estudar da linha 363 pra baixo
         // 2. Preenchimento Vermelho Dinâmico
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
