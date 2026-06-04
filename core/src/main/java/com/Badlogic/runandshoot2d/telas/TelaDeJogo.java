@@ -8,11 +8,15 @@ import com.Badlogic.runandshoot2d.personagens.Inimigo;
 import com.Badlogic.runandshoot2d.personagens.Jogador;
 import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -24,6 +28,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class TelaDeJogo extends ScreenAdapter {
 
@@ -31,6 +36,7 @@ public class TelaDeJogo extends ScreenAdapter {
     private final OrthogonalTiledMapRenderer renderizarMapa;
     private final OrthographicCamera camera;
     private final Viewport cenarioViewport;
+    private final RnsJogo jogo; // Modificaçao
 
     private static final int LARGURA_VIRTUAL = 400;
     private static final int ALTURA_VIRTUAL = 224;
@@ -53,9 +59,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
 
     private OrthographicCamera cameraHUD;
-    private com.badlogic.gdx.graphics.g2d.BitmapFont fonteHUD;
-    private com.badlogic.gdx.graphics.g2d.GlyphLayout layoutHUD;
-    private com.badlogic.gdx.graphics.glutils.ShapeRenderer shapeRenderer;
+    private BitmapFont fonteHUD;
+    private GlyphLayout layoutHUD;
+    private ShapeRenderer shapeRenderer;
 
     private int pontuacao = 0;
     private int vidasJogador = 3;
@@ -63,7 +69,8 @@ public class TelaDeJogo extends ScreenAdapter {
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
 
-    public TelaDeJogo(RnsJogo jogo) {
+    public TelaDeJogo( RnsJogo jogo) {
+        this.jogo = jogo;
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
@@ -97,7 +104,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.listaProjeteisInimigos = new Array<>();
         this.texBalaInimigo = this.texBala;
 
-        this.shapeRenderer = new com.badlogic.gdx.graphics.glutils.ShapeRenderer();
+        this.shapeRenderer = new ShapeRenderer();
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -191,11 +198,13 @@ public class TelaDeJogo extends ScreenAdapter {
             if (vidasJogador > 0) {
                 jogador.resetarHP();
                 jogador.tomarDano(0);
+            } else {
+                jogo.setScreen(new GamerOver(jogo));
             }
         }
 
         // Entrada de Tiro do Jogador
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
@@ -246,7 +255,7 @@ public class TelaDeJogo extends ScreenAdapter {
         for (Obstaculo plataforma : listaPlataformas) plataforma.draw(batch);
 
         // Processamento de Projéteis do Jogador
-        java.util.Iterator<Projetil> iter = listaProjeteis.iterator();
+        Iterator<Projetil> iter = listaProjeteis.iterator();
         while (iter.hasNext()) {
             Projetil tiro = iter.next();
             tiro.update(delta);
@@ -268,7 +277,7 @@ public class TelaDeJogo extends ScreenAdapter {
         }
 
         // Processamento de Projéteis Inimigos
-        java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
+        Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
             tiroE.update(delta);
@@ -292,10 +301,10 @@ public class TelaDeJogo extends ScreenAdapter {
         batch.end();
 
         shapeRenderer.setProjectionMatrix(cameraHUD.combined);
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
-        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+        shapeRenderer.setColor(Color.RED);
         float larguraBarra = 100f * ((float) jogador.getHpAtual() / jogador.getHpMaximo());
         shapeRenderer.rect(17, ALTURA_VIRTUAL - 33, larguraBarra, 6);
         shapeRenderer.end();
