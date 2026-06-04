@@ -1,5 +1,6 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.personagens;
 
+import com.Badlogic.runandshoot2d.objetos.ObjetoJogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,10 +15,10 @@ public class Jogador extends ObjetoJogo {
     private final float FORCA_PULO = 350f;
     private final float GRAVIDADE = 700f;
     private boolean noChao = true;
-    public static final float LARGURA_TOTAL_MAPA = 270f * 16f;
 
     // Controles de Animação do Jogador
     private Animation<TextureRegion> animacaoCorrer;
+    private Animation<TextureRegion> animacaoPulo;
     private TextureRegion frameEstatico;
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
@@ -38,99 +39,97 @@ public class Jogador extends ObjetoJogo {
         this.velocidade = new Vector2(0, 0);
         this.tempoDaAnimacao = 0f;
 
-        // -------------------------------------------------------------------------
-        // TRATAMENTO DA SPRITE SHEET DO LIBRESPRITE
-        // -------------------------------------------------------------------------
-        // 1. Carrega a folha de sprites completa
-        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/spriteAnimation/Soldado_andando_pistola_spritesheet.png"));
-
-        // 2. Fatia a folha.
-        // IMPORTANTE: Mude 48, 48 para o tamanho exato de UM frame seu no LibreSprite!
+        // Sprite sheet de corrida
+        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/Soldado_andando_pistola_spritesheet.png"));
         TextureRegion[][] matrizDeFrames = TextureRegion.split(folhaSprites, 70, 100);
 
-        // 3. Supondo que sua folha tenha todos os frames na primeira linha (linha 0)
-        // Vamos criar um array para guardar a sequência da animação de corrida (ex: 4 frames)
-        int totalDeFrames = 4; // Ajuste para a quantidade de frames que sua animação tem
+        int totalDeFrames = 5;
         TextureRegion[] framesCorrida = new TextureRegion[totalDeFrames];
-
         for (int i = 0; i < totalDeFrames; i++) {
-            framesCorrida[i] = matrizDeFrames[0][i]; // Linha 0, Coluna i
+            framesCorrida[i] = matrizDeFrames[0][i];
         }
 
-        // 4. Configura a animação para mudar de frame a cada 0.1 segundos em LOOP
         animacaoCorrer = new Animation<TextureRegion>(0.1f, framesCorrida);
         animacaoCorrer.setPlayMode(Animation.PlayMode.LOOP);
 
-        // 5. Guarda o primeiro frame separado para usar quando o jogador estiver parado
+        // Sprite sheet de pulo
+        Texture folhaPulo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/soldado_pulo.png"));
+        TextureRegion[][] matrizPulo = TextureRegion.split(folhaPulo, 100, 100);
+
+        int totalFramesPulo = 9;
+        TextureRegion[] framesPulo = new TextureRegion[totalFramesPulo];
+        for (int i = 0; i < totalFramesPulo; i++) {
+            framesPulo[i] = matrizPulo[0][i];
+        }
+
+        animacaoPulo = new Animation<TextureRegion>(0.1f, framesPulo);
+        animacaoPulo.setPlayMode(Animation.PlayMode.NORMAL);
+
+        // Frame estático (parado)
         frameEstatico = matrizDeFrames[0][0];
         frameAtual = frameEstatico;
     }
 
     @Override
     public void update(float delta) {
-        // Movimentação do jogador (2D puro)
+
         // 1. MOVIMENTAÇÃO HORIZONTAL
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             velocidade.x = -VELOCIDADE_MOVIMENTO;
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            olhandoParaDireita = false;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             velocidade.x = VELOCIDADE_MOVIMENTO;
-        }
-        else {
+            olhandoParaDireita = true;
+        } else {
             velocidade.x = 0;
         }
 
         // 2. PULO
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) && noChao) {
-            velocidade.y = FORCA_PULO; // Valor positivo para subir
+            velocidade.y = FORCA_PULO;
             noChao = false;
+            tempoDaAnimacao = 0f;
         }
 
-        // 3. APLICANDO GRAVIDADE
-        velocidade.y -= GRAVIDADE * delta; // Subtrai para puxar o boneco para baixo
+        // 3. GRAVIDADE
+        velocidade.y -= GRAVIDADE * delta;
 
-        // 4. APLICAÇÃO FINAL DO MOVIMENTO NA POSIÇÃO
+        // 4. APLICAÇÃO DO MOVIMENTO
         posicao.x += velocidade.x * delta;
         posicao.y += velocidade.y * delta;
-
         this.rect.setPosition(posicao.x, posicao.y);
 
         // 5. LIMITES DO MAPA
-        if (posicao.x < 0) {
-            posicao.x = 0;
-        }
+        if (posicao.x < 0) posicao.x = 0;
 
-        float larguraDoMapaEmPixels = 4160f;
+        float larguraDoMapaEmPixels = 269 * 16f;
         if (posicao.x > larguraDoMapaEmPixels - rect.width) {
             setPosicao(larguraDoMapaEmPixels - rect.width, posicao.y);
         }
 
-        // -------------------------------------------------------------------------
-        // LÓGICA DE TROCA DE SPRITES
-        // -------------------------------------------------------------------------
-        if (velocidade.x != 0) {
-            // Se estiver se movendo, avança o cronômetro e pega o frame da corrida
+        // 6. LÓGICA DE ANIMAÇÃO
+        boolean estaAndando = Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.D);
+
+        if (!noChao) {
             tempoDaAnimacao += delta;
-            frameAtual = animacaoCorrer.getKeyFrame(tempoDaAnimacao);
-
-            // Descobre para onde ele está olhando baseado na velocidade horizontal
-            if (velocidade.x > 0) olhandoParaDireita = true;
-            if (velocidade.x < 0) olhandoParaDireita = false;
+            frameAtual = new TextureRegion(animacaoPulo.getKeyFrame(tempoDaAnimacao));
+        } else if (estaAndando) {
+            tempoDaAnimacao += delta;
+            frameAtual = new TextureRegion(animacaoCorrer.getKeyFrame(tempoDaAnimacao));
+            frameAtual = new TextureRegion(animacaoCorrer.getKeyFrame(tempoDaAnimacao));
         } else {
-            // Se parou de andar, reseta o tempo e usa o frame dele parado
             tempoDaAnimacao = 0f;
-            frameAtual = frameEstatico;
+            frameAtual = new TextureRegion(frameEstatico);
         }
 
-        // CONTROLAR A DIREÇÃO DO OLHAR (Efeito Espelho)
+        // 7. ESPELHAMENTO
         if (!olhandoParaDireita && !frameAtual.isFlipX()) {
-            frameAtual.flip(true, false); // true para o eixo X (horizontal)
-        }
-        else if (olhandoParaDireita && frameAtual.isFlipX()) {
+            frameAtual.flip(true, false);
+        } else if (olhandoParaDireita && frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
         }
 
-        // Lógica de tempo invulnerável
+        // 8. INVULNERABILIDADE
         if (estaInvulneravel) {
             tempoInvulneravel -= delta;
             if (tempoInvulneravel <= 0) {
@@ -142,6 +141,7 @@ public class Jogador extends ObjetoJogo {
     public void resetarPulo() {
         this.velocidade.y = 0;
         this.noChao = true;
+
     }
 
     @Override
@@ -159,14 +159,12 @@ public class Jogador extends ObjetoJogo {
     @Override
     public void draw(Batch batch) {
         if (estaInvulneravel) {
-            // Faz o Jogador piscar enquanto estiver imune (pula frames de render se o resto da divisão por 2 for 0)
             if ((int)(tempoInvulneravel * 100) % 2 == 0) {
                 return;
             }
         }
 
         if (frameAtual != null) {
-            // Mantido o ajuste opcional de X (caso prefira centralizar melhor a sprite)
             batch.draw(frameAtual, rect.x - 10, rect.y, 48, 52);
         }
     }
@@ -181,7 +179,7 @@ public class Jogador extends ObjetoJogo {
             if (this.hpAtual < 0) this.hpAtual = 0;
 
             estaInvulneravel = true;
-            tempoInvulneravel = 1.5f; // 1 segundo e meio de imunidade após o golpe
+            tempoInvulneravel = 1.5f;
         }
     }
 
@@ -203,5 +201,9 @@ public class Jogador extends ObjetoJogo {
 
     public boolean estaSemVida() {
         return this.hpAtual <= 0;
+    }
+
+    public Vector2 getVelocidade() {
+        return velocidade;
     }
 }

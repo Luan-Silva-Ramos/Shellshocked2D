@@ -1,4 +1,4 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.personagens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,9 +13,9 @@ public class SoldadoRebelde extends Inimigo {
     private float tempoDaAnimacao;
     private boolean olhandoParaDireita = true;
 
-    public SoldadoRebelde(float x, float y, Texture textura) {
-        // Nasce no X e Y, tem tamanho 48x48 e anda 80 pixels para os lados na patrulha
-        super(x, y, 48, 48, null, 80f);
+    public SoldadoRebelde(float x, float y, Jogador jogador) {
+        // Envia os dados para a estrutura unificada de IA do Pai
+        super(x, y, 48f, 48f, null, 80f, jogador);
         this.tempoDaAnimacao = 0f;
 
         Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigo.png"));
@@ -32,22 +32,15 @@ public class SoldadoRebelde extends Inimigo {
 
     @Override
     public void update(float delta) {
+        // Deixa o pai resolver toda a física e gatilho de ataque
         super.update(delta);
 
-        // 2. LÓGICA DE ANIMAÇÃO DO SOLDADO
-        // O super.update atualizou a "velocidade", então agora sabemos para onde ele andou!
         tempoDaAnimacao += delta;
         frameAtual = animacaoAndar.getKeyFrame(tempoDaAnimacao);
 
-        // 3. CONTROLE DO ESPELHAMENTO (FLIP)
-        // Usamos a velocidade que a classe Inimigo calculou para virar o sprite
-        if (this.velocidade.x > 0) {
-            olhandoParaDireita = true;
-        } else if (this.velocidade.x < 0) {
-            olhandoParaDireita = false;
-        }
+        // Adapta o flip gráfico conforme o veredito da IA do Pai
+        olhandoParaDireita = this.isOlhandoParaDireita();
 
-        // Aplica o efeito espelho para o soldado olhar pro lado certo da patrulha
         if (!olhandoParaDireita && !frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
         } else if (olhandoParaDireita && frameAtual.isFlipX()) {
@@ -60,23 +53,16 @@ public class SoldadoRebelde extends Inimigo {
         if (frameAtual != null) {
             if (isEstaPiscando()) {
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE);
-
-                // Colocamos o batch em preto para anular as cores originais, mas mantemos o alpha em 1
                 batch.setColor(0f, 0f, 0f, 1f);
-
-                // Desenha a silhueta de fundo
                 batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
 
-                // Agora mudamos o blend para somar o brilho máximo, transformando tudo em BRANCO PURO e SÓLIDO!
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
                 batch.setColor(1f, 1f, 1f, 1f);
             }
 
-            // Desenha o sprite padrão
             batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
 
             if (isEstaPiscando()) {
-                // RESETAR O BATCH (Obrigatório para não quebrar o resto do jogo)
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
                 batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
             }

@@ -1,8 +1,14 @@
-package com.Badlogic.runandshoot2d;
+package com.Badlogic.runandshoot2d.telas;
 
+import com.Badlogic.runandshoot2d.jogo.RnsJogo;
+import com.Badlogic.runandshoot2d.objetos.Obstaculo;
+import com.Badlogic.runandshoot2d.objetos.Projetil;
+import com.Badlogic.runandshoot2d.personagens.Chefao;
+import com.Badlogic.runandshoot2d.personagens.Inimigo;
+import com.Badlogic.runandshoot2d.personagens.Jogador;
+import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -17,7 +23,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import java.util.HashMap;
 
 public class TelaDeJogo extends ScreenAdapter {
@@ -34,50 +39,40 @@ public class TelaDeJogo extends ScreenAdapter {
     private final Texture texJogador;
     private final SpriteBatch batch;
 
-    // Lista para guardar retângulos de colisão do mapa
     private final Array<Obstaculo> listaChao;
     private final Array<Obstaculo> listaPlataformas;
     private final Array<Obstaculo> listaBarris;
 
-    // Projeteis
-    private com.badlogic.gdx.utils.Array<Projetil> listaProjeteis;
+    private Array<Projetil> listaProjeteis;
     private Texture texBala;
 
     private final HashMap<String, Texture> texturasBarris;
     private final HashMap<String, Texture> texturasPlataformas;
 
-    // INIMIGOS
     private final Array<Inimigo> listaInimigos;
-    private final Texture texInimigoSoldado;
 
-    // HUD
+
     private OrthographicCamera cameraHUD;
     private com.badlogic.gdx.graphics.g2d.BitmapFont fonteHUD;
     private com.badlogic.gdx.graphics.g2d.GlyphLayout layoutHUD;
-
-    // Barra de Vida visual
     private com.badlogic.gdx.graphics.glutils.ShapeRenderer shapeRenderer;
 
     private int pontuacao = 0;
-    private int vidasJogador = 3; // Estilo clássico de gashapons/fichas
+    private int vidasJogador = 3;
 
-    // Projeteis dos Inimigos
-    private com.badlogic.gdx.utils.Array<Projetil> listaProjeteisInimigos;
+    private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
 
     public TelaDeJogo(RnsJogo jogo) {
-        // Usamos o batch unificado do jogo para evitar conflitos de OpenGL
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
 
-        // Inicializa o dicionário de Barris
         texturasBarris = new HashMap<>();
         texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilVermelhoSujo.png")));
         texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilSujo.png")));
         texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilTNT.png")));
 
-        // Inicializa o dicionário de Plataformas
         texturasPlataformas = new HashMap<>();
         texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma13.png")));
         texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma10.png")));
@@ -88,62 +83,34 @@ public class TelaDeJogo extends ScreenAdapter {
         listaPlataformas = new Array<>();
         listaChao = new Array<>();
 
-        // Carregando CENÁRIO
         this.cenario = new TmxMapLoader().load("cenario2d/cenario2d_v1.0.tmx");
-        System.out.println("Caminho real que o jogo está lendo: " + com.badlogic.gdx.Gdx.files.internal("cenario2d/cenario2d_v1.0.tmx").file().getAbsolutePath());
         renderizarMapa = new OrthogonalTiledMapRenderer(cenario, 1f, batch);
 
-        // Garante o carregamento da imagem do boneco
         texJogador = new Texture(Gdx.files.internal("cenario/Sprites/Personagens/SoldadoRebelde2.png"));
         this.jogador = new Jogador(100, 100, texJogador);
 
-        // Inicializa a lista e a textura
         listaInimigos = new Array<>();
-        texInimigoSoldado = new Texture(Gdx.files.internal("cenario/Sprites/Personagens/SoldadoRebelde2.png"));
 
-        listaProjeteis = new com.badlogic.gdx.utils.Array<>();
+        listaProjeteis = new Array<>();
         texBala = new Texture(Gdx.files.internal("recursos/vfx/tirosprite2.png"));
 
-        // Carregando aparência dos tiros dos inimigos
-        this.listaProjeteisInimigos = new com.badlogic.gdx.utils.Array<>();
+        this.listaProjeteisInimigos = new Array<>();
         this.texBalaInimigo = this.texBala;
 
-        // Barra de vida visual inicializada
         this.shapeRenderer = new com.badlogic.gdx.graphics.glutils.ShapeRenderer();
 
-        // Ler a camada de inimigos do Tiled
         carregarCamadaInimigos("inimigos");
-
-        // COLISÕES
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
         carregarCamadaObstaculos("colisao_plataforma", listaPlataformas, texturasPlataformas);
         carregarCamadaObstaculos("colisao_barril", listaBarris, texturasBarris);
 
-        // Toda a configuração de "câmara" necessária
-        float larguraDoMapaEmPixels = 4160f;
-        float limiteMaximoCamera = larguraDoMapaEmPixels - (camera.viewportWidth / 2f);
-
-        // Coloca a câmera no centro inicial da resolução virtual
         camera.position.x = jogador.getPosicao().x;
-
-        // TRAVA DA ESQUERDA
-        if (camera.position.x < LARGURA_VIRTUAL / 2f) {
-            camera.position.x = LARGURA_VIRTUAL / 2f;
-        }
-
-        // TRAVA DA DIREITA
-        if (camera.position.x > limiteMaximoCamera) {
-            camera.position.x = limiteMaximoCamera;
-        }
-
         camera.update();
 
-        // Configuração da Câmera HUD
         this.cameraHUD = new OrthographicCamera();
         this.cameraHUD.setToOrtho(false, LARGURA_VIRTUAL, ALTURA_VIRTUAL);
         this.cameraHUD.update();
 
-        // Usamos a fonte padrão do jogo
         this.fonteHUD = jogo.getFonte();
         this.layoutHUD = new GlyphLayout();
     }
@@ -152,7 +119,7 @@ public class TelaDeJogo extends ScreenAdapter {
         var camada = cenario.getLayers().get(nomeCamada);
         if (camada != null) {
             for (MapObject objeto : camada.getObjects()) {
-                Rectangle rectTiled = null;
+                Rectangle rectTiled;
                 if (objeto instanceof RectangleMapObject) {
                     rectTiled = ((RectangleMapObject) objeto).getRectangle();
                 } else {
@@ -164,97 +131,91 @@ public class TelaDeJogo extends ScreenAdapter {
                 }
 
                 if (rectTiled.width == 0 || rectTiled.height == 0) continue;
-
-                String tipoObjeto = objeto.getName();
-                if (tipoObjeto == null || tipoObjeto.trim().isEmpty()) {
-                    tipoObjeto = "padrao";
-                }
-
-                if (dicionarioTexturas != null) {
-                    System.out.println("Camada: " + nomeCamada + " | Lendo Nome do Objeto: '" + tipoObjeto + "'");
-                }
+                String tipoObjeto = objeto.getName() != null ? objeto.getName().toLowerCase().trim() : "padrao";
 
                 Texture texturaCorreta = null;
                 if (dicionarioTexturas != null) {
-                    texturaCorreta = dicionarioTexturas.get(tipoObjeto.toLowerCase().trim());
-
+                    texturaCorreta = dicionarioTexturas.get(tipoObjeto);
                     if (texturaCorreta == null && !dicionarioTexturas.isEmpty()) {
-                        System.out.println("⚠️ AVISO: A chave '" + tipoObjeto + "' não foi encontrada no HashMap. Usando padrão.");
                         texturaCorreta = dicionarioTexturas.values().iterator().next();
                     }
                 }
 
-                Obstaculo novoObstaculo = new Obstaculo(
-                    rectTiled.x, rectTiled.y, rectTiled.width, rectTiled.height, texturaCorreta, tipoObjeto
-                );
-                listaDestino.add(novoObstaculo);
+                listaDestino.add(new Obstaculo(rectTiled.x, rectTiled.y, rectTiled.width, rectTiled.height, texturaCorreta, tipoObjeto));
             }
         }
     }
 
     private void carregarCamadaInimigos(String nomeCamada) {
-        com.badlogic.gdx.maps.MapLayer camada = cenario.getLayers().get(nomeCamada);
-        if (camada != null) {
-            System.out.println("🤖 SUCESSO: A camada 'inimigos' foi encontrada de forma organizada!");
-            for (MapObject objeto : camada.getObjects()) {
-                String tipo = objeto.getName();
+        var camada = cenario.getLayers().get(nomeCamada);
 
-                if (tipo != null && "soldado".equalsIgnoreCase(tipo.trim())) {
-                    float x = objeto.getProperties().get("x", 0f, Float.class);
-                    float y = objeto.getProperties().get("y", 0f, Float.class);
+        if (camada == null) {
+            return;
+        }
+        for (MapObject objeto : camada.getObjects()) {
+            String tipo = objeto.getName();
 
-                    listaInimigos.add(new SoldadoRebelde(x, y, null));
-                    System.out.println("   ✅ Soldado spawnado com sucesso em X: " + x + " Y: " + y);
-                }
+            if (tipo == null) {
+                continue;
             }
-        } else {
-            System.out.println("❌ ERRO: O Java ainda não achou a camada '" + nomeCamada + "'. Verifique o passo 1 e 2.");
+
+            float x, y;
+
+            if (objeto instanceof RectangleMapObject) {
+                Rectangle r = ((RectangleMapObject) objeto).getRectangle();
+                x = r.x;
+                y = r.y;
+            } else {
+                x = objeto.getProperties().get("x", 0f, Float.class);
+                y = objeto.getProperties().get("y", 0f, Float.class);
+            }
+
+            tipo = tipo.trim().toLowerCase();
+
+            if ("soldado".equals(tipo)) {
+                listaInimigos.add(new SoldadoRebelde(x, y, jogador));
+            } else if ("boss".equals(tipo)) {
+                listaInimigos.add(new Chefao(x, y, jogador));
+            }
         }
     }
 
     @Override
     public void render(float delta) {
-        // 1. Limpa a tela
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // 2. Atualiza a física do jogador e inimigos
         jogador.update(delta);
 
-        // Gerencia as Tentativas de Vida
         if (jogador.estaSemVida()) {
             vidasJogador--;
             if (vidasJogador > 0) {
                 jogador.resetarHP();
-                jogador.tomarDano(0); // Imunidade temporária ao renascer
-            } else {
-                System.out.println("GAME OVER DE VERDADE!");
+                jogador.tomarDano(0);
             }
         }
 
-        // Teclado "input" para os tiros do Jogador
+        // Entrada de Tiro do Jogador
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
-            Projetil novoTiro = new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala);
-            listaProjeteis.add(novoTiro);
+            listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
         }
 
-        for (Inimigo inimigo : listaInimigos) {
-            inimigo.update(delta);
+        // Loop de Atualização e Instanciação de Projéteis Inimigos
+        for (Inimigo soldado : listaInimigos) {
+            soldado.update(delta);
 
-            // LÓGICA DE DISPARO DO INIMIGO
-            if (inimigo.seDesejaAtirar()) {
-                float eTiroX = inimigo.getRect().x + (inimigo.isOlhandoParaDireita() ? inimigo.getRect().width : -12);
-                float eTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2);
-                Projetil tiroInimigo = new Projetil(eTiroX, eTiroY, inimigo.isOlhandoParaDireita(), texBalaInimigo);
-                listaProjeteisInimigos.add(tiroInimigo);
-                inimigo.resetarDisparo();
+            if (soldado.seDesejaAtirar()) {
+                float spawnTiroX = soldado.getRect().x + (soldado.isOlhandoParaDireita() ? soldado.getRect().width : -10);
+                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 1.5f);
+
+                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, soldado.isOlhandoParaDireita(), texBalaInimigo));
+                soldado.resetarDisparo();
             }
         }
 
         checarColisoes();
 
-        // Colisão física dos Inimigos ao Jogador
         if (!jogador.isEstaInvulneravel()) {
             for (Inimigo inimigo : listaInimigos) {
                 if (jogador.getRect().overlaps(inimigo.getRect())) {
@@ -264,38 +225,27 @@ public class TelaDeJogo extends ScreenAdapter {
             }
         }
 
-        // Executa as colisões dos inimigos com o cenário para eles não caírem
         checarColisoesInimigos();
-
-        // 3. Atualiza a câmera seguindo o jogador
+        // Camera configurações
+        float larguraMapa = 269 * 16f;
         camera.position.x = jogador.getPosicao().x;
-        if (camera.position.x < LARGURA_VIRTUAL / 2f) {
-            camera.position.x = LARGURA_VIRTUAL / 2f;
-        }
+        if (camera.position.x < LARGURA_VIRTUAL / 2f) camera.position.x = LARGURA_VIRTUAL / 2f;
+        if (camera.position.x > larguraMapa - LARGURA_VIRTUAL / 2f) camera.position.x = larguraMapa - LARGURA_VIRTUAL / 2f;
         camera.update();
 
-        // 4. Sincroniza a projeção do mapa com a câmera
         renderizarMapa.setView(camera);
         renderizarMapa.render();
 
-        // Inicia o desenho das entidades do mundo
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
         jogador.draw(batch);
 
-        // Desenha os atores/cenários antes dos projéteis (Correção de Z-index!)
-        for (Inimigo inimigo : listaInimigos) {
-            inimigo.draw(batch);
-        }
-        for (Obstaculo barril : listaBarris) {
-            barril.draw(batch);
-        }
-        for (Obstaculo plataforma : listaPlataformas) {
-            plataforma.draw(batch);
-        }
+        for (Inimigo inimigo : listaInimigos) inimigo.draw(batch);
+        for (Obstaculo barril : listaBarris) barril.draw(batch);
+        for (Obstaculo plataforma : listaPlataformas) plataforma.draw(batch);
 
-        // ATUALIZAÇÃO, DESENHO E LIMPEZA DOS PROJÉTEIS JOGADOR
+        // Processamento de Projéteis do Jogador
         java.util.Iterator<Projetil> iter = listaProjeteis.iterator();
         while (iter.hasNext()) {
             Projetil tiro = iter.next();
@@ -314,12 +264,10 @@ public class TelaDeJogo extends ScreenAdapter {
                     break;
                 }
             }
-            if (tiro.deveDestruir()) {
-                iter.remove();
-            }
+            if (tiro.deveDestruir()) iter.remove();
         }
 
-        // ATUALIZAÇÃO E DESENHO DOS PROJÉTEIS INIMIGOS // Entender o que está ocorrendo?
+        // Processamento de Projéteis Inimigos
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
@@ -330,39 +278,23 @@ public class TelaDeJogo extends ScreenAdapter {
                 jogador.tomarDano(20);
                 tiroE.marcarComoDestruido();
             }
-            if (tiroE.deveDestruir()) {
-                iterBalaInimigo.remove();
-            }
+            if (tiroE.deveDestruir()) iterBalaInimigo.remove();
         }
 
         batch.end();
 
-        // RENDERIZAÇÃO DA HUD DA TELA (TEXTOS)
+        // Renders de HUD e Formas Geométricas (Fundo e HP)
         batch.setProjectionMatrix(cameraHUD.combined);
         batch.begin();
-
-        String textoScore = "SCORE: " + pontuacao;
-        fonteHUD.draw(batch, textoScore, 15, ALTURA_VIRTUAL - 15);
-
-        String textoVidas = "PLAYER x " + vidasJogador;
-        layoutHUD.setText(fonteHUD, textoVidas);
+        fonteHUD.draw(batch, "SCORE: " + pontuacao, 15, ALTURA_VIRTUAL - 15);
+        layoutHUD.setText(fonteHUD, "PLAYER x " + vidasJogador);
         fonteHUD.draw(batch, layoutHUD, LARGURA_VIRTUAL - layoutHUD.width - 15, ALTURA_VIRTUAL - 15);
-
         batch.end();
 
-        // DESENHANDO A BARRA DE HP GEOMÉTRICA
         shapeRenderer.setProjectionMatrix(cameraHUD.combined);
-
-        // 1. Fundo Preto
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
         shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
-        shapeRenderer.end();
-
-
-        // Estudar da linha 363 pra baixo
-        // 2. Preenchimento Vermelho Dinâmico
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
         float larguraBarra = 100f * ((float) jogador.getHpAtual() / jogador.getHpMaximo());
         shapeRenderer.rect(17, ALTURA_VIRTUAL - 33, larguraBarra, 6);
@@ -422,21 +354,19 @@ public class TelaDeJogo extends ScreenAdapter {
 
                 if (sobreposicaoY < sobreposicaoX) {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
-                        inimigo.getPosicao().y = rectObjeto.y + rectObjeto.height;
+                        inimigo.setY(rectObjeto.y + rectObjeto.height);
                         inimigo.getVelocidade().y = 0;
                     } else {
-                        inimigo.getPosicao().y = rectObjeto.y - rectInimigo.height;
+                        inimigo.setY(rectObjeto.y - rectInimigo.height);
                         inimigo.getVelocidade().y = 0;
                     }
                 } else {
                     if ((rectInimigo.x + rectInimigo.width / 2) < (rectObjeto.x + rectObjeto.width / 2)) {
-                        inimigo.getPosicao().x = rectObjeto.x - rectInimigo.width;
+                        inimigo.setX(rectObjeto.x - rectInimigo.width);
                     } else {
-                        inimigo.getPosicao().x = rectObjeto.x + rectObjeto.width;
+                        inimigo.setX(rectObjeto.x + rectObjeto.width);
                     }
-                    inimigo.getVelocidade().x *= -1;
                 }
-                inimigo.getRect().setPosition(inimigo.getPosicao().x, inimigo.getPosicao().y);
             }
         }
     }
@@ -448,13 +378,16 @@ public class TelaDeJogo extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        if (cenario != null) cenario.dispose();
-        if (renderizarMapa != null) renderizarMapa.dispose();
-        if (texJogador != null) texJogador.dispose();
-        for (Texture tex : texturasBarris.values()) tex.dispose();
-        for (Texture tex : texturasPlataformas.values()) tex.dispose();
-        if (texInimigoSoldado != null) texInimigoSoldado.dispose();
-        if (texBala != null) texBala.dispose();
-        if (shapeRenderer != null) shapeRenderer.dispose();
+        cenario.dispose();
+        renderizarMapa.dispose();
+        texJogador.dispose();
+        texBala.dispose();
+        shapeRenderer.dispose();
+        for (Texture t : texturasBarris.values()) {
+            t.dispose();
+        }
+        for (Texture t : texturasPlataformas.values()) {
+            t.dispose();
+        }
     }
 }
