@@ -11,6 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -50,8 +51,11 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private final Array<Inimigo> listaInimigos;
 
-    // Instância unificada da classe do HUD
-    private Hud hud;
+
+    private OrthographicCamera cameraHUD;
+    private com.badlogic.gdx.graphics.g2d.BitmapFont fonteHUD;
+    private com.badlogic.gdx.graphics.g2d.GlyphLayout layoutHUD;
+    private com.badlogic.gdx.graphics.glutils.ShapeRenderer shapeRenderer;
 
     private int pontuacao = 0;
     private int vidasJogador = 3;
@@ -65,15 +69,15 @@ public class TelaDeJogo extends ScreenAdapter {
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
 
         texturasBarris = new HashMap<>();
-        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
-        texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("recursos/objetos/BarrilSujo.png")));
-        texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("recursos/objetos/BarrilTNT.png")));
+        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilVermelhoSujo.png")));
+        texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilSujo.png")));
+        texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilTNT.png")));
 
         texturasPlataformas = new HashMap<>();
-        texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("recursos/objetos/Plataforma13.png")));
-        texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("recursos/objetos/Plataforma10.png")));
-        texturasPlataformas.put("col_plat_media", new Texture(Gdx.files.internal("recursos/objetos/Plataforma11.png")));
-        texturasPlataformas.put("col_plat_pequena2", new Texture(Gdx.files.internal("recursos/objetos/Plataforma12.png")));
+        texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma13.png")));
+        texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma10.png")));
+        texturasPlataformas.put("col_plat_media", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma11.png")));
+        texturasPlataformas.put("col_plat_pequena2", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma12.png")));
 
         listaBarris = new Array<>();
         listaPlataformas = new Array<>();
@@ -88,10 +92,12 @@ public class TelaDeJogo extends ScreenAdapter {
         listaInimigos = new Array<>();
 
         listaProjeteis = new Array<>();
-        texBala = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/tirosprite2.png"));
+        texBala = new Texture(Gdx.files.internal("recursos/vfx/tirosprite2.png"));
 
         this.listaProjeteisInimigos = new Array<>();
         this.texBalaInimigo = this.texBala;
+
+        this.shapeRenderer = new com.badlogic.gdx.graphics.glutils.ShapeRenderer();
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -101,8 +107,12 @@ public class TelaDeJogo extends ScreenAdapter {
         camera.position.x = jogador.getPosicao().x;
         camera.update();
 
-        // Inicialização do novo gerenciador HUD passando as configurações do jogo
-        this.hud = new Hud(jogo.getFontePontos(),jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
+        this.cameraHUD = new OrthographicCamera();
+        this.cameraHUD.setToOrtho(false, LARGURA_VIRTUAL, ALTURA_VIRTUAL);
+        this.cameraHUD.update();
+
+        this.fonteHUD = jogo.getFonte();
+        this.layoutHUD = new GlyphLayout();
     }
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
@@ -216,8 +226,7 @@ public class TelaDeJogo extends ScreenAdapter {
         }
 
         checarColisoesInimigos();
-
-        // Configurações de Câmera seguindo o Jogador
+        // Camera configurações
         float larguraMapa = 269 * 16f;
         camera.position.x = jogador.getPosicao().x;
         if (camera.position.x < LARGURA_VIRTUAL / 2f) camera.position.x = LARGURA_VIRTUAL / 2f;
@@ -258,11 +267,7 @@ public class TelaDeJogo extends ScreenAdapter {
             if (tiro.deveDestruir()) iter.remove();
         }
 
-<<<<<<< HEAD:core/src/main/java/com/Badlogic/runandshoot2d/telas/TelaDeJogo.java
         // Processamento de Projéteis Inimigos
-=======
-        // ATUALIZAÇÃO E DESENHO DOS PROJÉTEIS INIMIGOS // Entender o que está ocorrendo?
->>>>>>> aba0945 (salvando alterações da tela de jogo):core/src/main/java/com/Badlogic/runandshoot2d/TelaDeJogo.java
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
@@ -278,41 +283,22 @@ public class TelaDeJogo extends ScreenAdapter {
 
         batch.end();
 
-<<<<<<< HEAD:core/src/main/java/com/Badlogic/runandshoot2d/telas/TelaDeJogo.java
-        // Aciona o HUD customizado passando o estado atual das variáveis do jogo
-        hud.render(batch, jogador, pontuacao, vidasJogador);
-=======
-        // RENDERIZAÇÃO DA HUD DA TELA (TEXTOS)
+        // Renders de HUD e Formas Geométricas (Fundo e HP)
         batch.setProjectionMatrix(cameraHUD.combined);
         batch.begin();
-
-        String textoScore = "SCORE: " + pontuacao;
-        fonteHUD.draw(batch, textoScore, 15, ALTURA_VIRTUAL - 15);
-
-        String textoVidas = "PLAYER x " + vidasJogador;
-        layoutHUD.setText(fonteHUD, textoVidas);
+        fonteHUD.draw(batch, "SCORE: " + pontuacao, 15, ALTURA_VIRTUAL - 15);
+        layoutHUD.setText(fonteHUD, "PLAYER x " + vidasJogador);
         fonteHUD.draw(batch, layoutHUD, LARGURA_VIRTUAL - layoutHUD.width - 15, ALTURA_VIRTUAL - 15);
-
         batch.end();
 
-        // DESENHANDO A BARRA DE HP GEOMÉTRICA
         shapeRenderer.setProjectionMatrix(cameraHUD.combined);
-
-        // 1. Fundo Preto
         shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
         shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
-        shapeRenderer.end();
-
-
-        // Estudar da linha 363 pra baixo
-        // 2. Preenchimento Vermelho Dinâmico
-        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
         float larguraBarra = 100f * ((float) jogador.getHpAtual() / jogador.getHpMaximo());
         shapeRenderer.rect(17, ALTURA_VIRTUAL - 33, larguraBarra, 6);
         shapeRenderer.end();
->>>>>>> aba0945 (salvando alterações da tela de jogo):core/src/main/java/com/Badlogic/runandshoot2d/TelaDeJogo.java
     }
 
     private void checarColisoes() {
@@ -396,12 +382,7 @@ public class TelaDeJogo extends ScreenAdapter {
         renderizarMapa.dispose();
         texJogador.dispose();
         texBala.dispose();
-
-        // Libera o HUD e suas texturas PNG da memória RAM
-        if (hud != null) {
-            hud.dispose();
-        }
-
+        shapeRenderer.dispose();
         for (Texture t : texturasBarris.values()) {
             t.dispose();
         }
