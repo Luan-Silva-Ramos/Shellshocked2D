@@ -258,7 +258,11 @@ public class TelaDeJogo extends ScreenAdapter {
             if (tiro.deveDestruir()) iter.remove();
         }
 
+<<<<<<< HEAD:core/src/main/java/com/Badlogic/runandshoot2d/telas/TelaDeJogo.java
         // Processamento de Projéteis Inimigos
+=======
+        // ATUALIZAÇÃO E DESENHO DOS PROJÉTEIS INIMIGOS // Entender o que está ocorrendo?
+>>>>>>> aba0945 (salvando alterações da tela de jogo):core/src/main/java/com/Badlogic/runandshoot2d/TelaDeJogo.java
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
@@ -274,8 +278,41 @@ public class TelaDeJogo extends ScreenAdapter {
 
         batch.end();
 
+<<<<<<< HEAD:core/src/main/java/com/Badlogic/runandshoot2d/telas/TelaDeJogo.java
         // Aciona o HUD customizado passando o estado atual das variáveis do jogo
         hud.render(batch, jogador, pontuacao, vidasJogador);
+=======
+        // RENDERIZAÇÃO DA HUD DA TELA (TEXTOS)
+        batch.setProjectionMatrix(cameraHUD.combined);
+        batch.begin();
+
+        String textoScore = "SCORE: " + pontuacao;
+        fonteHUD.draw(batch, textoScore, 15, ALTURA_VIRTUAL - 15);
+
+        String textoVidas = "PLAYER x " + vidasJogador;
+        layoutHUD.setText(fonteHUD, textoVidas);
+        fonteHUD.draw(batch, layoutHUD, LARGURA_VIRTUAL - layoutHUD.width - 15, ALTURA_VIRTUAL - 15);
+
+        batch.end();
+
+        // DESENHANDO A BARRA DE HP GEOMÉTRICA
+        shapeRenderer.setProjectionMatrix(cameraHUD.combined);
+
+        // 1. Fundo Preto
+        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.BLACK);
+        shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
+        shapeRenderer.end();
+
+
+        // Estudar da linha 363 pra baixo
+        // 2. Preenchimento Vermelho Dinâmico
+        shapeRenderer.begin(com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.RED);
+        float larguraBarra = 100f * ((float) jogador.getHpAtual() / jogador.getHpMaximo());
+        shapeRenderer.rect(17, ALTURA_VIRTUAL - 33, larguraBarra, 6);
+        shapeRenderer.end();
+>>>>>>> aba0945 (salvando alterações da tela de jogo):core/src/main/java/com/Badlogic/runandshoot2d/TelaDeJogo.java
     }
 
     private void checarColisoes() {
