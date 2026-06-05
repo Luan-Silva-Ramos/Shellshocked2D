@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -18,8 +19,8 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     private final BitmapFont fonte;
     private final Viewport viewport = new ScreenViewport();
     private final GlyphLayout layout = new GlyphLayout();
+    private Texture imagemFundo;
 
-    // VARIÁVEIS DO MENU STYLE METAL SLUG
     private int opcaoSelecionada = 0;
     private final String[] opcoes = {"1. INICIAR MISSÃO", "2. CONTROLES", "3. SAIR"};
 
@@ -27,16 +28,11 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         this.rnsJogo = rnsJogo;
         this.batch = rnsJogo.getBatch();
         this.fonte = rnsJogo.getFonte();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        imagemFundo = new Texture(Gdx.files.internal("recursos/telas/tela_fundo.png"));
     }
 
     @Override
     public void render(float delta) {
-        // 1. ENTRADA DO TECLADO (Navegação clássica de Arcade)
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             opcaoSelecionada--;
             if (opcaoSelecionada < 0) opcaoSelecionada = opcoes.length - 1;
@@ -46,26 +42,24 @@ public class TelaMenuPrincipal extends ScreenAdapter {
             if (opcaoSelecionada >= opcoes.length) opcaoSelecionada = 0;
         }
 
-        // 2. AÇÃO AO CONFIRMAR (Espaço ou Enter)
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             if (opcaoSelecionada == 0) {
-                // Vai direto pro jogo
                 rnsJogo.setScreen(new TelaDeJogo(rnsJogo));
                 this.dispose();
                 return;
             } else if (opcaoSelecionada == 1) {
-                // Vai para a sua tela de controles atual!
                 rnsJogo.setScreen(new TelaDeControle(rnsJogo));
                 this.dispose();
                 return;
             } else if (opcaoSelecionada == 2) {
-                // Fecha o jogo
                 Gdx.app.exit();
                 return;
             }
         }
 
-        // 3. RENDERIZAÇÃO DA TELA
+
+
+        // 2. PARTE GRÁFICA / DESENHO
         ScreenUtils.clear(Color.BLACK);
 
         float centroX = viewport.getWorldWidth() / 2;
@@ -73,33 +67,41 @@ public class TelaMenuPrincipal extends ScreenAdapter {
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
+
         batch.begin();
 
-        // TÍTULO DO JOGO
+        // CORREÇÃO 1: Fundo usando a largura e altura do MUNDO VIRTUAL do Viewport
+        batch.draw(imagemFundo, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+
+        // CORREÇÃO 2: Definir explicitamente a cor do título antes de desenhá-lo
+        fonte.setColor(Color.RED); // Coloquei Vermelho para testarmos o destaque, mude para a cor que quiser!
         layout.setText(fonte, "METAL SLUG: RUN AND SHOOT");
         fonte.draw(batch, layout, centroX - layout.width / 2, varY);
-        varY -= 80; // Espaço maior depois do título
+        varY -= 80;
 
-        // DESENHANDO AS OPÇÕES DO MENU
+        // Desenho das opções (Sua lógica perfeita)
         for (int i = 0; i < opcoes.length; i++) {
             String textoOpcao = opcoes[i];
-
-            // Se for a opção que o jogador está em cima, adiciona uma "setinha" e muda a cor
             if (i == opcaoSelecionada) {
                 textoOpcao = "-> " + textoOpcao + " <-";
-                fonte.setColor(Color.YELLOW); // Destaca em amarelo
+                fonte.setColor(Color.YELLOW);
             } else {
-                fonte.setColor(Color.WHITE);  // As outras ficam brancas
+                fonte.setColor(Color.WHITE);
             }
 
             layout.setText(fonte, textoOpcao);
             fonte.draw(batch, layout, centroX - layout.width / 2, varY);
-            varY -= 40; // Distância entre as linhas do menu
+            varY -= 40;
         }
 
-        // Resetar a cor da fonte para não bugar outros textos depois
-        fonte.setColor(Color.WHITE);
 
         batch.end();
     }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
+
+
 }
