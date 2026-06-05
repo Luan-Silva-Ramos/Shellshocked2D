@@ -18,7 +18,7 @@ public class SoldadoRebelde extends Inimigo {
         super(x, y, 48f, 48f, null, 80f, jogador);
         this.tempoDaAnimacao = 0f;
 
-        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigo.png"));
+        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/soldado/inimigo.png"));
         TextureRegion[][] matriz = TextureRegion.split(folha, 100, 100);
 
         TextureRegion[] framesAndar = new TextureRegion[7];

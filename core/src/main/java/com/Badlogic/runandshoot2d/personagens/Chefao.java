@@ -27,7 +27,7 @@ public class Chefao extends Inimigo {
         this.tempoDaAnimacao = 0f;
 
         // Carrega os sprites do Chefão
-        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/vilao_andar_spritesheet.png"));
+        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar_spritesheet.png"));
         TextureRegion[][] matriz = TextureRegion.split(folha, 208, 220);
 
         TextureRegion[] framesAndar = new TextureRegion[7];
