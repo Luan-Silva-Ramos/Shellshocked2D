@@ -8,15 +8,10 @@ import com.Badlogic.runandshoot2d.personagens.Inimigo;
 import com.Badlogic.runandshoot2d.personagens.Jogador;
 import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -28,7 +23,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class TelaDeJogo extends ScreenAdapter {
 
@@ -36,7 +30,7 @@ public class TelaDeJogo extends ScreenAdapter {
     private final OrthogonalTiledMapRenderer renderizarMapa;
     private final OrthographicCamera camera;
     private final Viewport cenarioViewport;
-    private final RnsJogo jogo; // Modificaçao
+    private final RnsJogo jogo;
 
     private static final int LARGURA_VIRTUAL = 400;
     private static final int ALTURA_VIRTUAL = 224;
@@ -57,11 +51,8 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private final Array<Inimigo> listaInimigos;
 
-
-    private OrthographicCamera cameraHUD;
-    private BitmapFont fonteHUD;
-    private GlyphLayout layoutHUD;
-    private ShapeRenderer shapeRenderer;
+    // Instância unificada da classe do HUD
+    private Hud hud;
 
     private int pontuacao = 0;
     private int vidasJogador = 3;
@@ -69,22 +60,22 @@ public class TelaDeJogo extends ScreenAdapter {
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
 
-    public TelaDeJogo( RnsJogo jogo) {
+    public TelaDeJogo(RnsJogo jogo) {
         this.jogo = jogo;
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
 
         texturasBarris = new HashMap<>();
-        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilVermelhoSujo.png")));
-        texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilSujo.png")));
-        texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/BarrilTNT.png")));
+        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
+        texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("recursos/objetos/BarrilSujo.png")));
+        texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("recursos/objetos/BarrilTNT.png")));
 
         texturasPlataformas = new HashMap<>();
-        texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma13.png")));
-        texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma10.png")));
-        texturasPlataformas.put("col_plat_media", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma11.png")));
-        texturasPlataformas.put("col_plat_pequena2", new Texture(Gdx.files.internal("cenario/sprites/2 - objetos/Plataforma12.png")));
+        texturasPlataformas.put("col_plat_pequena", new Texture(Gdx.files.internal("recursos/objetos/Plataforma13.png")));
+        texturasPlataformas.put("col_plat_alta", new Texture(Gdx.files.internal("recursos/objetos/Plataforma10.png")));
+        texturasPlataformas.put("col_plat_media", new Texture(Gdx.files.internal("recursos/objetos/Plataforma11.png")));
+        texturasPlataformas.put("col_plat_pequena2", new Texture(Gdx.files.internal("recursos/objetos/Plataforma12.png")));
 
         listaBarris = new Array<>();
         listaPlataformas = new Array<>();
@@ -99,12 +90,10 @@ public class TelaDeJogo extends ScreenAdapter {
         listaInimigos = new Array<>();
 
         listaProjeteis = new Array<>();
-        texBala = new Texture(Gdx.files.internal("recursos/vfx/tirosprite2.png"));
+        texBala = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/tirosprite2.png"));
 
         this.listaProjeteisInimigos = new Array<>();
         this.texBalaInimigo = this.texBala;
-
-        this.shapeRenderer = new ShapeRenderer();
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -114,12 +103,8 @@ public class TelaDeJogo extends ScreenAdapter {
         camera.position.x = jogador.getPosicao().x;
         camera.update();
 
-        this.cameraHUD = new OrthographicCamera();
-        this.cameraHUD.setToOrtho(false, LARGURA_VIRTUAL, ALTURA_VIRTUAL);
-        this.cameraHUD.update();
-
-        this.fonteHUD = jogo.getFonte();
-        this.layoutHUD = new GlyphLayout();
+        // Inicialização do novo gerenciador HUD passando as configurações do jogo
+        this.hud = new Hud(jogo.getFontePontos(),jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
     }
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
@@ -201,10 +186,11 @@ public class TelaDeJogo extends ScreenAdapter {
             } else {
                 jogo.setScreen(new GamerOver(jogo));
             }
+
         }
 
         // Entrada de Tiro do Jogador
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
@@ -235,7 +221,8 @@ public class TelaDeJogo extends ScreenAdapter {
         }
 
         checarColisoesInimigos();
-        // Camera configurações
+
+        // Configurações de Câmera seguindo o Jogador
         float larguraMapa = 269 * 16f;
         camera.position.x = jogador.getPosicao().x;
         if (camera.position.x < LARGURA_VIRTUAL / 2f) camera.position.x = LARGURA_VIRTUAL / 2f;
@@ -255,7 +242,7 @@ public class TelaDeJogo extends ScreenAdapter {
         for (Obstaculo plataforma : listaPlataformas) plataforma.draw(batch);
 
         // Processamento de Projéteis do Jogador
-        Iterator<Projetil> iter = listaProjeteis.iterator();
+        java.util.Iterator<Projetil> iter = listaProjeteis.iterator();
         while (iter.hasNext()) {
             Projetil tiro = iter.next();
             tiro.update(delta);
@@ -277,7 +264,7 @@ public class TelaDeJogo extends ScreenAdapter {
         }
 
         // Processamento de Projéteis Inimigos
-        Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
+        java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
             tiroE.update(delta);
@@ -292,22 +279,8 @@ public class TelaDeJogo extends ScreenAdapter {
 
         batch.end();
 
-        // Renders de HUD e Formas Geométricas (Fundo e HP)
-        batch.setProjectionMatrix(cameraHUD.combined);
-        batch.begin();
-        fonteHUD.draw(batch, "SCORE: " + pontuacao, 15, ALTURA_VIRTUAL - 15);
-        layoutHUD.setText(fonteHUD, "PLAYER x " + vidasJogador);
-        fonteHUD.draw(batch, layoutHUD, LARGURA_VIRTUAL - layoutHUD.width - 15, ALTURA_VIRTUAL - 15);
-        batch.end();
-
-        shapeRenderer.setProjectionMatrix(cameraHUD.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(15, ALTURA_VIRTUAL - 35, 104, 10);
-        shapeRenderer.setColor(Color.RED);
-        float larguraBarra = 100f * ((float) jogador.getHpAtual() / jogador.getHpMaximo());
-        shapeRenderer.rect(17, ALTURA_VIRTUAL - 33, larguraBarra, 6);
-        shapeRenderer.end();
+        // Aciona o HUD customizado passando o estado atual das variáveis do jogo
+        hud.render(batch, jogador, pontuacao, vidasJogador);
     }
 
     private void checarColisoes() {
@@ -391,7 +364,12 @@ public class TelaDeJogo extends ScreenAdapter {
         renderizarMapa.dispose();
         texJogador.dispose();
         texBala.dispose();
-        shapeRenderer.dispose();
+
+        // Libera o HUD e suas texturas PNG da memória RAM
+        if (hud != null) {
+            hud.dispose();
+        }
+
         for (Texture t : texturasBarris.values()) {
             t.dispose();
         }

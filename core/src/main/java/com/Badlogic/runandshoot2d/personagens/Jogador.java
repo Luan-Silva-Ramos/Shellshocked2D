@@ -40,7 +40,7 @@ public class Jogador extends ObjetoJogo {
         this.tempoDaAnimacao = 0f;
 
         // Sprite sheet de corrida
-        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/Soldado_andando_pistola_spritesheet.png"));
+        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/jogador/Soldado_andando_pistola_spritesheet.png"));
         TextureRegion[][] matrizDeFrames = TextureRegion.split(folhaSprites, 70, 100);
 
         int totalDeFrames = 5;
@@ -53,7 +53,7 @@ public class Jogador extends ObjetoJogo {
         animacaoCorrer.setPlayMode(Animation.PlayMode.LOOP);
 
         // Sprite sheet de pulo
-        Texture folhaPulo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/soldado_pulo.png"));
+        Texture folhaPulo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/jogador/soldado_pulo.png"));
         TextureRegion[][] matrizPulo = TextureRegion.split(folhaPulo, 100, 100);
 
         int totalFramesPulo = 9;
