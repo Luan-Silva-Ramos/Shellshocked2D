@@ -1,15 +1,18 @@
 package com.Badlogic.runandshoot2d.jogo;
 
+import com.Badlogic.runandshoot2d.telas.GamerOver;
 import com.Badlogic.runandshoot2d.telas.TelaMenuPrincipal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class RnsJogo extends Game {
+    public Batch getBatch; // Criei esse metodo, pois preciso dele na tela GamerOver
     private SpriteBatch batch;
     private BitmapFont fonte;
 
@@ -47,6 +50,7 @@ public class RnsJogo extends Game {
         geradorFonteVidas.dispose();
 
 
+        //setScreen(new GamerOver(this));
         // Escolha qual tela deve abrir primeiro (Menu Principal mantido por padrão):
         setScreen(new TelaMenuPrincipal(this));
         // Se quiserem testar a tela de controles do seu amigo, mude para:
