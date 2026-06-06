@@ -30,6 +30,7 @@ public class TelaDeJogo extends ScreenAdapter {
     private final OrthogonalTiledMapRenderer renderizarMapa;
     private final OrthographicCamera camera;
     private final Viewport cenarioViewport;
+    private final RnsJogo jogo;
 
     private static final int LARGURA_VIRTUAL = 400;
     private static final int ALTURA_VIRTUAL = 224;
@@ -60,6 +61,7 @@ public class TelaDeJogo extends ScreenAdapter {
     private Texture texBalaInimigo;
 
     public TelaDeJogo(RnsJogo jogo) {
+        this.jogo = jogo;
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
@@ -181,7 +183,10 @@ public class TelaDeJogo extends ScreenAdapter {
             if (vidasJogador > 0) {
                 jogador.resetarHP();
                 jogador.tomarDano(0);
+            } else {
+                jogo.setScreen(new GamerOver(jogo));
             }
+
         }
 
         // Entrada de Tiro do Jogador
