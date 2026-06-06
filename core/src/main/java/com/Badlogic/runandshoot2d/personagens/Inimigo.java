@@ -114,4 +114,7 @@ public abstract class Inimigo extends ObjetoJogo {
     public boolean isOlhandoParaDireita() {
         return andandoParaDireita;
     }
+    public float getVelocidadeY() {
+        return velocidade.y;
+    }
 }
