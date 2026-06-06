@@ -327,6 +327,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private void resolverFisicaInimigo(Inimigo inimigo, Array<Obstaculo> listaDeObstaculos) {
         Rectangle rectInimigo = inimigo.getRect();
+
+        //inimigo.setNoChao(false);
+
         for (Obstaculo obstaculo : listaDeObstaculos) {
             Rectangle rectObjeto = obstaculo.getRect();
 
@@ -338,6 +341,7 @@ public class TelaDeJogo extends ScreenAdapter {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         inimigo.setY(rectObjeto.y + rectObjeto.height);
                         inimigo.getVelocidade().y = 0;
+                        //inimigo.setNoChao(true);
                     } else {
                         inimigo.setY(rectObjeto.y - rectInimigo.height);
                         inimigo.getVelocidade().y = 0;

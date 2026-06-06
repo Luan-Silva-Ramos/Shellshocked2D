@@ -40,7 +40,7 @@ public class Jogador extends ObjetoJogo {
         this.tempoDaAnimacao = 0f;
 
         // Sprite sheet de corrida
-        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/jogador/Soldado_andando_pistola_spritesheet.png"));
+        Texture folhaSprites = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/jogador/Soldado_andar.png"));
         TextureRegion[][] matrizDeFrames = TextureRegion.split(folhaSprites, 70, 100);
 
         int totalDeFrames = 5;
