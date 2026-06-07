@@ -93,7 +93,10 @@ public class TelaDeJogo extends ScreenAdapter {
         texBala = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/tirosprite2.png"));
 
         this.listaProjeteisInimigos = new Array<>();
-        this.texBalaInimigo = this.texBala;
+        texBalaInimigo = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/bala_soldado.png"));
+
+
+        //this.texBalaInimigo = this.texBala;
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -194,6 +197,7 @@ public class TelaDeJogo extends ScreenAdapter {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
+            jogador.notificarTiro();
         }
 
         // Loop de Atualização e Instanciação de Projéteis Inimigos
@@ -202,7 +206,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
             if (soldado.seDesejaAtirar()) {
                 float spawnTiroX = soldado.getRect().x + (soldado.isOlhandoParaDireita() ? soldado.getRect().width : -10);
-                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 1.5f);
+                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 2.5f);
 
                 listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, soldado.isOlhandoParaDireita(), texBalaInimigo));
                 soldado.resetarDisparo();
@@ -295,10 +299,20 @@ public class TelaDeJogo extends ScreenAdapter {
             Rectangle rectObjeto = obstaculo.getRect();
 
             if (rectJogador.overlaps(rectObjeto)) {
-                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width) - Math.max(rectJogador.x, rectObjeto.x);
-                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height) - Math.max(rectJogador.y, rectObjeto.y);
+                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width)
+                    - Math.max(rectJogador.x, rectObjeto.x);
+                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height)
+                    - Math.max(rectJogador.y, rectObjeto.y);
 
-                if (sobreposicaoY < sobreposicaoX) {
+                // Jogador descendo e topo do obstaculo dentro da hitbox — colisão vertical forçada
+                boolean jogadorDescendo = jogador.getVelocidade().y <= 0;
+                boolean topoDoObstaculoDentroDoJogador = rectObjeto.y + rectObjeto.height >= rectJogador.y
+                    && rectObjeto.y + rectObjeto.height <= rectJogador.y + rectJogador.height;
+
+                boolean colisaoVertical = (sobreposicaoY < sobreposicaoX)
+                    || (jogadorDescendo && topoDoObstaculoDentroDoJogador && sobreposicaoX < rectJogador.width * 0.8f);
+
+                if (colisaoVertical) {
                     if ((rectJogador.y + rectJogador.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         jogador.setY(rectObjeto.y + rectObjeto.height);
                         jogador.resetarPulo();
@@ -327,6 +341,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private void resolverFisicaInimigo(Inimigo inimigo, Array<Obstaculo> listaDeObstaculos) {
         Rectangle rectInimigo = inimigo.getRect();
+
+        //inimigo.setNoChao(false);
+
         for (Obstaculo obstaculo : listaDeObstaculos) {
             Rectangle rectObjeto = obstaculo.getRect();
 
@@ -338,6 +355,7 @@ public class TelaDeJogo extends ScreenAdapter {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         inimigo.setY(rectObjeto.y + rectObjeto.height);
                         inimigo.getVelocidade().y = 0;
+                        //inimigo.setNoChao(true);
                     } else {
                         inimigo.setY(rectObjeto.y - rectInimigo.height);
                         inimigo.getVelocidade().y = 0;
@@ -364,6 +382,7 @@ public class TelaDeJogo extends ScreenAdapter {
         renderizarMapa.dispose();
         texJogador.dispose();
         texBala.dispose();
+        texBalaInimigo.dispose();
 
         // Libera o HUD e suas texturas PNG da memória RAM
         if (hud != null) {
