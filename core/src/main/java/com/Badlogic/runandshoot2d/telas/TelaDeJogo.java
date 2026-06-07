@@ -299,10 +299,20 @@ public class TelaDeJogo extends ScreenAdapter {
             Rectangle rectObjeto = obstaculo.getRect();
 
             if (rectJogador.overlaps(rectObjeto)) {
-                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width) - Math.max(rectJogador.x, rectObjeto.x);
-                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height) - Math.max(rectJogador.y, rectObjeto.y);
+                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width)
+                    - Math.max(rectJogador.x, rectObjeto.x);
+                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height)
+                    - Math.max(rectJogador.y, rectObjeto.y);
 
-                if (sobreposicaoY < sobreposicaoX) {
+                // Jogador descendo e topo do obstaculo dentro da hitbox — colisão vertical forçada
+                boolean jogadorDescendo = jogador.getVelocidade().y <= 0;
+                boolean topoDoObstaculoDentroDoJogador = rectObjeto.y + rectObjeto.height >= rectJogador.y
+                    && rectObjeto.y + rectObjeto.height <= rectJogador.y + rectJogador.height;
+
+                boolean colisaoVertical = (sobreposicaoY < sobreposicaoX)
+                    || (jogadorDescendo && topoDoObstaculoDentroDoJogador && sobreposicaoX < rectJogador.width * 0.8f);
+
+                if (colisaoVertical) {
                     if ((rectJogador.y + rectJogador.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         jogador.setY(rectObjeto.y + rectObjeto.height);
                         jogador.resetarPulo();

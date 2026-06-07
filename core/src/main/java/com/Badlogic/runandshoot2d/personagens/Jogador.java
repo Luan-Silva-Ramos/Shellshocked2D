@@ -203,38 +203,41 @@ public class Jogador extends ObjetoJogo {
             float largura;
             float altura;
             float offsetX;
+            float offsetY; // << novo
 
             if (estaExibindoAnimacaoTiro) {
-                largura = 48f;
-                altura  = 57f;
-                offsetX = -14f;
+                largura  = 48f;
+                altura   = 57f;
+                offsetX  = -14f;
+                offsetY  = -1f; // ajuste até os pés coincidirem
             } else if (!noChao) {
-                largura = 44f;
-                altura  = 48f;
-                offsetX = -10f;
+                largura  = 44f;
+                altura   = 48f;
+                offsetX  = -10f;
+                offsetY  = 0f;
             } else {
-                largura = 40f;
-                altura  = 57f;
-                offsetX = -10f;
+                largura  = 40f;
+                altura   = 57f;
+                offsetX  = -10f;
+                offsetY  = -1f; // ajuste até os pés coincidirem
             }
 
-            // Pega as coordenadas UV do frame atual no atlas
-            int srcX   = frameAtual.getRegionX();
-            int srcY   = frameAtual.getRegionY();
-            int srcW   = frameAtual.getRegionWidth();
-            int srcH   = frameAtual.getRegionHeight();
+            int srcX = frameAtual.getRegionX();
+            int srcY = frameAtual.getRegionY();
+            int srcW = frameAtual.getRegionWidth();
+            int srcH = frameAtual.getRegionHeight();
 
             batch.draw(
                 frameAtual.getTexture(),
-                rect.x + offsetX, rect.y,  // posição na tela
-                0, 0,                       // origem
-                largura, altura,            // tamanho visual
-                1f, 1f,                     // escala
-                0f,                         // rotação
-                srcX, srcY,                 // posição no atlas
-                srcW, srcH,                 // tamanho no atlas
-                !olhandoParaDireita,        // flipX — espelha quando vai para esquerda
-                false                       // flipY
+                rect.x + offsetX, rect.y + offsetY, // << offsetY aplicado
+                0, 0,
+                largura, altura,
+                1f, 1f,
+                0f,
+                srcX, srcY,
+                srcW, srcH,
+                !olhandoParaDireita,
+                false
             );
         }
     }
