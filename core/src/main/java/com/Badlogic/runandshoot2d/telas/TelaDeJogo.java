@@ -93,7 +93,10 @@ public class TelaDeJogo extends ScreenAdapter {
         texBala = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/tirosprite2.png"));
 
         this.listaProjeteisInimigos = new Array<>();
-        this.texBalaInimigo = this.texBala;
+        texBalaInimigo = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/bala_soldado.png"));
+
+
+        //this.texBalaInimigo = this.texBala;
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -194,6 +197,7 @@ public class TelaDeJogo extends ScreenAdapter {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
+            jogador.notificarTiro();
         }
 
         // Loop de Atualização e Instanciação de Projéteis Inimigos
@@ -202,7 +206,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
             if (soldado.seDesejaAtirar()) {
                 float spawnTiroX = soldado.getRect().x + (soldado.isOlhandoParaDireita() ? soldado.getRect().width : -10);
-                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 1.5f);
+                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 2.5f);
 
                 listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, soldado.isOlhandoParaDireita(), texBalaInimigo));
                 soldado.resetarDisparo();
@@ -368,6 +372,7 @@ public class TelaDeJogo extends ScreenAdapter {
         renderizarMapa.dispose();
         texJogador.dispose();
         texBala.dispose();
+        texBalaInimigo.dispose();
 
         // Libera o HUD e suas texturas PNG da memória RAM
         if (hud != null) {
