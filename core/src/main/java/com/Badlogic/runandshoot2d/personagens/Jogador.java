@@ -228,6 +228,9 @@ public class Jogador extends ObjetoJogo {
                 offsetX  = -10f;
                 offsetY  = -1f; // ajuste até os pés coincidirem
             }
+            if (!olhandoParaDireita) {
+                offsetX = -offsetX - (largura - rect.width);
+            }
 
             int srcX = frameAtual.getRegionX();
             int srcY = frameAtual.getRegionY();
