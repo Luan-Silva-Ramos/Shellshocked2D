@@ -9,11 +9,11 @@
             "dynamicWrapping": false
         },
         "cenario2d_v1.0.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 3,
+            "scale": 2,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 782.3333333333333,
-                "y": 55.33333333333334
+                "x": 944.75,
+                "y": -29
             }
         },
         "cenario2d_v1.0.tmx#Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5": {

@@ -8,64 +8,213 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class SoldadoRebelde extends Inimigo {
 
+    // Lembra de que essa linha envolve (enum) para os estados de animação
+    private enum EstadoAnimacao {
+        ANDANDO,PARADO, CAINDO, ATIRANDO
+    }
+
+    // Animações
     private Animation<TextureRegion> animacaoAndar;
+    private Animation<TextureRegion> animacaoCair;
+    private Animation<TextureRegion> animacaoAtirar;
+    private Animation<TextureRegion> animacaoParada;
+
+    // Controle da Animação do inimigo(soldado)
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
-    private boolean olhandoParaDireita = true;
+    private EstadoAnimacao estadoAtual;
+    private EstadoAnimacao estadoAnterior;
+
+    // Timer próprio para segurar a animação de tiro
+    // (independente da flag do pai que dura apenas 1 frame)
+    private float tempoAnimacaoAtirando = 0f;
+    private boolean estaExibindoAnimacaoTiro = false;
+    private static final int TOTAL_FRAMES_ATIRAR = 5;
+    private static final float DURACAO_ANIMACAO_TIRO = TOTAL_FRAMES_ATIRAR * 0.10f;
+
+    private boolean direcaoTravadaAoAtirar = true;
 
     public SoldadoRebelde(float x, float y, Jogador jogador) {
         // Envia os dados para a estrutura unificada de IA do Pai
         super(x, y, 48f, 48f, null, 80f, jogador);
         this.tempoDaAnimacao = 0f;
+        this.estadoAtual = EstadoAnimacao.ANDANDO;
+        this.estadoAnterior = null; //Aqui atenção porque é responsável por forçar reset no primeiro Frame
 
-        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/soldado/inimigo.png"));
-        TextureRegion[][] matriz = TextureRegion.split(folha, 100, 100);
-
+        // Animação de Andar
+        Texture folha = new Texture(Gdx.files.internal(
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/inimigo.png"));
+        TextureRegion[][] matrizAndar = TextureRegion.split(folha, 100, 100);
         TextureRegion[] framesAndar = new TextureRegion[7];
         for (int i = 0; i < 7; i++) {
-            framesAndar[i] = matriz[0][i];
+            framesAndar[i] = matrizAndar[0][i];
         }
-
-        animacaoAndar = new Animation<TextureRegion>(0.12f, framesAndar);
+        animacaoAndar = new Animation<>(0.12f, framesAndar);
         animacaoAndar.setPlayMode(Animation.PlayMode.LOOP);
+
+
+        // Animação de Cair
+        Texture folhaCair = new Texture(Gdx.files.internal(
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_pulo.png"));
+        TextureRegion[][] matrizCair = TextureRegion.split(folhaCair, 201, 260);
+        // Ajuste o número de frames conforme seu spritesheet
+        int totalFramesCair = 4;
+        TextureRegion[] framesCair = new TextureRegion[totalFramesCair];
+        for (int i = 0; i < totalFramesCair; i++) {
+            framesCair[i] = matrizCair[0][i];
+        }
+        animacaoCair = new Animation<>(0.10f, framesCair);
+        animacaoCair.setPlayMode(Animation.PlayMode.NORMAL); // não loopa — congela no último frame
+
+        // ---- Animação: ATIRANDO ----
+        Texture folhaAtirar = new Texture(Gdx.files.internal(
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_atirar.png"));
+        TextureRegion[][] matrizAtirar = TextureRegion.split(folhaAtirar, 201, 260);
+        // Ajuste o número de frames conforme seu spritesheet
+        int totalFramesAtirar = 5;
+        TextureRegion[] framesAtirar = new TextureRegion[totalFramesAtirar];
+        for (int i = 0; i < totalFramesAtirar; i++) {
+            framesAtirar[i] = matrizAtirar[0][i];
+        }
+        animacaoAtirar = new Animation<>(0.10f, framesAtirar);
+        animacaoAtirar.setPlayMode(Animation.PlayMode.LOOP); // loopa enquanto ele está na janela de recarga
+
+        // Animação parado
+        Texture folhaParado = new Texture(Gdx.files.internal(
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_idle.png"));
+        TextureRegion[][] matrizParado = TextureRegion.split(folhaParado, 201, 256);
+        int totalFramesParado = 6;
+        TextureRegion[] framesParado = new TextureRegion[totalFramesParado];
+        for (int i = 0; i < totalFramesParado; i++) {
+            framesParado[i] = matrizParado[0][i];
+        }
+        animacaoParada = new Animation<>(0.12f, framesParado);
+        animacaoParada.setPlayMode(Animation.PlayMode.LOOP);
     }
 
     @Override
     public void update(float delta) {
-        // Deixa o pai resolver toda a física e gatilho de ataque
         super.update(delta);
 
+        // --- 1. Captura o momento exato do disparo e inicia timer próprio ---
+        if (seDesejaAtirar()) {
+            estaExibindoAnimacaoTiro = true;
+            tempoAnimacaoAtirando = 0f;
+            direcaoTravadaAoAtirar = this.isOlhandoParaDireita();
+        }
+
+        // --- 2. Avança o timer de tiro independentemente ---
+        if (estaExibindoAnimacaoTiro) {
+            tempoAnimacaoAtirando += delta;
+            if (tempoAnimacaoAtirando >= DURACAO_ANIMACAO_TIRO) {
+                estaExibindoAnimacaoTiro = false;
+            }
+        }
+
+        // --- 3. Determina estado com prioridade ---
+        EstadoAnimacao novoEstado;
+
+        if (estaExibindoAnimacaoTiro) {
+            novoEstado = EstadoAnimacao.ATIRANDO;
+        } else if (!isNoChao() && getVelocidadeY() < -100f) {
+            // Dupla confirmação: flag de chão E velocidade negativa significativa
+            // Evita ativar CAINDO quando noChao pisca por causa de colisão instável
+            novoEstado = EstadoAnimacao.CAINDO;
+        } else if (getVelocidade().x == 0) {
+            novoEstado = EstadoAnimacao.PARADO;
+        } else {
+            novoEstado = EstadoAnimacao.ANDANDO;
+        }
+
+        // --- 4. Reseta o timer só na mudança de estado ---
+        if (novoEstado != estadoAnterior) {
+            tempoDaAnimacao = 0f;
+            estadoAnterior = novoEstado;
+        }
+        estadoAtual = novoEstado;
         tempoDaAnimacao += delta;
-        frameAtual = animacaoAndar.getKeyFrame(tempoDaAnimacao);
 
-        // Adapta o flip gráfico conforme o veredito da IA do Pai
-        olhandoParaDireita = this.isOlhandoParaDireita();
+        // --- 5. Seleciona o frame correto — ATIRANDO usa seu timer próprio ---
+        switch (estadoAtual) {
+            case ATIRANDO:
+                frameAtual = animacaoAtirar.getKeyFrame(tempoAnimacaoAtirando); // << corrigido
+                break;
+            case PARADO:
+                frameAtual = animacaoParada.getKeyFrame(tempoDaAnimacao);
+                break;
+            case CAINDO:
+                frameAtual = animacaoCair.getKeyFrame(tempoDaAnimacao);
+                break;
+            case ANDANDO:
+            default:
+                frameAtual = animacaoAndar.getKeyFrame(tempoDaAnimacao);
+                break;
+        }
 
-        if (!olhandoParaDireita && !frameAtual.isFlipX()) {
+        // --- 6. Espelhamento ---
+        boolean olhandoDireita = (estadoAtual == EstadoAnimacao.ATIRANDO)
+            ? direcaoTravadaAoAtirar
+            : this.isOlhandoParaDireita();
+
+        if (!olhandoDireita && !frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
-        } else if (olhandoParaDireita && frameAtual.isFlipX()) {
+        } else if (olhandoDireita && frameAtual.isFlipX()) {
             frameAtual.flip(true, false);
         }
     }
 
     @Override
     public void draw(Batch batch) {
-        if (frameAtual != null) {
-            if (isEstaPiscando()) {
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE);
-                batch.setColor(0f, 0f, 0f, 1f);
-                batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
+        if (frameAtual == null) return;
 
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
-                batch.setColor(1f, 1f, 1f, 1f);
-            }
+        // Dimensões visuais por estado — hitbox não é afetada
+        float larguraVisual;
+        float alturaVisual;
+        float offsetX;
 
-            batch.draw(frameAtual, rect.x - 4, rect.y, 40, 42);
+        switch (estadoAtual) {
+            case ATIRANDO:
+                larguraVisual = 43f; // ajuste até ficar proporcional ao sprite de andar
+                alturaVisual = 48f;
+                offsetX = -6f;
+                break;
+            case CAINDO:
+                larguraVisual = 43f;
+                alturaVisual = 48f;
+                offsetX = -6f;
+                break;
+            case PARADO:
+                larguraVisual = 43f;
+                alturaVisual = 48f;
+                offsetX = -6f;
+                break;
+            case ANDANDO:
+            default:
+                larguraVisual = 40f;
+                alturaVisual = 42f;
+                offsetX = -4f;
+                break;
+        }
 
-            if (isEstaPiscando()) {
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
-                batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
-            }
+        if (isEstaPiscando()) {
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
+                com.badlogic.gdx.graphics.GL20.GL_ONE);
+            batch.setColor(0f, 0f, 0f, 1f);
+            batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_ONE,
+                com.badlogic.gdx.graphics.GL20.GL_ONE);
+            batch.setColor(1f, 1f, 1f, 1f);
+        }
+
+        batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
+
+        if (isEstaPiscando()) {
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
+                com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
+            batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
     }
 }

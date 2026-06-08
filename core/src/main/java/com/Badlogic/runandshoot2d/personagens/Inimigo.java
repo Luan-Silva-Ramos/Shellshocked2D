@@ -25,6 +25,11 @@ public abstract class Inimigo extends ObjetoJogo {
     protected float tempoProximoTiro = 0f;
     protected boolean desejaAtirar = false;
 
+    // Controle de chão com tolerância
+    protected boolean noChao = false;
+    private float tempoSemChao = 0f;
+    private static final float TOLERANCIA_CHAO = 0.15f;
+
     protected Jogador jogador;
 
     public Inimigo(float x, float y, float largura, float altura, Texture textura, float raioPatrulha, Jogador jogador) {
@@ -41,6 +46,20 @@ public abstract class Inimigo extends ObjetoJogo {
         // 1. Aplica a gravidade constantemente
         velocidade.y += GRAVIDADE * delta;
 
+        // 2. Cálculo robusto do noChao com tolerância de frames
+        boolean tocandoChaoAgora = (velocidade.y >= -80f && velocidade.y <= 1f);
+
+        if (tocandoChaoAgora) {
+            tempoSemChao = 0f;
+            this.noChao = true;
+        } else {
+            tempoSemChao += delta;
+            if (tempoSemChao >= TOLERANCIA_CHAO) {
+                this.noChao = false;
+            }
+        }
+
+        // 3. Lógica de IA
         boolean avistouJogador = false;
 
         if (jogador != null && !jogador.estaSemVida()) {
@@ -50,31 +69,24 @@ public abstract class Inimigo extends ObjetoJogo {
                 avistouJogador = true;
                 tempoProximoTiro += delta;
 
+                // Para e vira para o jogador imediatamente ao avistá-lo
+                this.andandoParaDireita = (jogador.getPosicao().x > this.posicao.x);
+                this.velocidade.x = 0;
+
                 if (tempoProximoTiro >= taxaDeDisparo) {
-                    // Salva a direção correta no momento exato do disparo
-                    this.andandoParaDireita = (jogador.getPosicao().x > this.posicao.x);
                     this.desejaAtirar = true;
-                    this.velocidade.x = 0;
                     tempoProximoTiro = 0f;
-                } else if (!desejaAtirar) {
-                    // Persegue/Caminha orientando o olhar ao jogador durante a recarga
-                    andandoParaDireita = (jogador.getPosicao().x > this.posicao.x);
-                    this.velocidade.x = andandoParaDireita ? velocidadeMovimento : -velocidadeMovimento;
-                } else {
-                    // Aguarda o disparo ser processado pela TelaDeJogo —
-                    // mantém parado sem recalcular direção para não atirar de costas
-                    this.velocidade.x = 0;
                 }
             }
         }
 
-        // Modo patrulha padrão (longe do jogador ou alvo morto)
+        // 4. Modo patrulha — só entra aqui se não avistou o jogador
         if (!avistouJogador) {
             tempoProximoTiro = 0f;
             this.velocidade.x = andandoParaDireita ? velocidadeMovimento : -velocidadeMovimento;
         }
 
-        // Executa deslocamento horizontal e travas de patrulha
+        // 5. Executa deslocamento horizontal e travas de patrulha
         if (this.velocidade.x != 0) {
             posicao.x += velocidade.x * delta;
 
@@ -87,11 +99,11 @@ public abstract class Inimigo extends ObjetoJogo {
             }
         }
 
-        // Movimento vertical e sincronia de Hitbox
+        // 6. Movimento vertical e sincronia de Hitbox
         posicao.y += velocidade.y * delta;
         this.rect.setPosition(posicao.x, posicao.y);
 
-        // Feedback visual de arcade (piscar ao tomar dano)
+        // 7. Feedback visual de arcade (piscar ao tomar dano)
         if (estaPiscando) {
             tempoPiscando -= delta;
             if (tempoPiscando <= 0) {
@@ -106,12 +118,12 @@ public abstract class Inimigo extends ObjetoJogo {
         this.tempoPiscando = 0.1f;
     }
 
-    public boolean estaMorto() { return this.vida <= 0; }
-    public boolean isEstaPiscando() { return this.estaPiscando; }
-    public boolean seDesejaAtirar() { return desejaAtirar; }
-    public void resetarDisparo() { this.desejaAtirar = false; }
-
-    public boolean isOlhandoParaDireita() {
-        return andandoParaDireita;
-    }
+    public boolean estaMorto()          { return this.vida <= 0; }
+    public boolean isEstaPiscando()     { return this.estaPiscando; }
+    public boolean seDesejaAtirar()     { return desejaAtirar; }
+    public void resetarDisparo()        { this.desejaAtirar = false; }
+    public boolean isOlhandoParaDireita() { return andandoParaDireita; }
+    public float getVelocidadeY()       { return velocidade.y; }
+    public boolean isNoChao()           { return noChao; }
+    public void setNoChao(boolean noChao) { this.noChao = noChao; }
 }
