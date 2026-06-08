@@ -46,7 +46,6 @@ public class GamerOver extends ScreenAdapter {
         if (tempoAcumulado >= 1.0f){
             contadorSegundos--;
             tempoAcumulado = 0;
-
             if (contadorSegundos < 0) {
                 rnsJogo.setScreen(new TelaMenuPrincipal(rnsJogo));
             }
@@ -54,30 +53,28 @@ public class GamerOver extends ScreenAdapter {
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
-
         batch.begin();
-
 
         layout.setText(fonte, "GAME OVER");
         fonte.setColor(Color.RED);
         fonte.draw(batch, layout, centroX - layout.width / 2, centroY + 100);
 
-        String textoContador = String.valueOf(contadorSegundos);
+        String textoContador = "Voltando ao menu em " + contadorSegundos + "...";
         layout.setText(fonte, textoContador);
         fonte.setColor(Color.WHITE);
         fonte.draw(batch, layout, centroX - layout.width / 2, centroY);
 
+        // Instrução para voltar imediatamente
+        String textoVoltar = "Pressione ENTER para voltar agora";
+        layout.setText(fonte, textoVoltar);
+        fonte.setColor(Color.GRAY);
+        fonte.draw(batch, layout, centroX - layout.width / 2, centroY - 60);
+
         batch.end();
 
-
-
-
-
+        // Volta ao menu imediatamente ao pressionar ENTER
+        if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
+            rnsJogo.setScreen(new TelaMenuPrincipal(rnsJogo));
+        }
     }
-
-
-
-
-
-
 }

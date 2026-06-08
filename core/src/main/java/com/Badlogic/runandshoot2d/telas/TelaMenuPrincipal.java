@@ -50,7 +50,7 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             if (opcaoSelecionada == 0) {
                 // Vai direto pro jogo
-                rnsJogo.setScreen(new TelaDeJogo(rnsJogo));
+                rnsJogo.setScreen(new TelaDeJogo(rnsJogo, 3));
                 this.dispose();
                 return;
             } else if (opcaoSelecionada == 1) {

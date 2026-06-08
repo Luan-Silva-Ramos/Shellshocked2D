@@ -66,11 +66,12 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private GerenciadorFisica gerenciadorFisica;
 
-    public TelaDeJogo(RnsJogo jogo) {
+    public TelaDeJogo(RnsJogo jogo, int vidasRestantes) {
         this.jogo = jogo;
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
+        this.vidasJogador = vidasRestantes;
 
         texturasBarris = new HashMap<>();
         texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
@@ -182,6 +183,7 @@ public class TelaDeJogo extends ScreenAdapter {
         if (jogador.estaSemVida()) {
             vidasJogador--;
             if (vidasJogador > 0) {
+                jogo.setScreen(new TelaDeJogo(jogo, vidasJogador));
                 jogador.resetarHP();
                 jogador.tomarDano(0);
             } else {
