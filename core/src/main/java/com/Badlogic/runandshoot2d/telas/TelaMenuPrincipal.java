@@ -51,12 +51,12 @@ public class TelaMenuPrincipal extends ScreenAdapter {
             if (opcaoSelecionada == 0) {
                 // Vai direto pro jogo
                 rnsJogo.setScreen(new TelaDeJogo(rnsJogo, 3));
-                this.dispose();
+                //this.dispose();
                 return;
             } else if (opcaoSelecionada == 1) {
                 // Vai para a sua tela de controles atual!
                 rnsJogo.setScreen(new TelaDeControle(rnsJogo));
-                this.dispose();
+                //this.dispose();
                 return;
             } else if (opcaoSelecionada == 2) {
                 // Fecha o jogo

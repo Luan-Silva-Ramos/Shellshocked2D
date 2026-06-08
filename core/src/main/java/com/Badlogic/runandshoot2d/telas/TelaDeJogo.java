@@ -189,6 +189,7 @@ public class TelaDeJogo extends ScreenAdapter {
             } else {
                 jogo.setScreen(new GamerOver(jogo));
             }
+            return;
         }
 
         // Tiro do jogador
@@ -249,7 +250,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
         renderizarMapa.setView(camera);
         renderizarMapa.render();
-
+        cenarioViewport.apply();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
