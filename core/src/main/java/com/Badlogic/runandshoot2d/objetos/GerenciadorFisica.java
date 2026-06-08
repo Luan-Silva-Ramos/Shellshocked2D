@@ -1,0 +1,109 @@
+package com.Badlogic.runandshoot2d.objetos;
+
+import com.Badlogic.runandshoot2d.personagens.Inimigo;
+import com.Badlogic.runandshoot2d.personagens.Jogador;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
+public class GerenciadorFisica {
+
+    private final Jogador jogador;
+
+    public GerenciadorFisica(Jogador jogador) {
+        this.jogador = jogador;
+    }
+
+    public void checarColisoes(Array<Obstaculo> listaChao,
+                               Array<Obstaculo> listaPlataformas,
+                               Array<Obstaculo> listaBarris) {
+        resolverFisicaDeColisao(listaChao);
+        resolverFisicaDeColisao(listaPlataformas);
+        resolverFisicaDeColisao(listaBarris);
+    }
+
+    public void checarColisoesInimigos(Array<Inimigo> listaInimigos,
+                                       Array<Obstaculo> listaChao,
+                                       Array<Obstaculo> listaPlataformas,
+                                       Array<Obstaculo> listaBarris) {
+        for (Inimigo inimigo : listaInimigos) {
+            resolverFisicaInimigo(inimigo, listaChao);
+            resolverFisicaInimigo(inimigo, listaPlataformas);
+            resolverFisicaInimigo(inimigo, listaBarris);
+        }
+    }
+
+    private void resolverFisicaDeColisao(Array<Obstaculo> listaDeObstaculos) {
+        Rectangle rectJogador = jogador.getRect();
+        for (Obstaculo obstaculo : listaDeObstaculos) {
+            Rectangle rectObjeto = obstaculo.getRect();
+
+            if (rectJogador.overlaps(rectObjeto)) {
+                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width)
+                    - Math.max(rectJogador.x, rectObjeto.x);
+                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height)
+                    - Math.max(rectJogador.y, rectObjeto.y);
+
+                Vector2 posAnterior = jogador.getPosicaoAnterior();
+                float topoObstaculo = rectObjeto.y + rectObjeto.height;
+
+                boolean viaDeCima = (posAnterior.y >= topoObstaculo - 4f);
+                boolean colisaoVertical = viaDeCima
+                    ? jogador.getVelocidade().y <= 0
+                    : sobreposicaoY < sobreposicaoX;
+
+                if (colisaoVertical) {
+                    if ((rectJogador.y + rectJogador.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
+                        jogador.setY(rectObjeto.y + rectObjeto.height);
+                        jogador.resetarPulo();
+                    } else {
+                        jogador.setY(rectObjeto.y - rectJogador.height);
+                        jogador.getVelocidade().y = 0;
+                    }
+                } else {
+                    if ((rectJogador.x + rectJogador.width / 2) < (rectObjeto.x + rectObjeto.width / 2)) {
+                        jogador.setX(rectObjeto.x - rectJogador.width);
+                    } else {
+                        jogador.setX(rectObjeto.x + rectObjeto.width);
+                    }
+                }
+            }
+        }
+    }
+
+    private void resolverFisicaInimigo(Inimigo inimigo, Array<Obstaculo> listaDeObstaculos) {
+        Rectangle rectInimigo = inimigo.getRect();
+        for (Obstaculo obstaculo : listaDeObstaculos) {
+            Rectangle rectObjeto = obstaculo.getRect();
+
+            if (rectInimigo.overlaps(rectObjeto)) {
+                float sobreposicaoX = Math.min(rectInimigo.x + rectInimigo.width, rectObjeto.x + rectObjeto.width)
+                    - Math.max(rectInimigo.x, rectObjeto.x);
+                float sobreposicaoY = Math.min(rectInimigo.y + rectInimigo.height, rectObjeto.y + rectObjeto.height)
+                    - Math.max(rectInimigo.y, rectObjeto.y);
+
+                float topoObstaculo = rectObjeto.y + rectObjeto.height;
+                // inimigo veio de cima se o centro dele está acima do topo
+                boolean inimigoAcimaDeTudo = (rectInimigo.y + rectInimigo.height * 0.5f) >= topoObstaculo;
+
+                boolean colisaoVertical = sobreposicaoY < sobreposicaoX || inimigoAcimaDeTudo;
+
+                if (colisaoVertical) {
+                    if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
+                        inimigo.setY(rectObjeto.y + rectObjeto.height);
+                        inimigo.getVelocidade().y = 0;
+                    } else {
+                        inimigo.setY(rectObjeto.y - rectInimigo.height);
+                        inimigo.getVelocidade().y = 0;
+                    }
+                } else {
+                    if ((rectInimigo.x + rectInimigo.width / 2) < (rectObjeto.x + rectObjeto.width / 2)) {
+                        inimigo.setX(rectObjeto.x - rectInimigo.width);
+                    } else {
+                        inimigo.setX(rectObjeto.x + rectObjeto.width);
+                    }
+                }
+            }
+        }
+    }
+}

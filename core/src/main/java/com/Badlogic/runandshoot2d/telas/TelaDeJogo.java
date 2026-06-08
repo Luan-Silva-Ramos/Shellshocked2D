@@ -1,6 +1,7 @@
 package com.Badlogic.runandshoot2d.telas;
 
 import com.Badlogic.runandshoot2d.jogo.RnsJogo;
+import com.Badlogic.runandshoot2d.objetos.GerenciadorFisica;
 import com.Badlogic.runandshoot2d.objetos.Obstaculo;
 import com.Badlogic.runandshoot2d.objetos.Projetil;
 import com.Badlogic.runandshoot2d.personagens.Chefao;
@@ -9,9 +10,11 @@ import com.Badlogic.runandshoot2d.personagens.Jogador;
 import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -51,7 +54,6 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private final Array<Inimigo> listaInimigos;
 
-    // Instância unificada da classe do HUD
     private Hud hud;
 
     private int pontuacao = 0;
@@ -60,11 +62,16 @@ public class TelaDeJogo extends ScreenAdapter {
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
 
-    public TelaDeJogo(RnsJogo jogo) {
+    private ShapeRenderer shapeRenderer;
+
+    private GerenciadorFisica gerenciadorFisica;
+
+    public TelaDeJogo(RnsJogo jogo, int vidasRestantes) {
         this.jogo = jogo;
         this.batch = jogo.getBatch();
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
+        this.vidasJogador = vidasRestantes;
 
         texturasBarris = new HashMap<>();
         texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
@@ -87,6 +94,8 @@ public class TelaDeJogo extends ScreenAdapter {
         texJogador = new Texture(Gdx.files.internal("cenario/Sprites/Personagens/SoldadoRebelde2.png"));
         this.jogador = new Jogador(100, 100, texJogador);
 
+        this.gerenciadorFisica = new GerenciadorFisica(jogador);
+
         listaInimigos = new Array<>();
 
         listaProjeteis = new Array<>();
@@ -95,9 +104,6 @@ public class TelaDeJogo extends ScreenAdapter {
         this.listaProjeteisInimigos = new Array<>();
         texBalaInimigo = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/bala_soldado.png"));
 
-
-        //this.texBalaInimigo = this.texBala;
-
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
         carregarCamadaObstaculos("colisao_plataforma", listaPlataformas, texturasPlataformas);
@@ -105,9 +111,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
         camera.position.x = jogador.getPosicao().x;
         camera.update();
+        shapeRenderer = new ShapeRenderer();
 
-        // Inicialização do novo gerenciador HUD passando as configurações do jogo
-        this.hud = new Hud(jogo.getFontePontos(),jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
+        this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
     }
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
@@ -143,19 +149,13 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private void carregarCamadaInimigos(String nomeCamada) {
         var camada = cenario.getLayers().get(nomeCamada);
+        if (camada == null) return;
 
-        if (camada == null) {
-            return;
-        }
         for (MapObject objeto : camada.getObjects()) {
             String tipo = objeto.getName();
-
-            if (tipo == null) {
-                continue;
-            }
+            if (tipo == null) continue;
 
             float x, y;
-
             if (objeto instanceof RectangleMapObject) {
                 Rectangle r = ((RectangleMapObject) objeto).getRectangle();
                 x = r.x;
@@ -166,11 +166,10 @@ public class TelaDeJogo extends ScreenAdapter {
             }
 
             tipo = tipo.trim().toLowerCase();
-
             if ("soldado".equals(tipo)) {
-                listaInimigos.add(new SoldadoRebelde(x, y, jogador));
+                listaInimigos.add(new SoldadoRebelde(x, y + 48f, jogador));
             } else if ("boss".equals(tipo)) {
-                listaInimigos.add(new Chefao(x, y, jogador));
+                listaInimigos.add(new Chefao(x, y + 64f, jogador));
             }
         }
     }
@@ -184,15 +183,15 @@ public class TelaDeJogo extends ScreenAdapter {
         if (jogador.estaSemVida()) {
             vidasJogador--;
             if (vidasJogador > 0) {
+                jogo.setScreen(new TelaDeJogo(jogo, vidasJogador));
                 jogador.resetarHP();
                 jogador.tomarDano(0);
             } else {
                 jogo.setScreen(new GamerOver(jogo));
             }
-
         }
 
-        // Entrada de Tiro do Jogador
+        // Tiro do jogador
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
@@ -200,33 +199,48 @@ public class TelaDeJogo extends ScreenAdapter {
             jogador.notificarTiro();
         }
 
-        // Loop de Atualização e Instanciação de Projéteis Inimigos
-        for (Inimigo soldado : listaInimigos) {
-            soldado.update(delta);
+        // Update e disparo dos inimigos — iteração reversa para remoção segura
+        for (int i = listaInimigos.size - 1; i >= 0; i--) {
+            Inimigo inimigo = listaInimigos.get(i);
+            inimigo.update(delta);
 
-            if (soldado.seDesejaAtirar()) {
-                float spawnTiroX = soldado.getRect().x + (soldado.isOlhandoParaDireita() ? soldado.getRect().width : -10);
-                float spawnTiroY = soldado.getRect().y + (soldado.getRect().height / 2.5f);
+            // << adiciona isso
+            Gdx.app.log("INIMIGO_" + i, "vivo=" + !inimigo.estaMorto()
+                + " y=" + inimigo.getPosicao().y
+                + " velY=" + inimigo.getVelocidade().y
+                + " morteConcluida=" + inimigo.animacaoMorteConcluida());
 
-                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, soldado.isOlhandoParaDireita(), texBalaInimigo));
-                soldado.resetarDisparo();
+            // Remove após animação de morte concluída
+            if (inimigo.estaMorto() && inimigo.animacaoMorteConcluida()) {
+                listaInimigos.removeIndex(i);
+                continue;
+            }
+
+
+            // Só dispara se ainda está vivo
+            if (!inimigo.estaMorto() && inimigo.seDesejaAtirar()) {
+                float spawnTiroX = inimigo.getRect().x + (inimigo.isOlhandoParaDireita() ? inimigo.getRect().width : -10);
+                float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f);
+                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texBalaInimigo));
+                inimigo.resetarDisparo();
             }
         }
 
-        checarColisoes();
+        // Física
+        gerenciadorFisica.checarColisoes(listaChao, listaPlataformas, listaBarris);
+        gerenciadorFisica.checarColisoesInimigos(listaInimigos, listaChao, listaPlataformas, listaBarris);
 
+        // Dano por contato — só inimigos vivos
         if (!jogador.isEstaInvulneravel()) {
             for (Inimigo inimigo : listaInimigos) {
-                if (jogador.getRect().overlaps(inimigo.getRect())) {
+                if (!inimigo.estaMorto() && jogador.getRect().overlaps(inimigo.getRect())) {
                     jogador.tomarDano(15);
                     break;
                 }
             }
         }
 
-        checarColisoesInimigos();
-
-        // Configurações de Câmera seguindo o Jogador
+        // Câmera
         float larguraMapa = 269 * 16f;
         camera.position.x = jogador.getPosicao().x;
         if (camera.position.x < LARGURA_VIRTUAL / 2f) camera.position.x = LARGURA_VIRTUAL / 2f;
@@ -245,7 +259,7 @@ public class TelaDeJogo extends ScreenAdapter {
         for (Obstaculo barril : listaBarris) barril.draw(batch);
         for (Obstaculo plataforma : listaPlataformas) plataforma.draw(batch);
 
-        // Processamento de Projéteis do Jogador
+        // Projéteis do jogador
         java.util.Iterator<Projetil> iter = listaProjeteis.iterator();
         while (iter.hasNext()) {
             Projetil tiro = iter.next();
@@ -254,12 +268,13 @@ public class TelaDeJogo extends ScreenAdapter {
 
             for (int i = 0; i < listaInimigos.size; i++) {
                 Inimigo inimigo = listaInimigos.get(i);
-                if (tiro.getRect().overlaps(inimigo.getRect())) {
+                // Projétil só acerta inimigos ainda vivos
+                if (!inimigo.estaMorto() && tiro.getRect().overlaps(inimigo.getRect())) {
                     inimigo.receberDano(1);
                     tiro.marcarComoDestruido();
                     if (inimigo.estaMorto()) {
-                        listaInimigos.removeIndex(i);
                         pontuacao += 100;
+                        // NÃO remove aqui — aguarda animação de morte concluir
                     }
                     break;
                 }
@@ -267,7 +282,7 @@ public class TelaDeJogo extends ScreenAdapter {
             if (tiro.deveDestruir()) iter.remove();
         }
 
-        // Processamento de Projéteis Inimigos
+        // Projéteis inimigos
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
@@ -283,92 +298,24 @@ public class TelaDeJogo extends ScreenAdapter {
 
         batch.end();
 
-        // Aciona o HUD customizado passando o estado atual das variáveis do jogo
-        hud.render(batch, jogador, pontuacao, vidasJogador);
-    }
-
-    private void checarColisoes() {
-        resolverFisicaDeColisao(listaChao);
-        resolverFisicaDeColisao(listaPlataformas);
-        resolverFisicaDeColisao(listaBarris);
-    }
-
-    private void resolverFisicaDeColisao(Array<Obstaculo> listaDeObstaculos) {
-        Rectangle rectJogador = jogador.getRect();
-        for (Obstaculo obstaculo : listaDeObstaculos) {
-            Rectangle rectObjeto = obstaculo.getRect();
-
-            if (rectJogador.overlaps(rectObjeto)) {
-                float sobreposicaoX = Math.min(rectJogador.x + rectJogador.width, rectObjeto.x + rectObjeto.width)
-                    - Math.max(rectJogador.x, rectObjeto.x);
-                float sobreposicaoY = Math.min(rectJogador.y + rectJogador.height, rectObjeto.y + rectObjeto.height)
-                    - Math.max(rectJogador.y, rectObjeto.y);
-
-                // Jogador descendo e topo do obstaculo dentro da hitbox — colisão vertical forçada
-                boolean jogadorDescendo = jogador.getVelocidade().y <= 0;
-                boolean topoDoObstaculoDentroDoJogador = rectObjeto.y + rectObjeto.height >= rectJogador.y
-                    && rectObjeto.y + rectObjeto.height <= rectJogador.y + rectJogador.height;
-
-                boolean colisaoVertical = (sobreposicaoY < sobreposicaoX)
-                    || (jogadorDescendo && topoDoObstaculoDentroDoJogador && sobreposicaoX < rectJogador.width * 0.8f);
-
-                if (colisaoVertical) {
-                    if ((rectJogador.y + rectJogador.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
-                        jogador.setY(rectObjeto.y + rectObjeto.height);
-                        jogador.resetarPulo();
-                    } else {
-                        jogador.setY(rectObjeto.y - rectJogador.height);
-                        jogador.getVelocidade().y = 0;
-                    }
-                } else {
-                    if ((rectJogador.x + rectJogador.width / 2) < (rectObjeto.x + rectObjeto.width / 2)) {
-                        jogador.setX(rectObjeto.x - rectJogador.width);
-                    } else {
-                        jogador.setX(rectObjeto.x + rectObjeto.width);
-                    }
-                }
-            }
+        // Debug de hitbox — remover quando não precisar mais
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.rect(jogador.getRect().x, jogador.getRect().y,
+            jogador.getRect().width, jogador.getRect().height);
+        for (Obstaculo o : listaBarris) {
+            shapeRenderer.rect(o.getRect().x, o.getRect().y, o.getRect().width, o.getRect().height);
         }
-    }
-
-    private void checarColisoesInimigos() {
+        for (Obstaculo o : listaPlataformas) {
+            shapeRenderer.rect(o.getRect().x, o.getRect().y, o.getRect().width, o.getRect().height);
+        }
         for (Inimigo inimigo : listaInimigos) {
-            resolverFisicaInimigo(inimigo, listaChao);
-            resolverFisicaInimigo(inimigo, listaPlataformas);
-            resolverFisicaInimigo(inimigo, listaBarris);
+            shapeRenderer.rect(inimigo.getRect().x, inimigo.getRect().y, inimigo.getRect().width, inimigo.getRect().height);
         }
-    }
+        shapeRenderer.end();
 
-    private void resolverFisicaInimigo(Inimigo inimigo, Array<Obstaculo> listaDeObstaculos) {
-        Rectangle rectInimigo = inimigo.getRect();
-
-        //inimigo.setNoChao(false);
-
-        for (Obstaculo obstaculo : listaDeObstaculos) {
-            Rectangle rectObjeto = obstaculo.getRect();
-
-            if (rectInimigo.overlaps(rectObjeto)) {
-                float sobreposicaoX = Math.min(rectInimigo.x + rectInimigo.width, rectObjeto.x + rectObjeto.width) - Math.max(rectInimigo.x, rectObjeto.x);
-                float sobreposicaoY = Math.min(rectInimigo.y + rectInimigo.height, rectObjeto.y + rectObjeto.height) - Math.max(rectInimigo.y, rectObjeto.y);
-
-                if (sobreposicaoY < sobreposicaoX) {
-                    if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
-                        inimigo.setY(rectObjeto.y + rectObjeto.height);
-                        inimigo.getVelocidade().y = 0;
-                        //inimigo.setNoChao(true);
-                    } else {
-                        inimigo.setY(rectObjeto.y - rectInimigo.height);
-                        inimigo.getVelocidade().y = 0;
-                    }
-                } else {
-                    if ((rectInimigo.x + rectInimigo.width / 2) < (rectObjeto.x + rectObjeto.width / 2)) {
-                        inimigo.setX(rectObjeto.x - rectInimigo.width);
-                    } else {
-                        inimigo.setX(rectObjeto.x + rectObjeto.width);
-                    }
-                }
-            }
-        }
+        hud.render(batch, jogador, pontuacao, vidasJogador);
     }
 
     @Override
@@ -384,16 +331,11 @@ public class TelaDeJogo extends ScreenAdapter {
         texBala.dispose();
         texBalaInimigo.dispose();
 
-        // Libera o HUD e suas texturas PNG da memória RAM
-        if (hud != null) {
-            hud.dispose();
-        }
+        if (hud != null) hud.dispose();
 
-        for (Texture t : texturasBarris.values()) {
-            t.dispose();
-        }
-        for (Texture t : texturasPlataformas.values()) {
-            t.dispose();
-        }
+        for (Texture t : texturasBarris.values()) t.dispose();
+        for (Texture t : texturasPlataformas.values()) t.dispose();
+
+        shapeRenderer.dispose();
     }
 }

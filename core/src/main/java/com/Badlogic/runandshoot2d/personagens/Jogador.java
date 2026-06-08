@@ -15,6 +15,7 @@ public class Jogador extends ObjetoJogo {
     private final float FORCA_PULO = 350f;
     private final float GRAVIDADE = 700f;
     private boolean noChao = true;
+    private Vector2 posicaoAnterior = new Vector2();
 
     // Controles de Animação do Jogador
     private Animation<TextureRegion> animacaoCorrer;
@@ -44,7 +45,7 @@ public class Jogador extends ObjetoJogo {
     private boolean estaInvulneravel = false;
 
     public Jogador(float x, float y, Texture textura) {
-        super(x, y, 48, 48, null);
+        super(x, y, 25, 35, null);
         this.velocidade = new Vector2(0, 0);
         this.tempoDaAnimacao = 0f;
 
@@ -121,6 +122,8 @@ public class Jogador extends ObjetoJogo {
         // 3. GRAVIDADE
         velocidade.y -= GRAVIDADE * delta;
 
+        posicaoAnterior.set(posicao.x, posicao.y);
+
         // 4. APLICAÇÃO DO MOVIMENTO
         posicao.x += velocidade.x * delta;
         posicao.y += velocidade.y * delta;
@@ -179,6 +182,10 @@ public class Jogador extends ObjetoJogo {
 
     }
 
+    public Vector2 getPosicaoAnterior() {
+        return posicaoAnterior;
+    }
+
     @Override
     public void setX(float x) {
         super.setX(x);
@@ -208,12 +215,12 @@ public class Jogador extends ObjetoJogo {
             if (estaExibindoAnimacaoTiro) {
                 largura  = 48f;
                 altura   = 57f;
-                offsetX  = -14f;
+                offsetX  = -5f;
                 offsetY  = -1f; // ajuste até os pés coincidirem
             } else if (!noChao) {
                 largura  = 44f;
                 altura   = 48f;
-                offsetX  = -10f;
+                offsetX  = -5f;
                 offsetY  = 0f;
             } else {
                 largura  = 40f;

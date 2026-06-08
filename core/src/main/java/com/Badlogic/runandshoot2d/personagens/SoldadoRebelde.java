@@ -10,7 +10,7 @@ public class SoldadoRebelde extends Inimigo {
 
     // Lembra de que essa linha envolve (enum) para os estados de animação
     private enum EstadoAnimacao {
-        ANDANDO,PARADO, CAINDO, ATIRANDO
+        ANDANDO,PARADO, CAINDO, ATIRANDO, MORRENDO
     }
 
     // Animações
@@ -32,11 +32,17 @@ public class SoldadoRebelde extends Inimigo {
     private static final int TOTAL_FRAMES_ATIRAR = 5;
     private static final float DURACAO_ANIMACAO_TIRO = TOTAL_FRAMES_ATIRAR * 0.10f;
 
+    private Animation<TextureRegion> animacaoMorte;
+    private boolean estaMorrendo = false;
+    private float tempoAnimacaoMorte = 0f;
+    private static final int TOTAL_FRAMES_MORTE = 7;
+    private static final float DURACAO_ANIMACAO_MORTE = TOTAL_FRAMES_MORTE * 0.12f;
+
     private boolean direcaoTravadaAoAtirar = true;
 
     public SoldadoRebelde(float x, float y, Jogador jogador) {
         // Envia os dados para a estrutura unificada de IA do Pai
-        super(x, y, 48f, 48f, null, 80f, jogador);
+        super(x, y, 25f, 35f, null, 60f, jogador);
         this.tempoDaAnimacao = 0f;
         this.estadoAtual = EstadoAnimacao.ANDANDO;
         this.estadoAnterior = null; //Aqui atenção porque é responsável por forçar reset no primeiro Frame
@@ -90,11 +96,44 @@ public class SoldadoRebelde extends Inimigo {
         }
         animacaoParada = new Animation<>(0.12f, framesParado);
         animacaoParada.setPlayMode(Animation.PlayMode.LOOP);
+
+        Texture folhaMorte = new Texture(Gdx.files.internal(
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_morte.png"));
+        TextureRegion[][] matrizMorte = TextureRegion.split(folhaMorte, 201, 260);
+        TextureRegion[] framesMorte = new TextureRegion[TOTAL_FRAMES_MORTE];
+        for (int i = 0; i < TOTAL_FRAMES_MORTE; i++) {
+            framesMorte[i] = matrizMorte[0][i];
+        }
+        animacaoMorte = new Animation<>(0.12f, framesMorte);
+        animacaoMorte.setPlayMode(Animation.PlayMode.NORMAL); // congela no último frame
+    }
+    @Override
+    public boolean animacaoMorteConcluida() {
+        return estaMorrendo && tempoAnimacaoMorte >= DURACAO_ANIMACAO_MORTE;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+
+        // --- 0. Morte tem prioridade absoluta ---
+        if (estaMorto() && !estaMorrendo) {
+            estaMorrendo = true;
+            tempoAnimacaoMorte = 0f;
+        }
+
+        if (estaMorrendo) {
+            tempoAnimacaoMorte += delta;
+            boolean olhandoDireita = this.isOlhandoParaDireita();
+            frameAtual = animacaoMorte.getKeyFrame(tempoAnimacaoMorte);
+
+            if (!olhandoDireita && !frameAtual.isFlipX()) {
+                frameAtual.flip(true, false);
+            } else if (olhandoDireita && frameAtual.isFlipX()) {
+                frameAtual.flip(true, false);
+            }
+            return; // interrompe todo o resto do update
+        }
 
         // --- 1. Captura o momento exato do disparo e inicia timer próprio ---
         if (seDesejaAtirar()) {
@@ -114,7 +153,9 @@ public class SoldadoRebelde extends Inimigo {
         // --- 3. Determina estado com prioridade ---
         EstadoAnimacao novoEstado;
 
-        if (estaExibindoAnimacaoTiro) {
+        if (estaMorrendo) {
+            novoEstado = EstadoAnimacao.MORRENDO;
+        } else if (estaExibindoAnimacaoTiro) {
             novoEstado = EstadoAnimacao.ATIRANDO;
         } else if (!isNoChao() && getVelocidadeY() < -100f) {
             // Dupla confirmação: flag de chão E velocidade negativa significativa
@@ -136,6 +177,9 @@ public class SoldadoRebelde extends Inimigo {
 
         // --- 5. Seleciona o frame correto — ATIRANDO usa seu timer próprio ---
         switch (estadoAtual) {
+            case MORRENDO:
+                frameAtual = animacaoMorte.getKeyFrame(tempoAnimacaoMorte);
+                break;
             case ATIRANDO:
                 frameAtual = animacaoAtirar.getKeyFrame(tempoAnimacaoAtirando); // << corrigido
                 break;

@@ -34,7 +34,7 @@ public class TelaDeControle extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            rnsJogo.setScreen(new TelaDeJogo(rnsJogo));
+            rnsJogo.setScreen(new TelaDeJogo(rnsJogo, 3));
             this.dispose();
             return;
         }
