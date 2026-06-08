@@ -166,9 +166,9 @@ public class TelaDeJogo extends ScreenAdapter {
 
             tipo = tipo.trim().toLowerCase();
             if ("soldado".equals(tipo)) {
-                listaInimigos.add(new SoldadoRebelde(x, y + 20f, jogador));
+                listaInimigos.add(new SoldadoRebelde(x, y + 48f, jogador));
             } else if ("boss".equals(tipo)) {
-                listaInimigos.add(new Chefao(x, y, jogador));
+                listaInimigos.add(new Chefao(x, y + 64f, jogador));
             }
         }
     }
@@ -307,6 +307,9 @@ public class TelaDeJogo extends ScreenAdapter {
         }
         for (Obstaculo o : listaPlataformas) {
             shapeRenderer.rect(o.getRect().x, o.getRect().y, o.getRect().width, o.getRect().height);
+        }
+        for (Inimigo inimigo : listaInimigos) {
+            shapeRenderer.rect(inimigo.getRect().x, inimigo.getRect().y, inimigo.getRect().width, inimigo.getRect().height);
         }
         shapeRenderer.end();
 

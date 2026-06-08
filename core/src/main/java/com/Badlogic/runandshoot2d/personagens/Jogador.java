@@ -38,8 +38,8 @@ public class Jogador extends ObjetoJogo {
     private boolean olhandoParaDireita = true;
 
     // Vida do jogador
-    private int hpMaximo = 100;
-    private int hpAtual = 100;
+    private int hpMaximo = 8000;
+    private int hpAtual = 8000;
 
     private float tempoInvulneravel = 0f;
     private boolean estaInvulneravel = false;

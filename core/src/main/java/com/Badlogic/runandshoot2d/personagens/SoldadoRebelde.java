@@ -42,7 +42,7 @@ public class SoldadoRebelde extends Inimigo {
 
     public SoldadoRebelde(float x, float y, Jogador jogador) {
         // Envia os dados para a estrutura unificada de IA do Pai
-        super(x, y, 48f, 48f, null, 80f, jogador);
+        super(x, y, 25f, 35f, null, 60f, jogador);
         this.tempoDaAnimacao = 0f;
         this.estadoAtual = EstadoAnimacao.ANDANDO;
         this.estadoAnterior = null; //Aqui atenção porque é responsável por forçar reset no primeiro Frame
