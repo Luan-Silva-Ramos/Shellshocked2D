@@ -103,6 +103,10 @@ public abstract class Inimigo extends ObjetoJogo {
         posicao.y += velocidade.y * delta;
         this.rect.setPosition(posicao.x, posicao.y);
 
+        if (posicao.y < -300f) {
+            this.vida = 0;
+        }
+
         // 7. Feedback visual de arcade (piscar ao tomar dano)
         if (estaPiscando) {
             tempoPiscando -= delta;
@@ -126,4 +130,8 @@ public abstract class Inimigo extends ObjetoJogo {
     public float getVelocidadeY()       { return velocidade.y; }
     public boolean isNoChao()           { return noChao; }
     public void setNoChao(boolean noChao) { this.noChao = noChao; }
+    public boolean animacaoMorteConcluida() {
+        return false;
+    }
+
 }
