@@ -45,7 +45,8 @@ public abstract class Inimigo extends ObjetoJogo {
     }
 
     @Override
-    public void update(float delta) {
+    public void update(float deltaTime) {
+        float delta = Math.min(deltaTime, 0.05f);
         // 1. Aplica a gravidade constantemente
         posicaoAnterior.set(posicao.x, posicao.y);
         velocidade.y += GRAVIDADE * delta;
