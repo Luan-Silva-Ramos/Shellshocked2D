@@ -37,6 +37,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private static final int LARGURA_VIRTUAL = 400;
     private static final int ALTURA_VIRTUAL = 224;
+    private static final float LARGURA_MAPA_PIXELS = 269 * 16f;
 
     private final Jogador jogador;
     private final Texture texJogador;
@@ -184,8 +185,8 @@ public class TelaDeJogo extends ScreenAdapter {
             vidasJogador--;
             if (vidasJogador > 0) {
                 jogo.setScreen(new TelaDeJogo(jogo, vidasJogador));
-                jogador.resetarHP();
-                jogador.tomarDano(0);
+                //jogador.resetarHP();
+               // jogador.tomarDano(0);
             } else {
                 jogo.setScreen(new GamerOver(jogo));
             }
@@ -206,10 +207,10 @@ public class TelaDeJogo extends ScreenAdapter {
             inimigo.update(delta);
 
             // << adiciona isso
-            Gdx.app.log("INIMIGO_" + i, "vivo=" + !inimigo.estaMorto()
-                + " y=" + inimigo.getPosicao().y
-                + " velY=" + inimigo.getVelocidade().y
-                + " morteConcluida=" + inimigo.animacaoMorteConcluida());
+            //Gdx.app.log("INIMIGO_" + i, "vivo=" + !inimigo.estaMorto()
+            //    + " y=" + inimigo.getPosicao().y
+            //    + " velY=" + inimigo.getVelocidade().y
+           //    + " morteConcluida=" + inimigo.animacaoMorteConcluida());
 
             // Remove após animação de morte concluída
             if (inimigo.estaMorto() && inimigo.animacaoMorteConcluida()) {

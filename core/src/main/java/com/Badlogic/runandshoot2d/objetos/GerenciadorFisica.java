@@ -92,6 +92,7 @@ public class GerenciadorFisica {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         inimigo.setY(rectObjeto.y + rectObjeto.height);
                         inimigo.getVelocidade().y = 0;
+                        inimigo.setNoChao(true);
                     } else {
                         inimigo.setY(rectObjeto.y - rectInimigo.height);
                         inimigo.getVelocidade().y = 0;
