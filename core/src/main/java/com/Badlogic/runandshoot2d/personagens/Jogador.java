@@ -132,6 +132,7 @@ public class Jogador extends ObjetoJogo {
 
         // 5. LIMITES DO MAPA
         if (posicao.x < 0) posicao.x = 0;
+        if (posicao.y < 0) posicao.y = 20;
 
         if (posicao.x > LARGURA_MAPA_PIXELS - rect.width) {
             setPosicao(LARGURA_MAPA_PIXELS - rect.width, posicao.y);

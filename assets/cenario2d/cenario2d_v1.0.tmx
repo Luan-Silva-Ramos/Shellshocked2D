@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="269" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="46">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="269" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="49">
  <tileset firstgid="1" name="Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5" tilewidth="16" tileheight="16" tilecount="19637" columns="269">
   <image source="../recursos/background/Neo Geo _ NGCD - Metal Slug - Backgrounds - Mission 5.png" trans="ffffff" width="4304" height="1175"/>
  </tileset>
@@ -39,7 +39,6 @@
  </objectgroup>
  <objectgroup id="4" name="colisao_barril">
   <object id="12" name="col_barril_cinza" x="640.25" y="176" width="20" height="32"/>
-  <object id="13" name="col_barril_cinza" x="1168" y="176" width="20" height="32"/>
   <object id="14" name="col_barril_cinza" x="1520" y="176" width="20" height="32"/>
   <object id="15" name="col_barril_cinza" x="2496" y="176" width="20" height="32"/>
   <object id="16" name="col_barril_cinza" x="2816" y="176" width="20" height="32"/>
@@ -51,21 +50,24 @@
   <object id="45" name="col_barril_cinza" x="2838.18" y="176" width="20" height="32"/>
  </objectgroup>
  <objectgroup id="6" name="inimigos">
-  <object id="20" name="soldado" x="513.667" y="169.167" width="32.6667" height="30"/>
-  <object id="21" name="soldado" x="832" y="48" width="32.6667" height="30"/>
-  <object id="22" name="soldado" x="1128.17" y="169" width="32.6667" height="30"/>
-  <object id="23" name="soldado" x="1455.17" y="169" width="32.6667" height="30"/>
+  <object id="20" name="soldado" x="376.667" y="169" width="32.6667" height="30"/>
+  <object id="21" name="soldado" x="843.333" y="48" width="32.6667" height="30"/>
+  <object id="22" name="soldado" x="1156.84" y="169" width="32.6667" height="30"/>
+  <object id="23" name="soldado" x="1300.5" y="168.833" width="32.6667" height="30"/>
   <object id="24" name="soldado" x="1667.17" y="112.5" width="32.6667" height="30"/>
   <object id="25" name="soldado" x="1874.34" y="48.3333" width="32.6667" height="30"/>
-  <object id="26" name="soldado" x="2022.67" y="169.5" width="32.6667" height="30"/>
-  <object id="27" name="soldado" x="2247.17" y="169.5" width="32.6667" height="30"/>
+  <object id="26" name="soldado" x="2226.67" y="168.833" width="32.6667" height="30"/>
+  <object id="27" name="soldado" x="2311.84" y="168.833" width="32.6667" height="30"/>
   <object id="28" name="soldado" x="2608.34" y="112.667" width="32.6667" height="30"/>
   <object id="29" name="soldado" x="2686.67" y="113.333" width="32.6667" height="30"/>
-  <object id="30" name="soldado" x="3135.17" y="169" width="32.6667" height="30"/>
-  <object id="31" name="soldado" x="2902.67" y="169" width="32.6667" height="30"/>
+  <object id="30" name="soldado" x="3175.17" y="167.667" width="32.6667" height="30"/>
+  <object id="31" name="soldado" x="2944" y="168.333" width="32.6667" height="30"/>
   <object id="32" name="soldado" x="3232" y="168.5" width="32.6667" height="30"/>
-  <object id="33" name="soldado" x="3331.67" y="169.5" width="32.6667" height="30"/>
-  <object id="34" name="soldado" x="3596.67" y="168.5" width="32.6667" height="30"/>
+  <object id="33" name="soldado" x="3283.67" y="168.167" width="32.6667" height="30"/>
+  <object id="34" name="soldado" x="3620.67" y="167.167" width="32.6667" height="30"/>
   <object id="35" name="boss" x="4122.54" y="104.5" width="64.6667" height="94"/>
+  <object id="46" name="soldado" x="1231.67" y="168.5" width="32.6667" height="30"/>
+  <object id="47" name="soldado" x="1351.17" y="168" width="32.6667" height="30"/>
+  <object id="48" name="soldado" x="2143.17" y="164.5" width="32.6667" height="30"/>
  </objectgroup>
 </map>
