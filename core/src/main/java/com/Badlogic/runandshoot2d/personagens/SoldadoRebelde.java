@@ -240,21 +240,14 @@ public class SoldadoRebelde extends Inimigo {
                 break;
         }
 
+        batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
+
         if (isEstaPiscando()) {
             batch.setBlendFunction(
                 com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
                 com.badlogic.gdx.graphics.GL20.GL_ONE);
-            batch.setColor(0f, 0f, 0f, 1f);
+            batch.setColor(1f, 1f, 1f, 0.6f);
             batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
-            batch.setBlendFunction(
-                com.badlogic.gdx.graphics.GL20.GL_ONE,
-                com.badlogic.gdx.graphics.GL20.GL_ONE);
-            batch.setColor(1f, 1f, 1f, 1f);
-        }
-
-        batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
-
-        if (isEstaPiscando()) {
             batch.setBlendFunction(
                 com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
                 com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);

@@ -46,8 +46,9 @@ public abstract class Inimigo extends ObjetoJogo {
         // 1. Aplica a gravidade constantemente
         velocidade.y += GRAVIDADE * delta;
 
-        // 2. Cálculo robusto do noChao com tolerância de frames
-        boolean tocandoChaoAgora = (velocidade.y >= -80f && velocidade.y <= 1f);
+        // 2. Cálculo robusto do noChao — resetado pelo GerenciadorFisica ao resolver colisão vertical
+        //    Aqui apenas marca como fora do chão se a velocidade indica queda livre prolongada
+        boolean tocandoChaoAgora = (velocidade.y > -200f && velocidade.y <= 1f);
 
         if (tocandoChaoAgora) {
             tempoSemChao = 0f;
