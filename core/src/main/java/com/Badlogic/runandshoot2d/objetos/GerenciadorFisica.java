@@ -83,10 +83,9 @@ public class GerenciadorFisica {
                     - Math.max(rectInimigo.y, rectObjeto.y);
 
                 float topoObstaculo = rectObjeto.y + rectObjeto.height;
-                boolean viaDeCima = (inimigo.getPosicaoAnterior().y >= topoObstaculo - 4f);
-                boolean colisaoVertical = viaDeCima
-                    ? inimigo.getVelocidade().y <= 0
-                    : sobreposicaoY < sobreposicaoX;
+                boolean viaDeCima = inimigo.getPosicaoAnterior().y >= topoObstaculo - 4f;
+                boolean caindo = inimigo.getVelocidade().y <= 0;
+                boolean colisaoVertical = (viaDeCima && caindo) || (!viaDeCima && sobreposicaoY < sobreposicaoX);
 
                 if (colisaoVertical) {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
