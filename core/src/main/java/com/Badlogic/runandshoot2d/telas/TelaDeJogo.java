@@ -10,11 +10,9 @@ import com.Badlogic.runandshoot2d.personagens.Jogador;
 import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -39,10 +37,9 @@ public class TelaDeJogo extends ScreenAdapter {
     private static final int ALTURA_VIRTUAL = 224;
     private static final float LARGURA_MAPA_PIXELS = 269 * 16f;
 
-    private final Jogador jogador;
-    private final Texture texJogador;
     private final SpriteBatch batch;
 
+    private final Jogador jogador;
     private final Array<Obstaculo> listaChao;
     private final Array<Obstaculo> listaPlataformas;
     private final Array<Obstaculo> listaBarris;
@@ -62,8 +59,6 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
-
-    private ShapeRenderer shapeRenderer;
 
     private GerenciadorFisica gerenciadorFisica;
 
@@ -92,8 +87,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.cenario = new TmxMapLoader().load("cenario2d/cenario2d_v1.0.tmx");
         renderizarMapa = new OrthogonalTiledMapRenderer(cenario, 1f, batch);
 
-        texJogador = new Texture(Gdx.files.internal("cenario/Sprites/Personagens/SoldadoRebelde2.png"));
-        this.jogador = new Jogador(100, 100, texJogador);
+        this.jogador = new Jogador(100, 100, null);
 
         this.gerenciadorFisica = new GerenciadorFisica(jogador);
 
@@ -109,10 +103,6 @@ public class TelaDeJogo extends ScreenAdapter {
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
         carregarCamadaObstaculos("colisao_plataforma", listaPlataformas, texturasPlataformas);
         carregarCamadaObstaculos("colisao_barril", listaBarris, texturasBarris);
-
-        camera.position.x = jogador.getPosicao().x;
-        camera.update();
-        shapeRenderer = new ShapeRenderer();
 
         this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
     }
@@ -185,8 +175,6 @@ public class TelaDeJogo extends ScreenAdapter {
             vidasJogador--;
             if (vidasJogador > 0) {
                 jogo.setScreen(new TelaDeJogo(jogo, vidasJogador));
-                //jogador.resetarHP();
-               // jogador.tomarDano(0);
             } else {
                 jogo.setScreen(new GamerOver(jogo));
             }
@@ -205,12 +193,6 @@ public class TelaDeJogo extends ScreenAdapter {
         for (int i = listaInimigos.size - 1; i >= 0; i--) {
             Inimigo inimigo = listaInimigos.get(i);
             inimigo.update(delta);
-
-            // << adiciona isso
-            //Gdx.app.log("INIMIGO_" + i, "vivo=" + !inimigo.estaMorto()
-            //    + " y=" + inimigo.getPosicao().y
-            //    + " velY=" + inimigo.getVelocidade().y
-           //    + " morteConcluida=" + inimigo.animacaoMorteConcluida());
 
             // Remove após animação de morte concluída
             if (inimigo.estaMorto() && inimigo.animacaoMorteConcluida()) {
@@ -243,7 +225,7 @@ public class TelaDeJogo extends ScreenAdapter {
         }
 
         // Câmera
-        float larguraMapa = 269 * 16f;
+        float larguraMapa = LARGURA_MAPA_PIXELS;
         camera.position.x = jogador.getPosicao().x;
         if (camera.position.x < LARGURA_VIRTUAL / 2f) camera.position.x = LARGURA_VIRTUAL / 2f;
         if (camera.position.x > larguraMapa - LARGURA_VIRTUAL / 2f) camera.position.x = larguraMapa - LARGURA_VIRTUAL / 2f;
@@ -300,23 +282,6 @@ public class TelaDeJogo extends ScreenAdapter {
 
         batch.end();
 
-        // Debug de hitbox — remover quando não precisar mais
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(jogador.getRect().x, jogador.getRect().y,
-            jogador.getRect().width, jogador.getRect().height);
-        for (Obstaculo o : listaBarris) {
-            shapeRenderer.rect(o.getRect().x, o.getRect().y, o.getRect().width, o.getRect().height);
-        }
-        for (Obstaculo o : listaPlataformas) {
-            shapeRenderer.rect(o.getRect().x, o.getRect().y, o.getRect().width, o.getRect().height);
-        }
-        for (Inimigo inimigo : listaInimigos) {
-            shapeRenderer.rect(inimigo.getRect().x, inimigo.getRect().y, inimigo.getRect().width, inimigo.getRect().height);
-        }
-        shapeRenderer.end();
-
         hud.render(batch, jogador, pontuacao, vidasJogador);
     }
 
@@ -329,15 +294,15 @@ public class TelaDeJogo extends ScreenAdapter {
     public void dispose() {
         cenario.dispose();
         renderizarMapa.dispose();
-        texJogador.dispose();
+        jogador.dispose();
         texBala.dispose();
         texBalaInimigo.dispose();
 
+        for (Inimigo inimigo : listaInimigos) inimigo.dispose();
         if (hud != null) hud.dispose();
 
         for (Texture t : texturasBarris.values()) t.dispose();
         for (Texture t : texturasPlataformas.values()) t.dispose();
 
-        shapeRenderer.dispose();
     }
 }

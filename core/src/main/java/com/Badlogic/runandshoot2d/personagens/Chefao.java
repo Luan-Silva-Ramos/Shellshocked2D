@@ -11,22 +11,15 @@ public class Chefao extends Inimigo {
     private Animation<TextureRegion> animacaoAndar;
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
-    private boolean olhandoParaDireita = true;
 
     public Chefao(float x, float y, Jogador jogador) {
-        // CORREÇÃO: textura removida do construtor (Chefao carrega a própria sprite internamente)
-        // Parametros passados para o Pai (Inimigo):
-        // x, y, largura (64), altura (64), textura (null), raioPatrulha (120 pixels), jogador
         super(x, y, 64f, 64f, null, 120f, jogador);
 
-        // Atributos customizados de Boss
         this.vida = 30;
         this.velocidadeMovimento = 30f;
         this.taxaDeDisparo = 0.8f;
-
         this.tempoDaAnimacao = 0f;
 
-        // Carrega os sprites do Chefão
         Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar_spritesheet.png"));
         TextureRegion[][] matriz = TextureRegion.split(folha, 208, 220);
 
@@ -41,38 +34,39 @@ public class Chefao extends Inimigo {
 
     @Override
     public void update(float delta) {
-        // CORREÇÃO CRÍTICA: super.update() estava comentado — boss não se movia nem atirava.
-        // Agora a IA (patrulha, visão, disparo, gravidade) funciona corretamente.
         super.update(delta);
-
         tempoDaAnimacao += delta;
-        frameAtual = new TextureRegion(animacaoAndar.getKeyFrame(tempoDaAnimacao));
 
-        olhandoParaDireita = this.isOlhandoParaDireita();
-        if (!olhandoParaDireita) {
-            frameAtual.flip(true, false);
-        }
-
+        // Seleciona frame sem alocar new TextureRegion() a cada frame
+        TextureRegion base = animacaoAndar.getKeyFrame(tempoDaAnimacao);
+        boolean virandoDireita = this.isOlhandoParaDireita();
+        if (virandoDireita && base.isFlipX())  base.flip(true, false);
+        if (!virandoDireita && !base.isFlipX()) base.flip(true, false);
+        frameAtual = base;
     }
 
     @Override
     public void draw(Batch batch) {
-        if (frameAtual != null) {
-            if (isEstaPiscando()) {
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE);
-                batch.setColor(0f, 0f, 0f, 1f);
-                batch.draw(frameAtual, rect.x, rect.y, rect.width, rect.height);
+        if (frameAtual == null) return;
 
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_ONE, com.badlogic.gdx.graphics.GL20.GL_ONE);
-                batch.setColor(1f, 1f, 1f, 1f);
-            }
+        batch.draw(frameAtual, rect.x, rect.y, rect.width, rect.height);
 
+        if (isEstaPiscando()) {
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
+                com.badlogic.gdx.graphics.GL20.GL_ONE);
+            batch.setColor(1f, 1f, 1f, 0.6f);
             batch.draw(frameAtual, rect.x, rect.y, rect.width, rect.height);
-
-            if (isEstaPiscando()) {
-                batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
-                batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
-            }
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
+                com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
+            batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
+    }
+
+    @Override
+    public void dispose() {
+        if (animacaoAndar != null && animacaoAndar.getKeyFrame(0) != null)
+            animacaoAndar.getKeyFrame(0).getTexture().dispose();
     }
 }

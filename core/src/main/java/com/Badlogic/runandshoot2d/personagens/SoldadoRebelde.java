@@ -254,4 +254,18 @@ public class SoldadoRebelde extends Inimigo {
             batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
     }
+
+    @Override
+    public void dispose() {
+        if (animacaoAndar != null && animacaoAndar.getKeyFrame(0) != null)
+            animacaoAndar.getKeyFrame(0).getTexture().dispose();
+        if (animacaoCair != null && animacaoCair.getKeyFrame(0) != null)
+            animacaoCair.getKeyFrame(0).getTexture().dispose();
+        if (animacaoAtirar != null && animacaoAtirar.getKeyFrame(0) != null)
+            animacaoAtirar.getKeyFrame(0).getTexture().dispose();
+        if (animacaoParada != null && animacaoParada.getKeyFrame(0) != null)
+            animacaoParada.getKeyFrame(0).getTexture().dispose();
+        if (animacaoMorte != null && animacaoMorte.getKeyFrame(0) != null)
+            animacaoMorte.getKeyFrame(0).getTexture().dispose();
+    }
 }

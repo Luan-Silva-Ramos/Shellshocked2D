@@ -32,6 +32,8 @@ public abstract class Inimigo extends ObjetoJogo {
 
     protected Jogador jogador;
 
+    private Vector2 posicaoAnterior = new Vector2();
+
     public Inimigo(float x, float y, float largura, float altura, Texture textura, float raioPatrulha, Jogador jogador) {
         super(x, y, largura, altura, textura);
         this.jogador = jogador;
@@ -45,6 +47,8 @@ public abstract class Inimigo extends ObjetoJogo {
     public void update(float delta) {
         // 1. Aplica a gravidade constantemente
         velocidade.y += GRAVIDADE * delta;
+
+        posicaoAnterior.set(posicao.x, posicao.y);
 
         // 2. Cálculo robusto do noChao — resetado pelo GerenciadorFisica ao resolver colisão vertical
         //    Aqui apenas marca como fora do chão se a velocidade indica queda livre prolongada
@@ -135,4 +139,7 @@ public abstract class Inimigo extends ObjetoJogo {
         return false;
     }
 
+    public Vector2 getPosicaoAnterior() { return posicaoAnterior; }
+
+    public void dispose() {}
 }
