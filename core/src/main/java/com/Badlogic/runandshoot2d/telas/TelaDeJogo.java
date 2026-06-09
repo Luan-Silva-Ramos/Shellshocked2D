@@ -158,10 +158,12 @@ public class TelaDeJogo extends ScreenAdapter {
 
             tipo = tipo.trim().toLowerCase();
             if ("soldado".equals(tipo)) {
+                Gdx.app.log("SPAWN", "tipo=" + tipo + " x=" + x + "y_bruto=" + y + "  y_final=" + (y + 48f));
                 listaInimigos.add(new SoldadoRebelde(x, y + 48f, jogador));
             } else if ("boss".equals(tipo)) {
                 listaInimigos.add(new Chefao(x, y + 64f, jogador));
             }
+            //Gdx.app.log("SPAWN", "tipo=" + tipo + " x=" + x + "y_bruto=" + y + "  y_final=" + (y + 48f));
         }
     }
 
