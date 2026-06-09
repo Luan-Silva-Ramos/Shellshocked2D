@@ -36,13 +36,13 @@ public class GamerOver extends ScreenAdapter {
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float deltaTime) {
         ScreenUtils.clear(Color.BLACK);
 
         float centroX = viewport.getWorldWidth() / 2;
         float centroY = viewport.getWorldHeight() / 2;
 
-        tempoAcumulado += delta;
+        tempoAcumulado += deltaTime;
         if (tempoAcumulado >= 1.0f){
             contadorSegundos--;
             tempoAcumulado = 0;

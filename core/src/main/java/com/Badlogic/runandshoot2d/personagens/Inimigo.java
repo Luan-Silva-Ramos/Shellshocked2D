@@ -38,21 +38,22 @@ public abstract class Inimigo extends ObjetoJogo {
         super(x, y, largura, altura, textura);
         this.jogador = jogador;
         this.velocidade = new Vector2(velocidadeMovimento, 0);
-
         this.limiteEsquerda = x - raioPatrulha;
         this.limiteDireita = x + raioPatrulha;
+        this.noChao = true;
+        this.tempoSemChao = 0f;
     }
 
     @Override
     public void update(float delta) {
         // 1. Aplica a gravidade constantemente
+        posicaoAnterior.set(posicao.x, posicao.y);
         velocidade.y += GRAVIDADE * delta;
 
-        posicaoAnterior.set(posicao.x, posicao.y);
 
         // 2. Cálculo robusto do noChao — resetado pelo GerenciadorFisica ao resolver colisão vertical
         //    Aqui apenas marca como fora do chão se a velocidade indica queda livre prolongada
-        boolean tocandoChaoAgora = (velocidade.y > -200f && velocidade.y <= 1f);
+        boolean tocandoChaoAgora = (velocidade.y > -80f && velocidade.y <= 1f);
 
         if (tocandoChaoAgora) {
             tempoSemChao = 0f;

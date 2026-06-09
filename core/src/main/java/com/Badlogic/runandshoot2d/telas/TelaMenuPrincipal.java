@@ -35,7 +35,7 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float deltaTime) {
         // 1. ENTRADA DO TECLADO (Navegação clássica de Arcade)
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             opcaoSelecionada--;

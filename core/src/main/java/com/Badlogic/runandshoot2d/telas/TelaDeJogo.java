@@ -166,10 +166,10 @@ public class TelaDeJogo extends ScreenAdapter {
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        jogador.update(delta);
+        jogador.update(deltaTime);
 
         if (jogador.estaSemVida()) {
             vidasJogador--;
@@ -192,7 +192,7 @@ public class TelaDeJogo extends ScreenAdapter {
         // Update e disparo dos inimigos — iteração reversa para remoção segura
         for (int i = listaInimigos.size - 1; i >= 0; i--) {
             Inimigo inimigo = listaInimigos.get(i);
-            inimigo.update(delta);
+            inimigo.update(deltaTime);
 
             // Remove após animação de morte concluída
             if (inimigo.estaMorto() && inimigo.animacaoMorteConcluida()) {
@@ -247,7 +247,7 @@ public class TelaDeJogo extends ScreenAdapter {
         java.util.Iterator<Projetil> iter = listaProjeteis.iterator();
         while (iter.hasNext()) {
             Projetil tiro = iter.next();
-            tiro.update(delta);
+            tiro.update(deltaTime);
             tiro.draw(batch);
 
             for (int i = 0; i < listaInimigos.size; i++) {
@@ -270,7 +270,7 @@ public class TelaDeJogo extends ScreenAdapter {
         java.util.Iterator<Projetil> iterBalaInimigo = listaProjeteisInimigos.iterator();
         while (iterBalaInimigo.hasNext()) {
             Projetil tiroE = iterBalaInimigo.next();
-            tiroE.update(delta);
+            tiroE.update(deltaTime);
             tiroE.draw(batch);
 
             if (!jogador.isEstaInvulneravel() && tiroE.getRect().overlaps(jogador.getRect())) {
