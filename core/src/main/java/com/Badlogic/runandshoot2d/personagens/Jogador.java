@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Jogador extends ObjetoJogo {
 
     private final float VELOCIDADE_MOVIMENTO = 150f;
+    private static final float LARGURA_MAPA_PIXELS = 269 * 16f;
     private final float FORCA_PULO = 350f;
     private final float GRAVIDADE = 700f;
     private boolean noChao = true;
@@ -132,9 +133,8 @@ public class Jogador extends ObjetoJogo {
         // 5. LIMITES DO MAPA
         if (posicao.x < 0) posicao.x = 0;
 
-        float larguraDoMapaEmPixels = 269 * 16f;
-        if (posicao.x > larguraDoMapaEmPixels - rect.width) {
-            setPosicao(larguraDoMapaEmPixels - rect.width, posicao.y);
+        if (posicao.x > LARGURA_MAPA_PIXELS - rect.width) {
+            setPosicao(LARGURA_MAPA_PIXELS - rect.width, posicao.y);
         }
 
         // 6. LÓGICA DE ANIMAÇÃO
@@ -293,5 +293,16 @@ public class Jogador extends ObjetoJogo {
     public void notificarTiro() {
         estaExibindoAnimacaoTiro = true;
         tempoAnimacaoTiro = 0f;
+    }
+
+    public void dispose() {
+        if (animacaoCorrer != null && animacaoCorrer.getKeyFrame(0) != null)
+            animacaoCorrer.getKeyFrame(0).getTexture().dispose();
+        if (animacaoPulo != null && animacaoPulo.getKeyFrame(0) != null)
+            animacaoPulo.getKeyFrame(0).getTexture().dispose();
+        if (animacaoAtirarParado != null && animacaoAtirarParado.getKeyFrame(0) != null)
+            animacaoAtirarParado.getKeyFrame(0).getTexture().dispose();
+        if (animacaoAtirarAndando != null && animacaoAtirarAndando.getKeyFrame(0) != null)
+            animacaoAtirarAndando.getKeyFrame(0).getTexture().dispose();
     }
 }

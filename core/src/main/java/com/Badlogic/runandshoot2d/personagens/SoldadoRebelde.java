@@ -240,25 +240,32 @@ public class SoldadoRebelde extends Inimigo {
                 break;
         }
 
-        if (isEstaPiscando()) {
-            batch.setBlendFunction(
-                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
-                com.badlogic.gdx.graphics.GL20.GL_ONE);
-            batch.setColor(0f, 0f, 0f, 1f);
-            batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
-            batch.setBlendFunction(
-                com.badlogic.gdx.graphics.GL20.GL_ONE,
-                com.badlogic.gdx.graphics.GL20.GL_ONE);
-            batch.setColor(1f, 1f, 1f, 1f);
-        }
-
         batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
 
         if (isEstaPiscando()) {
             batch.setBlendFunction(
                 com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
+                com.badlogic.gdx.graphics.GL20.GL_ONE);
+            batch.setColor(1f, 1f, 1f, 0.6f);
+            batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
+            batch.setBlendFunction(
+                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
                 com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
             batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
         }
+    }
+
+    @Override
+    public void dispose() {
+        if (animacaoAndar != null && animacaoAndar.getKeyFrame(0) != null)
+            animacaoAndar.getKeyFrame(0).getTexture().dispose();
+        if (animacaoCair != null && animacaoCair.getKeyFrame(0) != null)
+            animacaoCair.getKeyFrame(0).getTexture().dispose();
+        if (animacaoAtirar != null && animacaoAtirar.getKeyFrame(0) != null)
+            animacaoAtirar.getKeyFrame(0).getTexture().dispose();
+        if (animacaoParada != null && animacaoParada.getKeyFrame(0) != null)
+            animacaoParada.getKeyFrame(0).getTexture().dispose();
+        if (animacaoMorte != null && animacaoMorte.getKeyFrame(0) != null)
+            animacaoMorte.getKeyFrame(0).getTexture().dispose();
     }
 }

@@ -10,6 +10,8 @@ public class Projetil extends ObjetoJogo {
     private boolean destruir = false;
     private boolean indoParaDireita; // << guarda a direção para o draw()
 
+    private static final float LIMITE_MAPA = 269 * 16f;
+
     public Projetil(float x, float y, boolean indoParaDireita, Texture texturaTiro) {
         super(x, y, 12, 2, texturaTiro);
         this.indoParaDireita = indoParaDireita;
@@ -21,7 +23,7 @@ public class Projetil extends ObjetoJogo {
     public void update(float delta) {
         rect.x += velocidade.x * delta;
 
-        if (rect.x > 4160 || rect.x < -50) {
+        if (rect.x > LIMITE_MAPA || rect.x < -50) {
             destruir = true;
         }
     }
