@@ -34,7 +34,7 @@ public class TelaDeControle extends ScreenAdapter {
     @Override
     public void render(float deltaTime) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            rnsJogo.setScreen(new TelaDeJogo(rnsJogo, 3));
+            rnsJogo.setScreen(new TelaMenuPrincipal(rnsJogo));
             this.dispose();
             return;
         }
@@ -56,13 +56,19 @@ public class TelaDeControle extends ScreenAdapter {
         fonte.draw(batch, layout, centroX - layout.width / 2, varY);
         varY -= 40;
 
-        layout.setText(fonte, "R - Recomeçar (Quando Morrer)");
+        layout.setText(fonte, "F - Disparo de Projeteis");
         fonte.draw(batch, layout, centroX - layout.width / 2, varY);
         varY -= 70;
 
-        layout.setText(fonte, "Pressione - ESPAÇO - para começar");
+        layout.setText(fonte, "Pressione - ENTER - para selecionar");
+        fonte.draw(batch, layout, centroX - layout.width / 2, varY);
+        varY -= 90;
+
+        layout.setText(fonte, "Pressione - ESPAÇO - para voltar ao menu");
         fonte.draw(batch, layout, centroX - layout.width / 2, varY);
 
         batch.end();
+
+
     }
 }
