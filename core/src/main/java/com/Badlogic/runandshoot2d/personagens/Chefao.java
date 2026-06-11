@@ -13,10 +13,10 @@ public class Chefao extends Inimigo {
         ANDANDO, PARADO, ATIRANDO, MORRENDO
     }
 
-    private Animation<TextureRegion> animacaoAtirar;
-    private Animation<TextureRegion> animacaoAndar;
-    private Animation<TextureRegion> animacaoMorte;
-    private Animation<TextureRegion> animacaoIdle;
+    private final Animation<TextureRegion> animacaoAtirar;
+    private final Animation<TextureRegion> animacaoAndar;
+    private final Animation<TextureRegion> animacaoMorte;
+    private final Animation<TextureRegion> animacaoIdle;
 
     private TextureRegion frameAtual;
     private float tempoDaAnimacao = 0f;
@@ -30,10 +30,8 @@ public class Chefao extends Inimigo {
 
     private boolean estaMorrendo = false;
     private float tempoAnimacaoMorte = 0f;
-    private static final float DURACAO_ANIMACAO_MORTE = 0f;
+    private static final float DURACAO_ANIMACAO_MORTE = 6 * 0.15f;
 
-    private static final float LARGURA_VISUAL = 64f;
-    private static final float ALTURA_VISUAL = 80f;
 
     public Chefao(float x, float y, Jogador jogador) {
         super(x, y, 48f, 48f, null, 120f, jogador);
@@ -67,11 +65,11 @@ public class Chefao extends Inimigo {
         animacaoAtirar.setPlayMode(Animation.PlayMode.NORMAL);
 
         // ANIMAÇÃO MORRER
-        Texture folhaMorrendo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar.png"));
-        TextureRegion[][] matrizMorrer = TextureRegion.split(folhaMorrendo, 208, 220);
+        Texture folhaMorrendo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_morrer.png"));
+        TextureRegion[][] matrizMorrer = TextureRegion.split(folhaMorrendo, 250, 250);
 
-        TextureRegion[] framesMorrer = new TextureRegion[7];
-        for (int i = 0; i < 7; i++) {
+        TextureRegion[] framesMorrer = new TextureRegion[6];
+        for (int i = 0; i < 6; i++) {
             framesMorrer[i] = matrizMorrer[0][i];
         }
 
@@ -114,6 +112,7 @@ public class Chefao extends Inimigo {
 
         if (estaMorrendo) {
             tempoAnimacaoMorte += delta;
+            estadoAtual = EstadoAnimacaoChefao.MORRENDO;
             frameAtual = animacaoMorte.getKeyFrame(tempoAnimacaoMorte);
             aplicarFlip(frameAtual, isOlhandoParaDireita());
             return;
@@ -194,6 +193,11 @@ public class Chefao extends Inimigo {
         float offsetX;
 
         switch (estadoAtual) {
+            case MORRENDO:
+                larguraVisual = 86f;
+                alturaVisual  = 96f;
+                offsetX       = -18f;
+                break;
             case ATIRANDO:
                 larguraVisual = 112f;
                 alturaVisual  = 112f;
@@ -229,8 +233,8 @@ public class Chefao extends Inimigo {
     // ---------------------------------------------------------------
     @Override
     public boolean animacaoMorteConcluida() {
-        // return tempoAnimacaoMorte >= DURACAO_ANIMACAO_MORTE;
-        return false; // placeholder — não remove o chefão antes da animação real
+        return tempoAnimacaoMorte >= DURACAO_ANIMACAO_MORTE;
+
     }
 
     // ---------------------------------------------------------------
@@ -241,6 +245,6 @@ public class Chefao extends Inimigo {
         animacaoAndar.getKeyFrame(0).getTexture().dispose();
         animacaoIdle.getKeyFrame(0).getTexture().dispose();
         animacaoAtirar.getKeyFrame(0).getTexture().dispose();
-        // animacaoMorte usa textura própria quando spritesheet chegar — adicionar dispose() aqui
+        animacaoMorte.getKeyFrame(0).getTexture().dispose();
     }
 }
