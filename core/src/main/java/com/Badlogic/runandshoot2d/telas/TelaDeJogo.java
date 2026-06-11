@@ -59,6 +59,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
+    private Texture texBalaChefao;
 
     private GerenciadorFisica gerenciadorFisica;
 
@@ -104,6 +105,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
         this.listaProjeteisInimigos = new Array<>();
         texBalaInimigo = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/bala_soldado.png"));
+        texBalaChefao = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/MechaRobotAttack.png"));
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -269,9 +271,10 @@ public class TelaDeJogo extends ScreenAdapter {
 
             // Só dispara se ainda está vivo
             if (!inimigo.estaMorto() && inimigo.seDesejaAtirar()) {
+                Texture texTiro = (inimigo instanceof Chefao) ? texBalaChefao : texBalaInimigo;
                 float spawnTiroX = inimigo.getRect().x + (inimigo.isOlhandoParaDireita() ? inimigo.getRect().width : -10);
                 float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f);
-                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texBalaInimigo));
+                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texTiro));
                 inimigo.resetarDisparo();
             }
         }
@@ -362,6 +365,7 @@ public class TelaDeJogo extends ScreenAdapter {
         jogador.dispose();
         texBala.dispose();
         texBalaInimigo.dispose();
+        texBalaChefao.dispose();
 
         for (Inimigo inimigo : listaInimigos) inimigo.dispose();
         if (hud != null) hud.dispose();
