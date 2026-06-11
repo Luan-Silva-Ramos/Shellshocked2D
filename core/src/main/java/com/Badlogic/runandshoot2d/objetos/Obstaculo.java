@@ -13,8 +13,6 @@ public class Obstaculo extends ObjetoJogo {
 
     @Override
     public void update(float deltaTime) {
-        // Como a classe mãe não tem implementação (é abstrata),
-        // nós apenas sincronizamos o retângulo com a posição aqui diretamente.
         this.rect.setPosition(posicao.x, posicao.y);
     }
 

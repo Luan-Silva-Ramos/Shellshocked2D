@@ -279,10 +279,6 @@ public class Jogador extends ObjetoJogo {
         return hpMaximo;
     }
 
-    public void resetarHP() {
-        this.hpAtual = this.hpMaximo;
-    }
-
     public boolean estaSemVida() {
         return this.hpAtual <= 0;
     }

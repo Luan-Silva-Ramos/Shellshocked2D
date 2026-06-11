@@ -88,21 +88,6 @@ public class GerenciadorFisica {
                 boolean caindo = inimigo.getVelocidade().y <= 0;
                 boolean colisaoVertical = (viaDeCima && caindo) || (!viaDeCima && sobreposicaoY < sobreposicaoX);
 
-                if (rectInimigo.overlaps(rectObjeto)) {
-                    // ... cálculos existentes ...
-
-                    Gdx.app.log("FISICA",
-                        "posAnterior.y=" + inimigo.getPosicaoAnterior().y +
-                            " posAtual.y=" + inimigo.getPosicao().y +
-                            " vel.y=" + inimigo.getVelocidade().y +
-                            " topoObs=" + topoObstaculo +
-                            " viaDeCima=" + viaDeCima +
-                            " caindo=" + caindo +
-                            " colisaoVertical=" + colisaoVertical +
-                            " sobX=" + sobreposicaoX +
-                            " sobY=" + sobreposicaoY
-                    );
-                }
                 if (colisaoVertical) {
                     if ((rectInimigo.y + rectInimigo.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         inimigo.setY(rectObjeto.y + rectObjeto.height);
