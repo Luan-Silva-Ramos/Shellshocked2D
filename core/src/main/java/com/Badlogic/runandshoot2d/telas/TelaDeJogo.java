@@ -211,7 +211,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
             // Efeito pisca-pisca clássico de fliperama (Arcade Style)
             if ((int)(timerTransicao * 4) % 2 == 0) {
-                jogo.getFontePontos().draw(batch, "MISSION COMPLETE", xTexto, yTexto);
+                jogo.getFontePontos().draw(batch, "MISSÃO COMPLETA", xTexto, yTexto);
             }
             batch.end();
 
@@ -225,6 +225,7 @@ public class TelaDeJogo extends ScreenAdapter {
             if (timerTransicao > 3.0f && Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
                 Gdx.app.log("ARCADE", "Jogador apertou ENTER. Transição de tela ativada!");
                 // Exemplo: jogo.setScreen(new ProximaTela(jogo));
+                jogo.setScreen(new TelaMenuPrincipal(jogo));
             }
 
             return; // Interrompe o render aqui para congelar o resto do mundo
