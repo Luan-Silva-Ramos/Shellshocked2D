@@ -62,6 +62,12 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private GerenciadorFisica gerenciadorFisica;
 
+    // =====================================================================
+    // NOVO: VARIÁVEIS DE CONTROLE DA VITÓRIA (MODO ARCADE)
+    // =====================================================================
+    private boolean faseConcluida = false;
+    private float timerTransicao = 0;
+
     public TelaDeJogo(RnsJogo jogo, int vidasRestantes) {
         this.jogo = jogo;
         this.batch = jogo.getBatch();
@@ -105,6 +111,9 @@ public class TelaDeJogo extends ScreenAdapter {
         carregarCamadaObstaculos("colisao_barril", listaBarris, texturasBarris);
 
         this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
+
+        // MODIFICAÇÃO: A linha que tentava carregar a imagem 'mission_complete.png'
+        // foi completamente removida daqui para evitar o erro de File Not Found.
     }
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
@@ -163,7 +172,6 @@ public class TelaDeJogo extends ScreenAdapter {
             } else if ("boss".equals(tipo)) {
                 listaInimigos.add(new Chefao(x, y + 64f, jogador));
             }
-            //Gdx.app.log("SPAWN", "tipo=" + tipo + " x=" + x + "y_bruto=" + y + "  y_final=" + (y + 48f));
         }
     }
 
@@ -171,6 +179,57 @@ public class TelaDeJogo extends ScreenAdapter {
     public void render(float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
 
+        // =====================================================================
+        // MODIFICAÇÃO: INTERCEPTADOR DO RENDER (CONGELA O JOGO NA VITÓRIA)
+        // =====================================================================
+        if (faseConcluida) {
+            timerTransicao += deltaTime;
+
+            // Renderiza o cenário e personagens de forma estática (parados)
+            renderizarMapa.setView(camera);
+            renderizarMapa.render();
+            cenarioViewport.apply();
+            batch.setProjectionMatrix(camera.combined);
+
+            batch.begin();
+            jogador.draw(batch);
+            for (Inimigo inimigo : listaInimigos) inimigo.draw(batch);
+            for (Obstaculo barril : listaBarris) barril.draw(batch);
+            for (Obstaculo plataforma : listaPlataformas) plataforma.draw(batch);
+
+            // Ajusta o tamanho da fonte para o texto ficar GRANDE
+            jogo.getFontePontos().getData().setScale(2.0f);
+
+            // Medidor automático para centralizar perfeitamente na tela
+            com.badlogic.gdx.graphics.g2d.GlyphLayout layout = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+            layout.setText(jogo.getFontePontos(), "MISSION COMPLETE");
+
+            float xTexto = camera.position.x - (layout.width / 2);
+            float yTexto = camera.position.y + (layout.height / 2);
+
+            // Efeito pisca-pisca clássico de fliperama (Arcade Style)
+            if ((int)(timerTransicao * 4) % 2 == 0) {
+                jogo.getFontePontos().draw(batch, "MISSION COMPLETE", xTexto, yTexto);
+            }
+            batch.end();
+
+            // RESETA o tamanho da fonte para não deformar o HUD original
+            jogo.getFontePontos().getData().setScale(1.0f);
+
+            // Desenha o HUD por cima
+            hud.render(batch, jogador, pontuacao, vidasJogador);
+
+            // Se passaram 3 segundos, permite que o jogador mude de tela apertando ENTER
+            if (timerTransicao > 3.0f && Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
+                Gdx.app.log("ARCADE", "Jogador apertou ENTER. Transição de tela ativada!");
+                // Exemplo: jogo.setScreen(new ProximaTela(jogo));
+            }
+
+            return; // Interrompe o render aqui para congelar o resto do mundo
+        }
+        // =====================================================================
+
+        // FLUXO NORMAL DO JOGO (Se não ganhou ainda)
         jogador.update(deltaTime);
 
         if (jogador.estaSemVida()) {
@@ -196,12 +255,17 @@ public class TelaDeJogo extends ScreenAdapter {
             Inimigo inimigo = listaInimigos.get(i);
             inimigo.update(deltaTime);
 
-            // Remove após animação de morte concluída
+            // MODIFICAÇÃO GATILHO DA ANIMAÇÃO: O inimigo morreu E a animação de morte dele CONCLUIU totalmente.
             if (inimigo.estaMorto() && inimigo.animacaoMorteConcluida()) {
+
+                // SE ELE FOR O CHEFÃO, ATIVA A VITÓRIA SÓ AGORA (Faz ele cair morto antes do letreiro)
+                if (inimigo instanceof Chefao ) {
+                    faseConcluida = true;
+                }
+
                 listaInimigos.removeIndex(i);
                 continue;
             }
-
 
             // Só dispara se ainda está vivo
             if (!inimigo.estaMorto() && inimigo.seDesejaAtirar()) {
@@ -260,7 +324,6 @@ public class TelaDeJogo extends ScreenAdapter {
                     tiro.marcarComoDestruido();
                     if (inimigo.estaMorto()) {
                         pontuacao += 100;
-                        // NÃO remove aqui — aguarda animação de morte concluir
                     }
                     break;
                 }
@@ -306,5 +369,7 @@ public class TelaDeJogo extends ScreenAdapter {
         for (Texture t : texturasBarris.values()) t.dispose();
         for (Texture t : texturasPlataformas.values()) t.dispose();
 
+        // MODIFICAÇÃO: Removido qualquer tentativa de limpar 'texMissionComplete'
+        // para não causar erros de compilação, já que o objeto não é mais instanciado.
     }
 }

@@ -1,0 +1,4 @@
+package com.Badlogic.runandshoot2d.telas;
+
+public class FimDeFase {
+}
