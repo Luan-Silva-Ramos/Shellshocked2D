@@ -87,7 +87,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.cenario = new TmxMapLoader().load("cenario2d/cenario2d_v1.0.tmx");
         renderizarMapa = new OrthogonalTiledMapRenderer(cenario, 1f, batch);
 
-        this.jogador = new Jogador(100, 100, null);
+        this.jogador = new Jogador(3800, 100, null);
 
         this.gerenciadorFisica = new GerenciadorFisica(jogador);
 

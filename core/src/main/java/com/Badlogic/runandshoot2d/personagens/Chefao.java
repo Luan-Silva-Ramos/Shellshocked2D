@@ -1,72 +1,246 @@
 package com.Badlogic.runandshoot2d.personagens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Chefao extends Inimigo {
+    private enum EstadoAnimacaoChefao{
+        ANDANDO, PARADO, ATIRANDO, MORRENDO
+    }
 
+    private Animation<TextureRegion> animacaoAtirar;
     private Animation<TextureRegion> animacaoAndar;
+    private Animation<TextureRegion> animacaoMorte;
+    private Animation<TextureRegion> animacaoIdle;
+
     private TextureRegion frameAtual;
-    private float tempoDaAnimacao;
+    private float tempoDaAnimacao = 0f;
+    private EstadoAnimacaoChefao estadoAtual;
+    private EstadoAnimacaoChefao estadoAnterior;
+
+    private boolean estaExibindoAnimacaoTiro = false;
+    private float tempoAnimacaoTiro = 0f;
+    private boolean direcaoTravadaAoAtirar = true;
+    private static final float DURACAO_ANIMACAO_TIRO = 4 * 0.15f;
+
+    private boolean estaMorrendo = false;
+    private float tempoAnimacaoMorte = 0f;
+    private static final float DURACAO_ANIMACAO_MORTE = 0f;
+
+    private static final float LARGURA_VISUAL = 64f;
+    private static final float ALTURA_VISUAL = 80f;
 
     public Chefao(float x, float y, Jogador jogador) {
-        super(x, y, 64f, 64f, null, 120f, jogador);
+        super(x, y, 48f, 48f, null, 120f, jogador);
 
         this.vida = 30;
         this.velocidadeMovimento = 30f;
         this.taxaDeDisparo = 0.8f;
-        this.tempoDaAnimacao = 0f;
 
-        Texture folha = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar_spritesheet.png"));
-        TextureRegion[][] matriz = TextureRegion.split(folha, 208, 220);
+        // ANIMAÇÃO ANDAR
+        Texture folhaAndar = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar.png"));
+        TextureRegion[][] matrizAndar = TextureRegion.split(folhaAndar, 208, 220);
 
         TextureRegion[] framesAndar = new TextureRegion[7];
         for (int i = 0; i < 7; i++) {
-            framesAndar[i] = matriz[0][i];
+            framesAndar[i] = matrizAndar[0][i];
         }
 
         animacaoAndar = new Animation<TextureRegion>(0.15f, framesAndar);
         animacaoAndar.setPlayMode(Animation.PlayMode.LOOP);
+
+        // ANIMAÇÃO ATIRAR
+        Texture folhaAtirar = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_atirar.png"));
+        TextureRegion[][] matrizAtirar = TextureRegion.split(folhaAtirar, 240, 220);
+
+        TextureRegion[] framesAtirar = new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
+            framesAtirar[i] = matrizAtirar[0][i];
+        }
+
+        animacaoAtirar= new Animation<TextureRegion>(0.15f, framesAtirar);
+        animacaoAtirar.setPlayMode(Animation.PlayMode.NORMAL);
+
+        // ANIMAÇÃO MORRER
+        Texture folhaMorrendo = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_andar.png"));
+        TextureRegion[][] matrizMorrer = TextureRegion.split(folhaMorrendo, 208, 220);
+
+        TextureRegion[] framesMorrer = new TextureRegion[7];
+        for (int i = 0; i < 7; i++) {
+            framesMorrer[i] = matrizMorrer[0][i];
+        }
+
+        animacaoMorte = new Animation<TextureRegion>(0.15f, framesMorrer);
+        animacaoMorte.setPlayMode(Animation.PlayMode.NORMAL);
+
+        // ANIMAÇÃO PARADO
+        Texture folhaIdle = new Texture(Gdx.files.internal("recursos/personagens/SpriteAnimation/inimigos/chefao/vilao_idle.png"));
+        TextureRegion[][] matrizIdle = TextureRegion.split(folhaIdle, 176, 230);
+
+        TextureRegion[] framesIdle = new TextureRegion[8];
+        for (int i = 0; i < 8; i++) {
+            framesIdle[i] = matrizIdle[0][i];
+        }
+
+        animacaoIdle = new Animation<TextureRegion>(0.15f, framesIdle);
+        animacaoIdle.setPlayMode(Animation.PlayMode.NORMAL);
+
+        estadoAtual = EstadoAnimacaoChefao.ANDANDO;
+        estadoAnterior = null;
+    }
+    private TextureRegion[] extrairFrames(Texture tex, int frameW, int frameH, int count) {
+        TextureRegion[][] matriz = TextureRegion.split(tex, frameW, frameH);
+        TextureRegion[] frames = new TextureRegion[count];
+        for (int i = 0; i < count; i++) {
+            frames[i] = matriz[0][i];
+        }
+        return frames;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+
+        // --- 0. Morte tem prioridade absoluta ---
+        if (estaMorto() && !estaMorrendo) {
+            estaMorrendo       = true;
+            tempoAnimacaoMorte = 0f;
+        }
+
+        if (estaMorrendo) {
+            tempoAnimacaoMorte += delta;
+            frameAtual = animacaoMorte.getKeyFrame(tempoAnimacaoMorte);
+            aplicarFlip(frameAtual, isOlhandoParaDireita());
+            return;
+        }
+
+        // --- 1. Captura disparo (flag dura só 1 frame) ---
+        if (seDesejaAtirar()) {
+            estaExibindoAnimacaoTiro  = true;
+            tempoAnimacaoTiro         = 0f;
+            direcaoTravadaAoAtirar    = isOlhandoParaDireita();
+        }
+
+        // --- 2. Avança timer de tiro ---
+        if (estaExibindoAnimacaoTiro) {
+            tempoAnimacaoTiro += delta;
+            if (tempoAnimacaoTiro >= DURACAO_ANIMACAO_TIRO) {
+                estaExibindoAnimacaoTiro = false;
+            }
+        }
+
+        // --- 3. Determina estado ---
+        EstadoAnimacaoChefao novoEstado;
+        if (estaExibindoAnimacaoTiro) {
+            novoEstado = EstadoAnimacaoChefao.ATIRANDO;
+        } else if (getVelocidade().x == 0) {
+            novoEstado = EstadoAnimacaoChefao.PARADO;
+        } else {
+            novoEstado = EstadoAnimacaoChefao.ANDANDO;
+        }
+
+        // --- 4. Reseta timer só na mudança de estado ---
+        if (novoEstado != estadoAnterior) {
+            tempoDaAnimacao = 0f;
+            estadoAnterior  = novoEstado;
+        }
+        estadoAtual      = novoEstado;
         tempoDaAnimacao += delta;
 
-        // Seleciona frame sem alocar new TextureRegion() a cada frame
-        TextureRegion base = animacaoAndar.getKeyFrame(tempoDaAnimacao);
-        boolean virandoDireita = this.isOlhandoParaDireita();
-        if (virandoDireita && base.isFlipX())  base.flip(true, false);
-        if (!virandoDireita && !base.isFlipX()) base.flip(true, false);
-        frameAtual = base;
+        // --- 5. Seleciona frame ---
+        boolean olhandoDireita;
+        switch (estadoAtual) {
+            case ATIRANDO:
+                frameAtual     = animacaoAtirar.getKeyFrame(tempoAnimacaoTiro);
+                olhandoDireita = direcaoTravadaAoAtirar;
+                break;
+            case PARADO:
+                frameAtual     = animacaoIdle.getKeyFrame(tempoDaAnimacao);
+                olhandoDireita = isOlhandoParaDireita();
+                break;
+            case ANDANDO:
+            default:
+                frameAtual     = animacaoAndar.getKeyFrame(tempoDaAnimacao);
+                olhandoDireita = isOlhandoParaDireita();
+                break;
+        }
+
+        // --- 6. Flip ---
+        aplicarFlip(frameAtual, olhandoDireita);
     }
 
+    // ---------------------------------------------------------------
+    // Flip sem TextureRegion.flip() duplo
+    // ---------------------------------------------------------------
+    private void aplicarFlip(TextureRegion frame, boolean olhandoDireita) {
+        if (!olhandoDireita && !frame.isFlipX()) frame.flip(true, false);
+        else if (olhandoDireita && frame.isFlipX()) frame.flip(true, false);
+    }
+
+    // ---------------------------------------------------------------
+    // Draw — sprite centralizado horizontalmente sobre a hitbox
+    // ---------------------------------------------------------------
     @Override
     public void draw(Batch batch) {
         if (frameAtual == null) return;
 
-        batch.draw(frameAtual, rect.x, rect.y, rect.width, rect.height);
+        float larguraVisual;
+        float alturaVisual;
+        float offsetX;
+
+        switch (estadoAtual) {
+            case ATIRANDO:
+                larguraVisual = 112f;
+                alturaVisual  = 112f;
+                offsetX       = -70f;
+                break;
+            case PARADO:
+                larguraVisual = 80f;
+                alturaVisual  = 90f;
+                offsetX       = -15f;
+                break;
+            case ANDANDO:
+            default:
+                larguraVisual = 80f;
+                alturaVisual  = 90f;
+                offsetX       = 0f;
+                break;
+        }
+
+        batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
 
         if (isEstaPiscando()) {
-            batch.setBlendFunction(
-                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
-                com.badlogic.gdx.graphics.GL20.GL_ONE);
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
             batch.setColor(1f, 1f, 1f, 0.6f);
-            batch.draw(frameAtual, rect.x, rect.y, rect.width, rect.height);
-            batch.setBlendFunction(
-                com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA,
-                com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
-            batch.setColor(com.badlogic.gdx.graphics.Color.WHITE);
+            batch.draw(frameAtual, rect.x + offsetX, rect.y, larguraVisual, alturaVisual);
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            batch.setColor(Color.WHITE);
         }
     }
 
+    // ---------------------------------------------------------------
+    // Morte concluída — placeholder até spritesheet chegar
+    // TODO: atualizar DURACAO_ANIMACAO_MORTE e descomentar quando pronto
+    // ---------------------------------------------------------------
+    @Override
+    public boolean animacaoMorteConcluida() {
+        // return tempoAnimacaoMorte >= DURACAO_ANIMACAO_MORTE;
+        return false; // placeholder — não remove o chefão antes da animação real
+    }
+
+    // ---------------------------------------------------------------
+    // Dispose — libera todas as texturas
+    // ---------------------------------------------------------------
     @Override
     public void dispose() {
-        if (animacaoAndar != null && animacaoAndar.getKeyFrame(0) != null)
-            animacaoAndar.getKeyFrame(0).getTexture().dispose();
+        animacaoAndar.getKeyFrame(0).getTexture().dispose();
+        animacaoIdle.getKeyFrame(0).getTexture().dispose();
+        animacaoAtirar.getKeyFrame(0).getTexture().dispose();
+        // animacaoMorte usa textura própria quando spritesheet chegar — adicionar dispose() aqui
     }
 }

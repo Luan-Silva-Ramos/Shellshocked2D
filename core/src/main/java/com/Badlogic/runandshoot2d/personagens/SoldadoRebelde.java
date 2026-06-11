@@ -18,6 +18,7 @@ public class SoldadoRebelde extends Inimigo {
     private Animation<TextureRegion> animacaoCair;
     private Animation<TextureRegion> animacaoAtirar;
     private Animation<TextureRegion> animacaoParada;
+    private Animation<TextureRegion> animacaoMorte;
 
     // Controle da Animação do inimigo(soldado)
     private TextureRegion frameAtual;
@@ -32,7 +33,7 @@ public class SoldadoRebelde extends Inimigo {
     private static final int TOTAL_FRAMES_ATIRAR = 5;
     private static final float DURACAO_ANIMACAO_TIRO = TOTAL_FRAMES_ATIRAR * 0.10f;
 
-    private Animation<TextureRegion> animacaoMorte;
+
     private boolean estaMorrendo = false;
     private float tempoAnimacaoMorte = 0f;
     private static final int TOTAL_FRAMES_MORTE = 7;
@@ -48,9 +49,9 @@ public class SoldadoRebelde extends Inimigo {
         this.estadoAnterior = null; //Aqui atenção porque é responsável por forçar reset no primeiro Frame
 
         // Animação de Andar
-        Texture folha = new Texture(Gdx.files.internal(
+        Texture folhaAndar = new Texture(Gdx.files.internal(
             "recursos/personagens/SpriteAnimation/inimigos/soldado/inimigo.png"));
-        TextureRegion[][] matrizAndar = TextureRegion.split(folha, 100, 100);
+        TextureRegion[][] matrizAndar = TextureRegion.split(folhaAndar, 100, 100);
         TextureRegion[] framesAndar = new TextureRegion[7];
         for (int i = 0; i < 7; i++) {
             framesAndar[i] = matrizAndar[0][i];
