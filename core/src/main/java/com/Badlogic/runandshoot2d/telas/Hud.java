@@ -45,14 +45,6 @@ public class Hud {
 
     public void render(SpriteBatch batch, Jogador jogador, int pontuacao, int vidasJogador) {
 
-        // Salva a escala original da fonte para não quebrar outras partes do jogo
-        float escPontosOrigX = fontePontos.getScaleX();
-        float escPontosOrigY = fontePontos.getScaleY();
-
-        // 2. Salva as escalas originais da fonte das Vidas
-        float escVidasOrigX = fonteVidas.getScaleX();
-        float escVidasOrigY = fonteVidas.getScaleY();
-
         shapeRenderer.setProjectionMatrix(cameraHUD.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 

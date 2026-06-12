@@ -142,7 +142,7 @@ java -jar Shellshocked2D.jar
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/<Luan-Silva-Ramos>/Shellshocked2D.git
+git clone https://github.com/Luan-Silva-Ramos/Shellshocked2D.git
 cd Shellshocked2D
 ```
 

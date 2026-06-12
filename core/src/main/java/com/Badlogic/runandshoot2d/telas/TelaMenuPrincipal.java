@@ -96,7 +96,7 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         }
 
         // Exibe o recorde salvo — abaixo das opções
-        layout.setText(jogo_fonte_recorde(), "RECORDE: " + rnsJogo.dadosSalvos.pontuacaoMaxima);
+        layout.setText(fonte, "RECORDE: " + rnsJogo.dadosSalvos.pontuacaoMaxima);
         fonte.setColor(Color.WHITE);
         fonte.draw(batch, layout, centroX - layout.width / 2, varY - 20);
 
@@ -104,10 +104,6 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         batch.end();
     }
 
-    // Helper só pra evitar repetir "fonte" — pode remover e usar "fonte" direto
-    private BitmapFont jogo_fonte_recorde() {
-        return fonte;
-    }
     @Override
     public void dispose() {
         background.dispose();
