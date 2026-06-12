@@ -5,7 +5,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
 
 public class GerenciadorSave {
-    private static final String ARQUIVO = "runandshoot2d_save";
+    private static final String ARQUIVO = "shellshocked2d_save";
     private final Preferences prefs;
     private final Json json;
 
@@ -23,6 +23,12 @@ public class GerenciadorSave {
         if (!prefs.contains("dados")) {
             return new DadosSalvos();
         }
-        return json.fromJson(DadosSalvos.class, prefs.getString("dados"));
+
+        try {
+            return json.fromJson(DadosSalvos.class, prefs.getString("dados"));
+        } catch (Exception e) {
+            Gdx.app.error("SAVE", "Erro ao carregar dados salvos, usando padrão. Motivo: " + e.getMessage());
+            return new DadosSalvos();
+        }
     }
 }
