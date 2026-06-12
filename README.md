@@ -19,7 +19,7 @@
 
 ## Descrição do projeto
 
-Run and Shoot 2D é um jogo de plataforma side-scrolling com combate, no estilo Metal Slug. O jogador controla um soldado que deve atravessar um cenário eliminando inimigos — soldados rebeldes e um chefão — para completar a missão. O jogo possui sistema de vidas, pontuação, HUD personalizado, efeitos sonoros e persistência de recorde entre sessões.
+Shellshocked 2D é um jogo de plataforma side-scrolling com combate, no estilo Metal Slug. O jogador controla um soldado que deve atravessar um cenário eliminando inimigos — soldados rebeldes e um chefão — para completar a missão. O jogo possui sistema de vidas, pontuação, HUD personalizado, efeitos sonoros e persistência de recorde entre sessões.
 
 ---
 
@@ -130,11 +130,11 @@ Nenhuma instalação adicional é necessária. O JAR já contém todas as depend
 ### Via JAR (recomendado)
 
 1. Certifique-se de ter o Java instalado (`java -version`).
-2. Coloque o arquivo `Jogo2DRunAndShoot.jar` e a pasta `recursos/` no mesmo diretório.
+2. Coloque o arquivo `Shellshocked2D.jar` e a pasta `recursos/` no mesmo diretório.
 3. Execute:
 
 ```bash
-java -jar Jogo2DRunAndShoot.jar
+java -jar Shellshocked2D.jar
 ```
 
 ### Via IDE (para desenvolvimento)
@@ -142,8 +142,8 @@ java -jar Jogo2DRunAndShoot.jar
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/<seu-usuario>/Jogo2DRunAndShoot.git
-cd Jogo2DRunAndShoot
+git clone https://github.com/<Luan-Silva-Ramos>/Shellshocked2D.git
+cd Shellshocked2D
 ```
 
 2. Abra o projeto com IntelliJ IDEA ou outra IDE com suporte a Gradle.
