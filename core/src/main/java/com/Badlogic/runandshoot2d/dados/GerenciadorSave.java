@@ -16,22 +16,13 @@ public class GerenciadorSave {
 
     public void salvar(DadosSalvos dados) {
         prefs.putString("dados", json.toJson(dados));
-        prefs.flush(); // sem flush não persiste em disco
+        prefs.flush();
     }
 
     public DadosSalvos carregar() {
         if (!prefs.contains("dados")) {
-            return new DadosSalvos(); // padrão para "novo jogo"
+            return new DadosSalvos();
         }
         return json.fromJson(DadosSalvos.class, prefs.getString("dados"));
-    }
-
-    public boolean existeSave() {
-        return prefs.contains("dados");
-    }
-
-    public void apagarSave() {
-        prefs.remove("dados");
-        prefs.flush();
     }
 }

@@ -37,21 +37,18 @@ public class Projetil extends ObjetoJogo {
     @Override
     public void draw(Batch batch) {
         if (textura != null) {
-            // Parâmetros do batch.draw() com flip:
-            // (textura, x, y, originX, originY, width, height, scaleX, scaleY, rotation,
-            //  srcX, srcY, srcWidth, srcHeight, flipX, flipY)
             batch.draw(
                 textura,
-                rect.x, rect.y,         // posição
-                0, 0,            // origem da rotação
-                16, 8,            // tamanho visual
-                1f, 1f,           // escala
-                0f,                      // rotação
-                0, 0,               // srcX, srcY (começo na textura)
-                textura.getWidth(),      // srcWidth
-                textura.getHeight(),     // srcHeight
-                !indoParaDireita,        // flipX — espelha quando vai para esquerda
-                false                    // flipY
+                rect.x, rect.y,
+                0, 0,
+                16, 8,
+                1f, 1f,
+                0f,
+                0, 0,
+                textura.getWidth(),
+                textura.getHeight(),
+                !indoParaDireita,
+                false
             );
         }
     }

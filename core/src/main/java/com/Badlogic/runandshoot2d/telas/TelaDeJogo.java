@@ -1,6 +1,5 @@
 package com.Badlogic.runandshoot2d.telas;
 
-import com.Badlogic.runandshoot2d.dados.DadosSalvos;
 import com.Badlogic.runandshoot2d.jogo.RnsJogo;
 import com.Badlogic.runandshoot2d.objetos.GerenciadorFisica;
 import com.Badlogic.runandshoot2d.objetos.Obstaculo;
@@ -34,41 +33,29 @@ public class TelaDeJogo extends ScreenAdapter {
     private final OrthographicCamera camera;
     private final Viewport cenarioViewport;
     private final RnsJogo jogo;
-
     private static final int LARGURA_VIRTUAL = 400;
     private static final int ALTURA_VIRTUAL = 224;
     private static final float LARGURA_MAPA_PIXELS = 269 * 16f;
-
     private final SpriteBatch batch;
-
     private final Jogador jogador;
     private final Array<Obstaculo> listaChao;
     private final Array<Obstaculo> listaPlataformas;
     private final Array<Obstaculo> listaBarris;
-
     private Array<Projetil> listaProjeteis;
     private Texture texBala;
-
     private final HashMap<String, Texture> texturasBarris;
     private final HashMap<String, Texture> texturasPlataformas;
-
     private final Array<Inimigo> listaInimigos;
-
     private Hud hud;
-
     private int pontuacao = 0;
     private int vidasJogador = 3;
-
     private Array<Projetil> listaProjeteisInimigos;
     private Texture texBalaInimigo;
     private Texture texBalaChefao;
-
     private GerenciadorFisica gerenciadorFisica;
-
     // VITÓRIA
     private boolean faseConcluida = false;
     private float timerTransicao = 0;
-
     // Áudio — passos
     private float timerPassos = 0f;
     private static final float INTERVALO_PASSOS = 0.32f;
@@ -83,7 +70,6 @@ public class TelaDeJogo extends ScreenAdapter {
         this.pontuacao = 0;
 
         texturasBarris = new HashMap<>();
-        texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
         texturasBarris.put("col_barril_cinza", new Texture(Gdx.files.internal("recursos/objetos/BarrilSujo.png")));
         texturasBarris.put("col_barril_tnt", new Texture(Gdx.files.internal("recursos/objetos/BarrilTNT.png")));
 
@@ -121,7 +107,6 @@ public class TelaDeJogo extends ScreenAdapter {
         this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
 
     }
-
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
         var camada = cenario.getLayers().get(nomeCamada);
@@ -190,7 +175,6 @@ public class TelaDeJogo extends ScreenAdapter {
     @Override
     public void render(float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
-
 
         // CONF. DE TELA DE MISSÃO COMPLETA
         if (faseConcluida) {
@@ -415,10 +399,8 @@ public class TelaDeJogo extends ScreenAdapter {
         texBala.dispose();
         texBalaInimigo.dispose();
         texBalaChefao.dispose();
-
         for (Inimigo inimigo : listaInimigos) inimigo.dispose();
         if (hud != null) hud.dispose();
-
         for (Texture t : texturasBarris.values()) t.dispose();
         for (Texture t : texturasPlataformas.values()) t.dispose();
 

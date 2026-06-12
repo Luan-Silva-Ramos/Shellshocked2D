@@ -10,7 +10,7 @@ public class GerenciadorFisica {
 
     private final Jogador jogador;
 
-    // Estado de chão do jogador — derivado a cada frame
+    // Estado de chão do jogador
     private boolean jogadorNoChao = false;
     private boolean jogadorPousouEsseFrame = false;
 
@@ -21,7 +21,7 @@ public class GerenciadorFisica {
     public void checarColisoes(Array<Obstaculo> listaChao,
                                Array<Obstaculo> listaPlataformas,
                                Array<Obstaculo> listaBarris) {
-        // Reseta a cada frame — assume no ar até algum resolverFisica provar o contrário
+        // Reseta a cada frame
         boolean estavaNoChaoBefore = jogadorNoChao;
         jogadorNoChao = false;
         jogadorPousouEsseFrame = false;
@@ -30,7 +30,7 @@ public class GerenciadorFisica {
         resolverFisicaDeColisao(listaPlataformas);
         resolverFisicaDeColisao(listaBarris);
 
-        // Pousou = estava no ar na frame anterior e agora está no chão
+        // Pousou
         if (!estavaNoChaoBefore && jogadorNoChao) {
             jogadorPousouEsseFrame = true;
         }
@@ -47,8 +47,7 @@ public class GerenciadorFisica {
         }
     }
 
-    // --- Getters públicos para a TelaDeJogo ---
-
+    // Getters públicos para a TelaDeJogo
     public boolean isNoChao() {
         return jogadorNoChao;
     }
@@ -57,8 +56,7 @@ public class GerenciadorFisica {
         return jogadorPousouEsseFrame;
     }
 
-    // --- Física interna ---
-
+    // Física interna
     private void resolverFisicaDeColisao(Array<Obstaculo> listaDeObstaculos) {
         Rectangle rectJogador = jogador.getRect();
         for (Obstaculo obstaculo : listaDeObstaculos) {

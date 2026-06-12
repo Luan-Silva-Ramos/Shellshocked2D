@@ -14,10 +14,7 @@ import com.badlogic.gdx.audio.Sound;
  */
 public class GerenciadorAudio {
 
-    // -------------------------------------------------------------------------
     // Caminhos dos assets
-    // -------------------------------------------------------------------------
-
     // Músicas
     private static final String MUSICA_MENU      = "recursos/audio/musica/Frodo's Quest - Ezra Lipp.mp3";
     private static final String MUSICA_GAMEPLAY  = "recursos/audio/musica/freesound_community-war-drum-loop.wav";
@@ -38,9 +35,8 @@ public class GerenciadorAudio {
     private static final String SFX_PASSO_3      = "recursos/audio/sfx/personagens/Footsteps_Rock_Run_03.wav";
     private static final String SFX_PASSO_4      = "recursos/audio/sfx/personagens/Footsteps_Rock_Run_04.wav";
 
-    // -------------------------------------------------------------------------
-    // Volumes padrão (ajuste conforme teste auditivo)
-    // -------------------------------------------------------------------------
+    // Volumes
+
     private static final float VOL_MUSICA_MENU      = 0.2f;
     private static final float VOL_MUSICA_GAMEPLAY  = 0.2f;
     private static final float VOL_AMBIENCE         = 0.4f;  // mais baixo para não brigar com a música
@@ -48,9 +44,7 @@ public class GerenciadorAudio {
     private static final float VOL_SFX_TIRO         = 0.8f;
     private static final float VOL_SFX_PASSOS       = 0.6f;
 
-    // -------------------------------------------------------------------------
     // Instâncias
-    // -------------------------------------------------------------------------
 
     // Music (streaming)
     private Music musicaMenu;
@@ -63,12 +57,10 @@ public class GerenciadorAudio {
     private Sound sfxTiro762;
     private Sound sfxRocket;
     private Sound sfxPassoPouso;
-    private Sound[] sfxPassosCorrida;   // array para ciclar as variações
-    private int indicePasso = 0;        // controla qual variação tocar a seguir
+    private Sound[] sfxPassosCorrida;
+    private int indicePasso = 0;
 
-    // -------------------------------------------------------------------------
     // Inicialização
-    // -------------------------------------------------------------------------
 
     public GerenciadorAudio() {
         carregarMusicas();
@@ -109,17 +101,13 @@ public class GerenciadorAudio {
         };
     }
 
-    // -------------------------------------------------------------------------
     // Controle por contexto de tela
-    // -------------------------------------------------------------------------
 
-    /** Chame ao entrar na TelaMenuPrincipal */
     public void tocarMenu() {
         pararTudo();
         musicaMenu.play();
     }
 
-    /** Chame ao entrar na TelaDeJogo — toca música + ambience sobrepostos */
     public void tocarGameplay() {
         pararTudo();
         musicaGameplay.play();
@@ -132,7 +120,6 @@ public class GerenciadorAudio {
         musicaGameOver.play();
     }
 
-    /** Para toda música e ambience imediatamente */
     public void pararTudo() {
         musicaMenu.stop();
         musicaGameplay.stop();
@@ -140,7 +127,6 @@ public class GerenciadorAudio {
         musicaGameOver.stop();
     }
 
-    /** Pausa toda música (útil para pausar o jogo) */
     public void pausarTudo() {
         musicaMenu.pause();
         musicaGameplay.pause();
@@ -148,19 +134,7 @@ public class GerenciadorAudio {
         musicaGameOver.pause();
     }
 
-    /** Retoma música pausada */
-    public void retomar() {
-        // Retoma apenas o que estava tocando — checa isPlaying para não
-        // retomar algo que foi parado intencionalmente
-        if (!musicaMenu.isPlaying()      && musicaMenu.getPosition() > 0)      musicaMenu.play();
-        if (!musicaGameplay.isPlaying()  && musicaGameplay.getPosition() > 0)  musicaGameplay.play();
-        if (!ambienceGameplay.isPlaying() && ambienceGameplay.getPosition() > 0) ambienceGameplay.play();
-        if (!musicaGameOver.isPlaying()  && musicaGameOver.getPosition() > 0)  musicaGameOver.play();
-    }
-
-    // -------------------------------------------------------------------------
     // SFX — Armas
-    // -------------------------------------------------------------------------
 
     public void tocarTiro556() {
         sfxTiro556.play(VOL_SFX_TIRO);
@@ -174,41 +148,18 @@ public class GerenciadorAudio {
         sfxRocket.play(VOL_SFX_TIRO);
     }
 
-    // -------------------------------------------------------------------------
     // SFX — Personagem
-    // -------------------------------------------------------------------------
 
-    /**
-     * Toca a próxima variação de passo de corrida em ciclo.
-     * Chame a cada passo do jogador no update() da TelaDeJogo.
-     */
     public void tocarPassoCorrida() {
         sfxPassosCorrida[indicePasso].play(VOL_SFX_PASSOS);
         indicePasso = (indicePasso + 1) % sfxPassosCorrida.length;
     }
 
-    /** Toca o som de pouso após pulo */
     public void tocarPassoPouso() {
         sfxPassoPouso.play(VOL_SFX_PASSOS);
     }
 
-    // -------------------------------------------------------------------------
-    // Ajuste de volume em tempo real (opcional — útil para settings futuros)
-    // -------------------------------------------------------------------------
-
-    public void setVolumeMusica(float volume) {
-        musicaMenu.setVolume(volume);
-        musicaGameplay.setVolume(volume);
-        musicaGameOver.setVolume(volume);
-    }
-
-    public void setVolumeAmbience(float volume) {
-        ambienceGameplay.setVolume(volume);
-    }
-
-    // -------------------------------------------------------------------------
     // Dispose — chame no RnsJogo.dispose()
-    // -------------------------------------------------------------------------
 
     public void dispose() {
         musicaMenu.dispose();
@@ -224,7 +175,5 @@ public class GerenciadorAudio {
         for (Sound s : sfxPassosCorrida) {
             s.dispose();
         }
-
-        Gdx.app.log("AUDIO", "GerenciadorAudio descartado.");
     }
 }

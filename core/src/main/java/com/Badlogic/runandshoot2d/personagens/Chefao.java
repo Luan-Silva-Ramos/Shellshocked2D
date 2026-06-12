@@ -117,14 +117,14 @@ public class Chefao extends Inimigo {
             return;
         }
 
-        // --- 1. Captura disparo (flag dura só 1 frame) ---
+        // 1. Captura disparo (flag dura só 1 frame)
         if (seDesejaAtirar()) {
             estaExibindoAnimacaoTiro  = true;
             tempoAnimacaoTiro         = 0f;
             direcaoTravadaAoAtirar    = isOlhandoParaDireita();
         }
 
-        // --- 2. Avança timer de tiro ---
+        // 2. Avança timer de tiro
         if (estaExibindoAnimacaoTiro) {
             tempoAnimacaoTiro += delta;
             if (tempoAnimacaoTiro >= DURACAO_ANIMACAO_TIRO) {
@@ -132,7 +132,7 @@ public class Chefao extends Inimigo {
             }
         }
 
-        // --- 3. Determina estado ---
+        // 3. Determina estado
         EstadoAnimacaoChefao novoEstado;
         if (estaExibindoAnimacaoTiro) {
             novoEstado = EstadoAnimacaoChefao.ATIRANDO;
@@ -142,7 +142,7 @@ public class Chefao extends Inimigo {
             novoEstado = EstadoAnimacaoChefao.ANDANDO;
         }
 
-        // --- 4. Reseta timer só na mudança de estado ---
+        // 4. Reseta timer só na mudança de estado
         if (novoEstado != estadoAnterior) {
             tempoDaAnimacao = 0f;
             estadoAnterior  = novoEstado;
@@ -150,7 +150,7 @@ public class Chefao extends Inimigo {
         estadoAtual      = novoEstado;
         tempoDaAnimacao += delta;
 
-        // --- 5. Seleciona frame ---
+        // 5. Seleciona frame
         boolean olhandoDireita;
         switch (estadoAtual) {
             case ATIRANDO:
@@ -168,7 +168,7 @@ public class Chefao extends Inimigo {
                 break;
         }
 
-        // --- 6. Flip ---
+        //  6. Flip
         aplicarFlip(frameAtual, olhandoDireita);
     }
 

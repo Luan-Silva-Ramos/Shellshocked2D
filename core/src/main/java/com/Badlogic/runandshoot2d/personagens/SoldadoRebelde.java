@@ -21,32 +21,23 @@ public class SoldadoRebelde extends Inimigo {
         ANDANDO,PARADO, CAINDO, ATIRANDO, MORRENDO
     }
 
-    // Animações
     private Animation<TextureRegion> animacaoAndar;
     private Animation<TextureRegion> animacaoCair;
     private Animation<TextureRegion> animacaoAtirar;
     private Animation<TextureRegion> animacaoParada;
     private Animation<TextureRegion> animacaoMorte;
-
-    // Controle da Animação do inimigo(soldado)
     private TextureRegion frameAtual;
     private float tempoDaAnimacao;
     private EstadoAnimacao estadoAtual;
     private EstadoAnimacao estadoAnterior;
-
-    // Timer próprio para segurar a animação de tiro
-    // (independente da flag do pai que dura apenas 1 frame)
     private float tempoAnimacaoAtirando = 0f;
     private boolean estaExibindoAnimacaoTiro = false;
     private static final int TOTAL_FRAMES_ATIRAR = 5;
     private static final float DURACAO_ANIMACAO_TIRO = TOTAL_FRAMES_ATIRAR * 0.10f;
-
-
     private boolean estaMorrendo = false;
     private float tempoAnimacaoMorte = 0f;
     private static final int TOTAL_FRAMES_MORTE = 7;
     private static final float DURACAO_ANIMACAO_MORTE = TOTAL_FRAMES_MORTE * 0.12f;
-
     private boolean direcaoTravadaAoAtirar = true;
 
     public SoldadoRebelde(float x, float y, Jogador jogador) {

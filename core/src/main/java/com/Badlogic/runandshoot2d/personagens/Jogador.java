@@ -150,7 +150,6 @@ public class Jogador extends ObjetoJogo {
         boolean estaAndando = Gdx.input.isKeyPressed(Input.Keys.A)
             || Gdx.input.isKeyPressed(Input.Keys.D);
 
-// Seleciona o frame SEM criar new TextureRegion()
         if (estaExibindoAnimacaoTiro) {
             if (!noChao || estaAndando) {
                 frameAtual = animacaoAtirarAndando.getKeyFrame(tempoAnimacaoTiro);
@@ -240,7 +239,7 @@ public class Jogador extends ObjetoJogo {
 
             batch.draw(
                 frameAtual.getTexture(),
-                rect.x + offsetX, rect.y + offsetY, // << offsetY aplicado
+                rect.x + offsetX, rect.y + offsetY,
                 0, 0,
                 largura, altura,
                 1f, 1f,
@@ -286,16 +285,6 @@ public class Jogador extends ObjetoJogo {
     public Vector2 getVelocidade() {
         return velocidade;
     }
-
-    public boolean isNoChao() {
-        return noChao;
-    }
-
-    public void notificarTiro() {
-        estaExibindoAnimacaoTiro = true;
-        tempoAnimacaoTiro = 0f;
-    }
-
 
     public void dispose() {
         if (animacaoCorrer != null && animacaoCorrer.getKeyFrame(0) != null)

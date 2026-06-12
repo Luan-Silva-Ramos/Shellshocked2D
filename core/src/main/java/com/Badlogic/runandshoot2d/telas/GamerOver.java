@@ -28,6 +28,7 @@ public class GamerOver extends ScreenAdapter {
     public void show() {
         this.batch = rnsJogo.getBatch();
         this.fonte = rnsJogo.getFonte();
+        rnsJogo.audio.tocarGameOver();
     }
 
     @Override
@@ -72,7 +73,6 @@ public class GamerOver extends ScreenAdapter {
 
         batch.end();
 
-        // Volta ao menu imediatamente ao pressionar ENTER
         if (com.badlogic.gdx.Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
             rnsJogo.setScreen(new TelaMenuPrincipal(rnsJogo));
         }

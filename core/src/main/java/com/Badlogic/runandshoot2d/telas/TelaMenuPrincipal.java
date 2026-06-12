@@ -23,8 +23,6 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     private final String[] opcoes = {"1. INICIAR MISSÃO", "2. CONTROLES", "3. SAIR"};
 
     private Texture  background;
-    private Texture background2;
-    private Texture background3;
 
     public TelaMenuPrincipal(RnsJogo rnsJogo) {
         this.rnsJogo = rnsJogo;
@@ -71,7 +69,6 @@ public class TelaMenuPrincipal extends ScreenAdapter {
 
         ScreenUtils.clear(Color.BLACK);
 
-
         float largura = viewport.getWorldWidth();
         float altura = viewport.getWorldHeight();
         float centroX = viewport.getWorldWidth() / 2;
@@ -83,8 +80,6 @@ public class TelaMenuPrincipal extends ScreenAdapter {
 
         batch.draw(background, 0, 0, largura, altura);
 
-        //layout.setText(fonte, "SHELLSHOCKED 2D");
-        //fonte.draw(batch, layout, centroX - layout.width / 2, varY);
         varY -= 60;
 
         for (int i = 0; i < opcoes.length; i++) {

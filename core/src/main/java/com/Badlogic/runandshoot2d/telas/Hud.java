@@ -17,12 +17,9 @@ public class Hud {
     private BitmapFont fonteVidas;
     private GlyphLayout layoutHUD;
     private ShapeRenderer shapeRenderer;
-
-    // Suas artes customizadas em PNG
     private Texture texFichaJogador;
     private Texture texBarraVida;
     private Texture texBarraPontos;
-
     private final int larguraVirtual;
     private final int alturaVirtual;
 
@@ -52,18 +49,10 @@ public class Hud {
         float escPontosOrigX = fontePontos.getScaleX();
         float escPontosOrigY = fontePontos.getScaleY();
 
-        // Reduz o tamanho do texto para caber perfeitamente dentro das molduras
-        //fontePontos.getData().setScale(0.55f, 0.55f);
-
         // 2. Salva as escalas originais da fonte das Vidas
         float escVidasOrigX = fonteVidas.getScaleX();
         float escVidasOrigY = fonteVidas.getScaleY();
-        // Ajusta o tamanho da fonte das vidas para o quadradinho preto do "X"
-        //fonteVidas.getData().setScale(0.55f, 0.55f);
 
-        // -----------------------------------------------------------------
-        // PASSO 1: DESENHAR O PREENCHIMENTO DA BARRA DE VIDA (SHAPERENDERER)
-        // -----------------------------------------------------------------
         shapeRenderer.setProjectionMatrix(cameraHUD.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -72,7 +61,7 @@ public class Hud {
         shapeRenderer.rect(93, alturaVirtual - 25, 95, 10);
 
         float percentualVida = (float) jogador.getHpAtual() / jogador.getHpMaximo();
-        // Largura útil interna corrigida para 75 pixels
+
         float larguraBarra = 95f * percentualVida;
 
         if (larguraBarra > 0) {
@@ -92,9 +81,8 @@ public class Hud {
         }
         shapeRenderer.end();
 
-        // -----------------------------------------------------------------
         // PASSO 2: DESENHAR AS MOLDURAS METALIZADAS E OS TEXTOS
-        // -----------------------------------------------------------------
+
         batch.setProjectionMatrix(cameraHUD.combined);
         batch.begin();
 
@@ -109,9 +97,7 @@ public class Hud {
         float xBarraPontos = larguraVirtual - 155;
         batch.draw(texBarraPontos, xBarraPontos, yElementosTopo + 4, 145, 22);
 
-        // -----------------------------------------------------------------
         // PASSO 3: RENDERIZAR OS TEXTOS AJUSTADOS
-        // -----------------------------------------------------------------
 
         // Texto das Vidas: Alinhado perfeitamente no centro do quadrado preto à direita do "X"
         String textoVidas = String.format("%02d", vidasJogador);
@@ -129,10 +115,6 @@ public class Hud {
 
         batch.end();
 
-        // Restaura a escala padrão da fonte para o resto do jogo
-        // Devolve o tamanho original de ambas as fontes para não encolher textos em outras telas
-        //fontePontos.getData().setScale(escPontosOrigX, escPontosOrigY);
-        //fonteVidas.getData().setScale(escVidasOrigX, escVidasOrigY);
     }
 
     public void dispose() {
