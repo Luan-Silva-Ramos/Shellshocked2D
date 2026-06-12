@@ -1,5 +1,6 @@
 package com.Badlogic.RunAndShoot.lwjgl3;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.Badlogic.runandshoot2d.jogo.RnsJogo;
@@ -17,7 +18,7 @@ public class Lwjgl3Launcher {
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-        configuration.setTitle("MetalSlugClone");
+        configuration.setTitle("SHELLSHOCKED 2D");
         //// Vsync limits the frames per second to what your hardware can display, and helps eliminate
         //// screen tearing. This setting doesn't always work on Linux, so the line after is a safeguard.
         configuration.useVsync(true);
@@ -31,7 +32,8 @@ public class Lwjgl3Launcher {
         configuration.setWindowedMode(800, 500);
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         //// They can also be loaded from the root of assets/ .
-        configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+        configuration.setWindowIcon("recursos/hud/icones/shellshocked2d128.png",
+            "recursos/hud/icones/shellshocked2d64.png","recursos/hud/icones/shellshocked2d32.png","recursos/hud/icones/shellshocked2d16.png");
 
         //// This could improve compatibility with Windows machines with buggy OpenGL drivers, Macs
         //// with Apple Silicon that have to emulate compatibility with OpenGL anyway, and more.
