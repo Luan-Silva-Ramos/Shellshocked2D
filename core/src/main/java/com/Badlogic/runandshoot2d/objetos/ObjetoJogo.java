@@ -19,12 +19,7 @@ public abstract class ObjetoJogo {
         this.posicao = new Vector2(x, y);
     }
 
-    public ObjetoJogo(float x, float y, float largura, float altura) {
-        this(x, y, largura, altura, null);
-    }
-
     public Rectangle getRect() { return rect; }
-    public Texture getTextura() { return textura; }
     public float getX() { return rect.x; }
     public float getY() { return rect.y; }
     public float getWidth() { return rect.width; }
@@ -45,11 +40,6 @@ public abstract class ObjetoJogo {
     public void setY(float y) {
         this.posicao.y = y;
         this.rect.y = y;
-    }
-
-    public void setBounds(float x, float y, float largura, float altura) {
-        this.rect.set(x, y, largura, altura);
-        this.posicao.set(x, y);
     }
 
     public void draw(Batch batch) {

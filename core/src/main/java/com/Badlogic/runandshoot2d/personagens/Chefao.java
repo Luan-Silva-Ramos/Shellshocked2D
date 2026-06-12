@@ -91,20 +91,11 @@ public class Chefao extends Inimigo {
         estadoAtual = EstadoAnimacaoChefao.ANDANDO;
         estadoAnterior = null;
     }
-    private TextureRegion[] extrairFrames(Texture tex, int frameW, int frameH, int count) {
-        TextureRegion[][] matriz = TextureRegion.split(tex, frameW, frameH);
-        TextureRegion[] frames = new TextureRegion[count];
-        for (int i = 0; i < count; i++) {
-            frames[i] = matriz[0][i];
-        }
-        return frames;
-    }
 
     @Override
     public void update(float delta) {
         super.update(delta);
 
-        // --- 0. Morte tem prioridade absoluta ---
         if (estaMorto() && !estaMorrendo) {
             estaMorrendo       = true;
             tempoAnimacaoMorte = 0f;
@@ -173,17 +164,11 @@ public class Chefao extends Inimigo {
         aplicarFlip(frameAtual, olhandoDireita);
     }
 
-    // ---------------------------------------------------------------
-    // Flip sem TextureRegion.flip() duplo
-    // ---------------------------------------------------------------
     private void aplicarFlip(TextureRegion frame, boolean olhandoDireita) {
         if (!olhandoDireita && !frame.isFlipX()) frame.flip(true, false);
         else if (olhandoDireita && frame.isFlipX()) frame.flip(true, false);
     }
 
-    // ---------------------------------------------------------------
-    // Draw — sprite centralizado horizontalmente sobre a hitbox
-    // ---------------------------------------------------------------
     @Override
     public void draw(Batch batch) {
         if (frameAtual == null) return;
@@ -227,19 +212,12 @@ public class Chefao extends Inimigo {
         }
     }
 
-    // ---------------------------------------------------------------
-    // Morte concluída — placeholder até spritesheet chegar
-    // TODO: atualizar DURACAO_ANIMACAO_MORTE e descomentar quando pronto
-    // ---------------------------------------------------------------
     @Override
     public boolean animacaoMorteConcluida() {
         return tempoAnimacaoMorte >= DURACAO_ANIMACAO_MORTE;
 
     }
 
-    // ---------------------------------------------------------------
-    // Dispose — libera todas as texturas
-    // ---------------------------------------------------------------
     @Override
     public void dispose() {
         animacaoAndar.getKeyFrame(0).getTexture().dispose();

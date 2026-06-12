@@ -51,9 +51,6 @@ public abstract class Inimigo extends ObjetoJogo {
         posicaoAnterior.set(posicao.x, posicao.y);
         velocidade.y += GRAVIDADE * delta;
 
-
-        // 2. Cálculo robusto do noChao — resetado pelo GerenciadorFisica ao resolver colisão vertical
-        //    Aqui apenas marca como fora do chão se a velocidade indica queda livre prolongada
         boolean tocandoChaoAgora = (velocidade.y > -80f && velocidade.y <= 1f);
 
         if (tocandoChaoAgora) {
