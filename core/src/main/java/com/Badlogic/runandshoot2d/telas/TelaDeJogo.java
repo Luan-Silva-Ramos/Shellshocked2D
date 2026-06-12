@@ -391,7 +391,7 @@ public class TelaDeJogo extends ScreenAdapter {
             tiroE.draw(batch);
 
             if (!jogador.isEstaInvulneravel() && tiroE.getRect().overlaps(jogador.getRect())) {
-                jogador.tomarDano(5);
+                jogador.tomarDano(15);
                 tiroE.marcarComoDestruido();
             }
             if (tiroE.deveDestruir()) iterBalaInimigo.remove();
