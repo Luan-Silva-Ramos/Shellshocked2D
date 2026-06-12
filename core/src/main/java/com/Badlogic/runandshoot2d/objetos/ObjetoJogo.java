@@ -5,6 +5,15 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Classe base abstrata para todos os objetos do mundo do jogo.
+ *
+ * Padrão de projeto: Template Method — define o esqueleto de comportamento
+ * comum (posição, velocidade, hitbox, draw básico) e declara update() como
+ * método abstrato, forçando cada subclasse a implementar sua própria lógica
+ * de atualização sem duplicar a estrutura compartilhada.
+ */
+
 public abstract class ObjetoJogo {
 
     protected Vector2 velocidade;

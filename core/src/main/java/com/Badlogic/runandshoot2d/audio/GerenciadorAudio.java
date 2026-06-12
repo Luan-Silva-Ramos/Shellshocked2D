@@ -7,24 +7,10 @@ import com.badlogic.gdx.audio.Sound;
 /**
  * GerenciadorAudio — centraliza todo o áudio do jogo.
  *
- * Estrutura:
- *   Music  → streaming (não carrega tudo na memória) — músicas e ambiences longos
- *   Sound  → carregado inteiro na memória — SFX curtos, disparo instantâneo
- *
- * Uso típico:
- *   No RnsJogo.create():   jogo.audio = new GerenciadorAudio();
- *   No RnsJogo.dispose():  jogo.audio.dispose();
- *
- *   TelaMenuPrincipal:     jogo.audio.tocarMenu();
- *   TelaDeJogo:            jogo.audio.tocarGameplay();
- *                          jogo.audio.pararTudo(); // ao sair da tela
- *   GamerOver:             jogo.audio.tocarGameOver();
- *
- *   SFX:
- *     jogo.audio.tocarTiro556();
- *     jogo.audio.tocarTiro762();
- *     jogo.audio.tocarPassoCorrida();   // cicla entre as 4 variações
- *     jogo.audio.tocarPassoPouso();
+ * Padrão de projeto: Facade — esconde a complexidade de gerenciar múltiplos
+ * objetos Music e Sound da LibGDX, expondo apenas métodos de alto nível
+ * como tocarMenu(), tocarGameplay() e tocarGameOver().
+
  */
 public class GerenciadorAudio {
 

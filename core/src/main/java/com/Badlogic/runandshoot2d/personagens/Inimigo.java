@@ -4,6 +4,15 @@ import com.Badlogic.runandshoot2d.objetos.ObjetoJogo;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Classe abstrata que representa um inimigo genérico.
+ *
+ * Padrão de projeto: Template Method — centraliza a IA de patrulha, visão
+ * e física na implementação de update(), deixando para as subclasses apenas
+ * a responsabilidade de definir animações e comportamentos visuais próprios
+ * via override de draw() e update() (que chama super.update() primeiro).
+ */
+
 public abstract class Inimigo extends ObjetoJogo {
 
     protected float velocidadeMovimento = 40f;

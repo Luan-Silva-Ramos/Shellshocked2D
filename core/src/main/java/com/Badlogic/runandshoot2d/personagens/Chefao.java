@@ -9,6 +9,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Chefao extends Inimigo {
+    /**
+     * Controla as animações do SoldadoRebelde.
+     *
+     * Padrão de projeto: State — cada valor do enum representa um estado
+     * bem definido (ANDANDO, PARADO, ATIRANDO, MORRENDO). A transição
+     * entre estados é explícita e o timer de animação é resetado apenas na
+     * mudança de estado, evitando animações quebradas.
+     */
     private enum EstadoAnimacaoChefao{
         ANDANDO, PARADO, ATIRANDO, MORRENDO
     }
