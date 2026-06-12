@@ -241,7 +241,7 @@ public class TelaDeJogo extends ScreenAdapter {
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2 + 5);
-            listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
+            listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala, false, 250f));
             jogador.notificarTiro();
         }
 
@@ -267,7 +267,9 @@ public class TelaDeJogo extends ScreenAdapter {
                 Texture texTiro = (inimigo instanceof Chefao) ? texBalaChefao : texBalaInimigo;
                 float spawnTiroX = inimigo.getRect().x + (inimigo.isOlhandoParaDireita() ? inimigo.getRect().width : -10);
                 float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f + 2);
-                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texTiro));
+                boolean flipPadrao = (inimigo instanceof Chefao);
+                float alcance = (inimigo instanceof Chefao) ? 400f : 250;
+                listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texTiro, flipPadrao, alcance));
                 inimigo.resetarDisparo();
             }
         }

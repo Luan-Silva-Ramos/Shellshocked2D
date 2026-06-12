@@ -8,13 +8,18 @@ public class Projetil extends ObjetoJogo {
 
     private Vector2 velocidade;
     private boolean destruir = false;
-    private boolean indoParaDireita; // << guarda a direção para o draw()
+    private boolean indoParaDireita;
+    private boolean flipPadrao;
 
-    private static final float LIMITE_MAPA = 269 * 16f;
+    private float posicaoInicialX;
+    private float alcanceMaximo;
 
-    public Projetil(float x, float y, boolean indoParaDireita, Texture texturaTiro) {
+    public Projetil(float x, float y, boolean indoParaDireita, Texture texturaTiro, boolean flipPadrao, float alcanceMaximo) {
         super(x, y, 12, 2, texturaTiro);
         this.indoParaDireita = indoParaDireita;
+        this.flipPadrao = flipPadrao;
+        this.posicaoInicialX = x;
+        this.alcanceMaximo = alcanceMaximo;
         float velocidadeX = indoParaDireita ? 200f : -200f;
         this.velocidade = new Vector2(velocidadeX, 0);
     }
@@ -23,7 +28,8 @@ public class Projetil extends ObjetoJogo {
     public void update(float delta) {
         rect.x += velocidade.x * delta;
 
-        if (rect.x > LIMITE_MAPA || rect.x < -50) {
+        float distanciaPercorrida = Math.abs(rect.x - posicaoInicialX);
+        if (distanciaPercorrida >= alcanceMaximo) {
             destruir = true;
         }
     }
