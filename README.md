@@ -224,10 +224,10 @@ O jogo salva e carrega dados entre execuções usando a API `Preferences` da Lib
 
 ## Screenshots
 
-| Menu Principal                          | Tela de Jogo                          |
-|-----------------------------------------|---------------------------------------|
+| Menu Principal | Tela de Jogo |
+|---|---|
 | ![Menu](screenshots/menu_principal.png) | ![Jogo](screenshots/tela_de_jogo.png) |
 
-| Game Over                              | Missão Completa                             |
-|----------------------------------------|---------------------------------------------|
+| Game Over | Missão Completa |
+|---|---|
 | ![GameOver](screenshots/game_over.png) | ![Vitoria](screenshots/missao_completa.png) |
