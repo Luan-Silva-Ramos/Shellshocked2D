@@ -34,10 +34,10 @@ public class Chefao extends Inimigo {
 
 
     public Chefao(float x, float y, Jogador jogador) {
-        super(x, y, 48f, 48f, null, 120f, jogador);
+        super(x, y, 48f, 48f, null, 20f, jogador);
 
         this.vida = 30;
-        this.velocidadeMovimento = 30f;
+        this.velocidadeMovimento = 50f;
         this.taxaDeDisparo = 0.8f;
 
         // ANIMAÇÃO ANDAR
