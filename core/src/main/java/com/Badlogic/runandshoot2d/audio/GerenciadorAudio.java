@@ -55,11 +55,11 @@ public class GerenciadorAudio {
     // -------------------------------------------------------------------------
     // Volumes padrão (ajuste conforme teste auditivo)
     // -------------------------------------------------------------------------
-    private static final float VOL_MUSICA_MENU      = 0.7f;
-    private static final float VOL_MUSICA_GAMEPLAY  = 0.7f;
+    private static final float VOL_MUSICA_MENU      = 0.2f;
+    private static final float VOL_MUSICA_GAMEPLAY  = 0.2f;
     private static final float VOL_AMBIENCE         = 0.4f;  // mais baixo para não brigar com a música
     private static final float VOL_MUSICA_GAMEOVER  = 0.8f;
-    private static final float VOL_SFX_TIRO         = 1.0f;
+    private static final float VOL_SFX_TIRO         = 0.8f;
     private static final float VOL_SFX_PASSOS       = 0.6f;
 
     // -------------------------------------------------------------------------

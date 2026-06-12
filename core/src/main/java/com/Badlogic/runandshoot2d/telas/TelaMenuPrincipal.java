@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -21,10 +22,16 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     private int opcaoSelecionada = 0;
     private final String[] opcoes = {"1. INICIAR MISSÃO", "2. CONTROLES", "3. SAIR"};
 
+    private Texture  background;
+    private Texture background2;
+    private Texture background3;
+
     public TelaMenuPrincipal(RnsJogo rnsJogo) {
         this.rnsJogo = rnsJogo;
         this.batch = rnsJogo.getBatch();
         this.fonte = rnsJogo.getFonte();
+
+        background = new Texture(Gdx.files.internal("recursos/background/fundo_menu.png"));
     }
 
     @Override
@@ -64,6 +71,9 @@ public class TelaMenuPrincipal extends ScreenAdapter {
 
         ScreenUtils.clear(Color.BLACK);
 
+
+        float largura = viewport.getWorldWidth();
+        float altura = viewport.getWorldHeight();
         float centroX = viewport.getWorldWidth() / 2;
         float varY = viewport.getWorldHeight() / 2 + 100;
 
@@ -71,9 +81,11 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
 
-        layout.setText(fonte, "SHELLSHOCKED 2D");
-        fonte.draw(batch, layout, centroX - layout.width / 2, varY);
-        varY -= 80;
+        batch.draw(background, 0, 0, largura, altura);
+
+        //layout.setText(fonte, "SHELLSHOCKED 2D");
+        //fonte.draw(batch, layout, centroX - layout.width / 2, varY);
+        varY -= 60;
 
         for (int i = 0; i < opcoes.length; i++) {
             String textoOpcao = opcoes[i];
@@ -100,5 +112,9 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     // Helper só pra evitar repetir "fonte" — pode remover e usar "fonte" direto
     private BitmapFont jogo_fonte_recorde() {
         return fonte;
+    }
+    @Override
+    public void dispose() {
+        background.dispose();
     }
 }
