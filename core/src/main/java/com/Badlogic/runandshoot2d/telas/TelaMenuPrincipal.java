@@ -58,7 +58,7 @@ public class TelaMenuPrincipal extends ScreenAdapter {
         ScreenUtils.clear(Color.BLACK);
 
         float centroX = viewport.getWorldWidth() / 2;
-        float varY = viewport.getWorldHeight() / 2 + 50;
+        float varY = viewport.getWorldHeight() / 2 + 100;
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -81,8 +81,17 @@ public class TelaMenuPrincipal extends ScreenAdapter {
             varY -= 40;
         }
 
-        // Resetar a cor da fonte para não bugar outros textos depois
+        // Exibe o recorde salvo — abaixo das opções
+        layout.setText(jogo_fonte_recorde(), "RECORDE: " + rnsJogo.dadosSalvos.pontuacaoMaxima);
+        fonte.setColor(Color.WHITE);
+        fonte.draw(batch, layout, centroX - layout.width / 2, varY - 20);
+
         fonte.setColor(Color.WHITE);
         batch.end();
+    }
+
+    // Helper só pra evitar repetir "fonte" — pode remover e usar "fonte" direto
+    private BitmapFont jogo_fonte_recorde() {
+        return fonte;
     }
 }

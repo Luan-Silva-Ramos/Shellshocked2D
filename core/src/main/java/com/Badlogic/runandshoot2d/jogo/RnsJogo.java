@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.Badlogic.runandshoot2d.dados.GerenciadorSave;
+import com.Badlogic.runandshoot2d.dados.DadosSalvos;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class RnsJogo extends Game {
@@ -13,6 +15,9 @@ public class RnsJogo extends Game {
     private BitmapFont fonte;
     private BitmapFont fontePontos;
     private BitmapFont fonteVidas;
+
+    public GerenciadorSave gerenciadorSave;
+    public DadosSalvos dadosSalvos;
 
     @Override
     public void create() {
@@ -44,6 +49,10 @@ public class RnsJogo extends Game {
         this.fonteVidas =  geradorFonteVidas.generateFont(parametrosFonteVidas);
         geradorFonteVidas.dispose();
 
+        // Conf. Salvamento & Carregamento
+        gerenciadorSave = new GerenciadorSave();
+        dadosSalvos = gerenciadorSave.carregar();
+
         //Chamada do Menu
         setScreen(new TelaMenuPrincipal(this));
     }
@@ -55,6 +64,7 @@ public class RnsJogo extends Game {
 
     @Override
     public void dispose() {
+        gerenciadorSave.salvar(dadosSalvos);
         super.dispose();
         if (batch != null) batch.dispose();
         if (fonte != null) fonte.dispose();

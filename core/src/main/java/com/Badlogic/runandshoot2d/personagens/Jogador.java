@@ -292,6 +292,7 @@ public class Jogador extends ObjetoJogo {
         tempoAnimacaoTiro = 0f;
     }
 
+
     public void dispose() {
         if (animacaoCorrer != null && animacaoCorrer.getKeyFrame(0) != null)
             animacaoCorrer.getKeyFrame(0).getTexture().dispose();

@@ -1,5 +1,6 @@
 package com.Badlogic.runandshoot2d.telas;
 
+import com.Badlogic.runandshoot2d.dados.DadosSalvos;
 import com.Badlogic.runandshoot2d.jogo.RnsJogo;
 import com.Badlogic.runandshoot2d.objetos.GerenciadorFisica;
 import com.Badlogic.runandshoot2d.objetos.Obstaculo;
@@ -73,6 +74,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.camera = new OrthographicCamera();
         this.cenarioViewport = new FitViewport(LARGURA_VIRTUAL, ALTURA_VIRTUAL, camera);
         this.vidasJogador = vidasRestantes;
+        this.pontuacao = 0;
 
         texturasBarris = new HashMap<>();
         texturasBarris.put("col_barril_vermelho", new Texture(Gdx.files.internal("recursos/objetos/BarrilVermelhoSujo.png")));
@@ -113,6 +115,7 @@ public class TelaDeJogo extends ScreenAdapter {
         this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
 
     }
+
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
         var camada = cenario.getLayers().get(nomeCamada);
@@ -218,6 +221,12 @@ public class TelaDeJogo extends ScreenAdapter {
             // Se passaram 3 segundos, permite que o jogador mude de tela apertando ENTER
             if (timerTransicao > 3.0f && Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
                 Gdx.app.log("ARCADE", "Jogador apertou ENTER. Transição de tela ativada!");
+                // Avança fase e salva progresso — CRÍTICO antes de trocar de tela
+                if (pontuacao > jogo.dadosSalvos.pontuacaoMaxima) {
+                    jogo.dadosSalvos.pontuacaoMaxima = pontuacao;
+                    jogo.gerenciadorSave.salvar(jogo.dadosSalvos);
+                }
+                jogo.gerenciadorSave.salvar(jogo.dadosSalvos);
                 jogo.setScreen(new TelaMenuPrincipal(jogo));
             }
             // congela o resto do mundo
@@ -229,9 +238,15 @@ public class TelaDeJogo extends ScreenAdapter {
 
         if (jogador.estaSemVida()) {
             vidasJogador--;
+
             if (vidasJogador > 0) {
                 jogo.setScreen(new TelaDeJogo(jogo, vidasJogador));
             } else {
+                // Atualiza recorde e salva ANTES de ir para Game Over
+                if (pontuacao > jogo.dadosSalvos.pontuacaoMaxima) {
+                    jogo.dadosSalvos.pontuacaoMaxima = pontuacao;
+                    jogo.gerenciadorSave.salvar(jogo.dadosSalvos);
+                }
                 jogo.setScreen(new GamerOver(jogo));
             }
             return;
