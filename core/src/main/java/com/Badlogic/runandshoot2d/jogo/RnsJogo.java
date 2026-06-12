@@ -1,4 +1,5 @@
 package com.Badlogic.runandshoot2d.jogo;
+import com.Badlogic.runandshoot2d.audio.GerenciadorAudio;
 import com.Badlogic.runandshoot2d.telas.TelaMenuPrincipal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -18,10 +19,12 @@ public class RnsJogo extends Game {
 
     public GerenciadorSave gerenciadorSave;
     public DadosSalvos dadosSalvos;
+    public GerenciadorAudio audio;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
+        audio = new GerenciadorAudio();
 
         var geradorFonteMenu = new FreeTypeFontGenerator(Gdx.files.internal("fontsjogo/font_pixel_digivolve/Pixel Digivolve Italic.otf"));
         var parametrosFonteMenu = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -70,6 +73,7 @@ public class RnsJogo extends Game {
         if (fonte != null) fonte.dispose();
         if (fontePontos != null) fontePontos.dispose();
         if (fonteVidas != null) fonteVidas.dispose();
+        audio.dispose();
 
     }
 

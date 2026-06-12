@@ -33,7 +33,14 @@ public class TelaMenuPrincipal extends ScreenAdapter {
     }
 
     @Override
+    public void show() {
+        rnsJogo.audio.tocarMenu();
+    }
+
+    @Override
     public void render(float deltaTime) {
+
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             opcaoSelecionada--;
             if (opcaoSelecionada < 0) opcaoSelecionada = opcoes.length - 1;

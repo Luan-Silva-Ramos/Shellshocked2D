@@ -2,7 +2,6 @@ package com.Badlogic.runandshoot2d.objetos;
 
 import com.Badlogic.runandshoot2d.personagens.Inimigo;
 import com.Badlogic.runandshoot2d.personagens.Jogador;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -11,6 +10,10 @@ public class GerenciadorFisica {
 
     private final Jogador jogador;
 
+    // Estado de chão do jogador — derivado a cada frame
+    private boolean jogadorNoChao = false;
+    private boolean jogadorPousouEsseFrame = false;
+
     public GerenciadorFisica(Jogador jogador) {
         this.jogador = jogador;
     }
@@ -18,9 +21,19 @@ public class GerenciadorFisica {
     public void checarColisoes(Array<Obstaculo> listaChao,
                                Array<Obstaculo> listaPlataformas,
                                Array<Obstaculo> listaBarris) {
+        // Reseta a cada frame — assume no ar até algum resolverFisica provar o contrário
+        boolean estavaNoChaoBefore = jogadorNoChao;
+        jogadorNoChao = false;
+        jogadorPousouEsseFrame = false;
+
         resolverFisicaDeColisao(listaChao);
         resolverFisicaDeColisao(listaPlataformas);
         resolverFisicaDeColisao(listaBarris);
+
+        // Pousou = estava no ar na frame anterior e agora está no chão
+        if (!estavaNoChaoBefore && jogadorNoChao) {
+            jogadorPousouEsseFrame = true;
+        }
     }
 
     public void checarColisoesInimigos(Array<Inimigo> listaInimigos,
@@ -33,6 +46,18 @@ public class GerenciadorFisica {
             resolverFisicaInimigo(inimigo, listaBarris);
         }
     }
+
+    // --- Getters públicos para a TelaDeJogo ---
+
+    public boolean isNoChao() {
+        return jogadorNoChao;
+    }
+
+    public boolean isPousouEsseFrame() {
+        return jogadorPousouEsseFrame;
+    }
+
+    // --- Física interna ---
 
     private void resolverFisicaDeColisao(Array<Obstaculo> listaDeObstaculos) {
         Rectangle rectJogador = jogador.getRect();
@@ -57,6 +82,7 @@ public class GerenciadorFisica {
                     if ((rectJogador.y + rectJogador.height / 2) > (rectObjeto.y + rectObjeto.height / 2)) {
                         jogador.setY(rectObjeto.y + rectObjeto.height);
                         jogador.resetarPulo();
+                        jogadorNoChao = true; // <- confirmação de chão
                     } else {
                         jogador.setY(rectObjeto.y - rectJogador.height);
                         jogador.getVelocidade().y = 0;

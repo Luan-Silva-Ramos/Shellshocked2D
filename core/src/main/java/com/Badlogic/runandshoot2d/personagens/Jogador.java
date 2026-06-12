@@ -287,6 +287,10 @@ public class Jogador extends ObjetoJogo {
         return velocidade;
     }
 
+    public boolean isNoChao() {
+        return noChao;
+    }
+
     public void notificarTiro() {
         estaExibindoAnimacaoTiro = true;
         tempoAnimacaoTiro = 0f;

@@ -10,6 +10,7 @@ import com.Badlogic.runandshoot2d.personagens.Inimigo;
 import com.Badlogic.runandshoot2d.personagens.Jogador;
 import com.Badlogic.runandshoot2d.personagens.SoldadoRebelde;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -67,6 +68,11 @@ public class TelaDeJogo extends ScreenAdapter {
     // VITÓRIA
     private boolean faseConcluida = false;
     private float timerTransicao = 0;
+
+    // Áudio — passos
+    private float timerPassos = 0f;
+    private static final float INTERVALO_PASSOS = 0.32f;
+
 
     public TelaDeJogo(RnsJogo jogo, int vidasRestantes) {
         this.jogo = jogo;
@@ -177,8 +183,14 @@ public class TelaDeJogo extends ScreenAdapter {
     }
 
     @Override
+    public void show() {
+        jogo.audio.tocarGameplay();
+    }
+
+    @Override
     public void render(float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
+
 
         // CONF. DE TELA DE MISSÃO COMPLETA
         if (faseConcluida) {
@@ -257,7 +269,8 @@ public class TelaDeJogo extends ScreenAdapter {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
             float tiroY = jogador.getRect().y + (jogador.getRect().height / 2 + 5);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala, false, 250f));
-            jogador.notificarTiro();
+            jogo.audio.tocarTiro556();
+
         }
 
         // Update e disparo dos inimigos — iteração reversa para remoção segura
@@ -284,6 +297,11 @@ public class TelaDeJogo extends ScreenAdapter {
                 float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f + 2);
                 boolean flipPadrao = (inimigo instanceof Chefao);
                 float alcance = (inimigo instanceof Chefao) ? 400f : 250;
+                if (inimigo instanceof Chefao) {
+                    jogo.audio.tocarRocket();
+                } else {
+                    jogo.audio.tocarTiro762();
+                }
                 listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texTiro, flipPadrao, alcance));
                 inimigo.resetarDisparo();
             }
@@ -291,6 +309,27 @@ public class TelaDeJogo extends ScreenAdapter {
 
         // Física
         gerenciadorFisica.checarColisoes(listaChao, listaPlataformas, listaBarris);
+
+        ///Audio
+        // Pouso — dispara uma única vez
+        if (gerenciadorFisica.isPousouEsseFrame()) {
+            jogo.audio.tocarPassoPouso();
+        }
+
+        // Passos — timer contínuo
+        boolean movendo = Gdx.input.isKeyPressed(Input.Keys.A)
+            || Gdx.input.isKeyPressed(Input.Keys.D);
+
+        if (gerenciadorFisica.isNoChao() && movendo) {
+            timerPassos += deltaTime;
+            if (timerPassos >= INTERVALO_PASSOS) {
+                jogo.audio.tocarPassoCorrida();
+                timerPassos = 0f;
+            }
+        } else {
+            timerPassos = 0f;
+        }
+
         gerenciadorFisica.checarColisoesInimigos(listaInimigos, listaChao, listaPlataformas, listaBarris);
 
         // Dano por contato — só inimigos vivos
