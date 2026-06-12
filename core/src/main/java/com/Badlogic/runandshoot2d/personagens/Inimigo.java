@@ -137,8 +137,6 @@ public abstract class Inimigo extends ObjetoJogo {
     public boolean animacaoMorteConcluida() {
         return false;
     }
-
     public Vector2 getPosicaoAnterior() { return posicaoAnterior; }
-
     public void dispose() {}
 }

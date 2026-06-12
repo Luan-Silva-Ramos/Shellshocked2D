@@ -47,10 +47,11 @@ public class SoldadoRebelde extends Inimigo {
         this.tempoDaAnimacao = 0f;
         this.estadoAtual = EstadoAnimacao.ANDANDO;
         this.estadoAnterior = null; //Aqui atenção porque é responsável por forçar reset no primeiro Frame
+        this.taxaDeDisparo = 0.5f;
 
         // Animação de Andar
         Texture folhaAndar = new Texture(Gdx.files.internal(
-            "recursos/personagens/SpriteAnimation/inimigos/soldado/inimigo.png"));
+            "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_andar.png"));
         TextureRegion[][] matrizAndar = TextureRegion.split(folhaAndar, 100, 100);
         TextureRegion[] framesAndar = new TextureRegion[7];
         for (int i = 0; i < 7; i++) {
@@ -59,32 +60,29 @@ public class SoldadoRebelde extends Inimigo {
         animacaoAndar = new Animation<>(0.12f, framesAndar);
         animacaoAndar.setPlayMode(Animation.PlayMode.LOOP);
 
-
         // Animação de Cair
         Texture folhaCair = new Texture(Gdx.files.internal(
             "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_pulo.png"));
         TextureRegion[][] matrizCair = TextureRegion.split(folhaCair, 201, 260);
-        // Ajuste o número de frames conforme seu spritesheet
         int totalFramesCair = 4;
         TextureRegion[] framesCair = new TextureRegion[totalFramesCair];
         for (int i = 0; i < totalFramesCair; i++) {
             framesCair[i] = matrizCair[0][i];
         }
         animacaoCair = new Animation<>(0.10f, framesCair);
-        animacaoCair.setPlayMode(Animation.PlayMode.NORMAL); // não loopa — congela no último frame
+        animacaoCair.setPlayMode(Animation.PlayMode.NORMAL);
 
-        // ---- Animação: ATIRANDO ----
+        // Animação: ATIRANDO
         Texture folhaAtirar = new Texture(Gdx.files.internal(
             "recursos/personagens/SpriteAnimation/inimigos/soldado/soldado_atirar.png"));
         TextureRegion[][] matrizAtirar = TextureRegion.split(folhaAtirar, 201, 260);
-        // Ajuste o número de frames conforme seu spritesheet
         int totalFramesAtirar = 5;
         TextureRegion[] framesAtirar = new TextureRegion[totalFramesAtirar];
         for (int i = 0; i < totalFramesAtirar; i++) {
             framesAtirar[i] = matrizAtirar[0][i];
         }
         animacaoAtirar = new Animation<>(0.10f, framesAtirar);
-        animacaoAtirar.setPlayMode(Animation.PlayMode.LOOP); // loopa enquanto ele está na janela de recarga
+        animacaoAtirar.setPlayMode(Animation.PlayMode.LOOP);
 
         // Animação parado
         Texture folhaParado = new Texture(Gdx.files.internal(
@@ -117,7 +115,7 @@ public class SoldadoRebelde extends Inimigo {
     public void update(float delta) {
         super.update(delta);
 
-        // --- 0. Morte tem prioridade absoluta ---
+        // 0. Morte tem prioridade absoluta
         if (estaMorto() && !estaMorrendo) {
             estaMorrendo = true;
             tempoAnimacaoMorte = 0f;
@@ -133,17 +131,17 @@ public class SoldadoRebelde extends Inimigo {
             } else if (olhandoDireita && frameAtual.isFlipX()) {
                 frameAtual.flip(true, false);
             }
-            return; // interrompe todo o resto do update
+            return;
         }
 
-        // --- 1. Captura o momento exato do disparo e inicia timer próprio ---
+        // 1. Captura o momento exato do disparo e inicia timer próprio
         if (seDesejaAtirar()) {
             estaExibindoAnimacaoTiro = true;
             tempoAnimacaoAtirando = 0f;
             direcaoTravadaAoAtirar = this.isOlhandoParaDireita();
         }
 
-        // --- 2. Avança o timer de tiro independentemente ---
+        // 2. Avança o timer de tiro independentemente
         if (estaExibindoAnimacaoTiro) {
             tempoAnimacaoAtirando += delta;
             if (tempoAnimacaoAtirando >= DURACAO_ANIMACAO_TIRO) {
@@ -151,7 +149,7 @@ public class SoldadoRebelde extends Inimigo {
             }
         }
 
-        // --- 3. Determina estado com prioridade ---
+        // 3. Determina estado com prioridade
         EstadoAnimacao novoEstado;
 
         if (estaMorrendo) {
@@ -168,7 +166,7 @@ public class SoldadoRebelde extends Inimigo {
             novoEstado = EstadoAnimacao.ANDANDO;
         }
 
-        // --- 4. Reseta o timer só na mudança de estado ---
+        // 4. Reseta o timer só na mudança de estado
         if (novoEstado != estadoAnterior) {
             tempoDaAnimacao = 0f;
             estadoAnterior = novoEstado;
@@ -176,7 +174,7 @@ public class SoldadoRebelde extends Inimigo {
         estadoAtual = novoEstado;
         tempoDaAnimacao += delta;
 
-        // --- 5. Seleciona o frame correto — ATIRANDO usa seu timer próprio ---
+        // 5. Seleciona o frame correto — ATIRANDO usa seu timer próprio
         switch (estadoAtual) {
             case MORRENDO:
                 frameAtual = animacaoMorte.getKeyFrame(tempoAnimacaoMorte);
@@ -196,7 +194,7 @@ public class SoldadoRebelde extends Inimigo {
                 break;
         }
 
-        // --- 6. Espelhamento ---
+        // 6. Espelhamento
         boolean olhandoDireita = (estadoAtual == EstadoAnimacao.ATIRANDO)
             ? direcaoTravadaAoAtirar
             : this.isOlhandoParaDireita();
@@ -219,7 +217,7 @@ public class SoldadoRebelde extends Inimigo {
 
         switch (estadoAtual) {
             case ATIRANDO:
-                larguraVisual = 43f; // ajuste até ficar proporcional ao sprite de andar
+                larguraVisual = 43f;
                 alturaVisual = 48f;
                 offsetX = -6f;
                 break;

@@ -63,9 +63,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
     private GerenciadorFisica gerenciadorFisica;
 
-    // =====================================================================
-    // NOVO: VARIÁVEIS DE CONTROLE DA VITÓRIA (MODO ARCADE)
-    // =====================================================================
+    // VITÓRIA
     private boolean faseConcluida = false;
     private float timerTransicao = 0;
 
@@ -105,7 +103,7 @@ public class TelaDeJogo extends ScreenAdapter {
 
         this.listaProjeteisInimigos = new Array<>();
         texBalaInimigo = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/bala_soldado.png"));
-        texBalaChefao = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/MechaRobotAttack.png"));
+        texBalaChefao = new Texture(Gdx.files.internal("recursos/vfx/sprites_projeteis/rocket_projetil.png"));
 
         carregarCamadaInimigos("inimigos");
         carregarCamadaObstaculos("colisao_chao", listaChao, null);
@@ -114,8 +112,6 @@ public class TelaDeJogo extends ScreenAdapter {
 
         this.hud = new Hud(jogo.getFontePontos(), jogo.getFonteVidas(), LARGURA_VIRTUAL, ALTURA_VIRTUAL);
 
-        // MODIFICAÇÃO: A linha que tentava carregar a imagem 'mission_complete.png'
-        // foi completamente removida daqui para evitar o erro de File Not Found.
     }
 
     private void carregarCamadaObstaculos(String nomeCamada, Array<Obstaculo> listaDestino, HashMap<String, Texture> dicionarioTexturas) {
@@ -181,9 +177,7 @@ public class TelaDeJogo extends ScreenAdapter {
     public void render(float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // =====================================================================
-        // MODIFICAÇÃO: INTERCEPTADOR DO RENDER (CONGELA O JOGO NA VITÓRIA)
-        // =====================================================================
+        // CONF. DE TELA DE MISSÃO COMPLETA
         if (faseConcluida) {
             timerTransicao += deltaTime;
 
@@ -224,13 +218,11 @@ public class TelaDeJogo extends ScreenAdapter {
             // Se passaram 3 segundos, permite que o jogador mude de tela apertando ENTER
             if (timerTransicao > 3.0f && Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
                 Gdx.app.log("ARCADE", "Jogador apertou ENTER. Transição de tela ativada!");
-                // Exemplo: jogo.setScreen(new ProximaTela(jogo));
                 jogo.setScreen(new TelaMenuPrincipal(jogo));
             }
-
-            return; // Interrompe o render aqui para congelar o resto do mundo
+            // congela o resto do mundo
+            return;
         }
-        // =====================================================================
 
         // FLUXO NORMAL DO JOGO (Se não ganhou ainda)
         jogador.update(deltaTime);
@@ -248,7 +240,7 @@ public class TelaDeJogo extends ScreenAdapter {
         // Tiro do jogador
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.F)) {
             float tiroX = jogador.getRect().x + (jogador.isOlhandoParaDireita() ? jogador.getRect().width : -12);
-            float tiroY = jogador.getRect().y + (jogador.getRect().height / 2);
+            float tiroY = jogador.getRect().y + (jogador.getRect().height / 2 + 5);
             listaProjeteis.add(new Projetil(tiroX, tiroY, jogador.isOlhandoParaDireita(), texBala));
             jogador.notificarTiro();
         }
@@ -274,7 +266,7 @@ public class TelaDeJogo extends ScreenAdapter {
             if (!inimigo.estaMorto() && inimigo.seDesejaAtirar()) {
                 Texture texTiro = (inimigo instanceof Chefao) ? texBalaChefao : texBalaInimigo;
                 float spawnTiroX = inimigo.getRect().x + (inimigo.isOlhandoParaDireita() ? inimigo.getRect().width : -10);
-                float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f);
+                float spawnTiroY = inimigo.getRect().y + (inimigo.getRect().height / 2.5f + 2);
                 listaProjeteisInimigos.add(new Projetil(spawnTiroX, spawnTiroY, inimigo.isOlhandoParaDireita(), texTiro));
                 inimigo.resetarDisparo();
             }
@@ -288,7 +280,7 @@ public class TelaDeJogo extends ScreenAdapter {
         if (!jogador.isEstaInvulneravel()) {
             for (Inimigo inimigo : listaInimigos) {
                 if (!inimigo.estaMorto() && jogador.getRect().overlaps(inimigo.getRect())) {
-                    jogador.tomarDano(15);
+                    jogador.tomarDano(5);
                     break;
                 }
             }
@@ -343,7 +335,7 @@ public class TelaDeJogo extends ScreenAdapter {
             tiroE.draw(batch);
 
             if (!jogador.isEstaInvulneravel() && tiroE.getRect().overlaps(jogador.getRect())) {
-                jogador.tomarDano(20);
+                jogador.tomarDano(5);
                 tiroE.marcarComoDestruido();
             }
             if (tiroE.deveDestruir()) iterBalaInimigo.remove();
@@ -374,7 +366,5 @@ public class TelaDeJogo extends ScreenAdapter {
         for (Texture t : texturasBarris.values()) t.dispose();
         for (Texture t : texturasPlataformas.values()) t.dispose();
 
-        // MODIFICAÇÃO: Removido qualquer tentativa de limpar 'texMissionComplete'
-        // para não causar erros de compilação, já que o objeto não é mais instanciado.
     }
 }
