@@ -1,233 +1,148 @@
-# SHELLSHOCKED 2D
+# Shellshocked 2D
 
-> Jogo de plataforma 2D no estilo arcade/run-and-gun desenvolvido em Java com LibGDX para a disciplina de Programação Orientada a Objetos — IFPB Campus Esperança, 2026.1.
+Jogo de plataforma 2D no estilo *run-and-gun*, desenvolvido em Java com LibGDX para a disciplina de Programação Orientada a Objetos do IFPB — Campus Esperança, período 2026.1.
 
----
+## Sobre o projeto
 
-## Sumário
+Shellshocked 2D é um jogo de ação com progressão lateral (*side-scrolling*), inspirado em jogos clássicos de combate arcade. O jogador controla um soldado que enfrenta inimigos e um chefe para concluir a missão.
 
-- [Descrição do projeto](#descrição-do-projeto)
-- [Estrutura do sistema](#estrutura-do-sistema)
-- [Funcionalidades principais](#funcionalidades-principais)
-- [Requisitos e configuração](#requisitos-e-configuração)
-- [Como executar](#como-executar)
-- [Conceitos de OO aplicados](#conceitos-de-oo-aplicados)
-- [Persistência de dados](#persistência-de-dados)
-- [Screenshots](#screenshots)
+O projeto reúne conceitos de programação orientada a objetos, gerenciamento de estados, colisões, animações, áudio e persistência de dados.
 
----
+## Demonstração
 
-## Descrição do projeto
-
-Shellshocked 2D é um jogo de plataforma side-scrolling com combate, no estilo Metal Slug. O jogador controla um soldado que deve atravessar um cenário eliminando inimigos — soldados rebeldes e um chefão — para completar a missão. O jogo possui sistema de vidas, pontuação, HUD personalizado, efeitos sonoros e persistência de recorde entre sessões.
-
----
-
-## Estrutura do sistema
-
-O projeto é organizado em pacotes por responsabilidade:
-
-```
-com.Badlogic.runandshoot2d
-├── audio
-│   └── GerenciadorAudio        — controla toda a trilha sonora e SFX do jogo
-├── dados
-│   ├── DadosSalvos             — POJO com os dados persistidos (recorde, volumes)
-│   └── GerenciadorSave         — leitura e escrita via LibGDX Preferences (JSON)
-├── jogo
-│   └── RnsJogo                 — ponto de entrada, inicializa recursos compartilhados
-├── objetos
-│   ├── ObjetoJogo              — classe abstrata base para todo objeto do mundo
-│   ├── Obstaculo               — obstáculo estático com colisão (chão, plataforma, barril)
-│   ├── Projetil                — projétil com alcance máximo e lógica de destruição
-│   └── GerenciadorFisica       — resolve colisões AABB entre jogador/inimigos e obstáculos
-└── personagens
-    ├── Jogador                 — movimentação, animação, sistema de HP e invulnerabilidade
-    ├── Inimigo                 — classe abstrata com IA de patrulha e visão compartilhada
-    ├── SoldadoRebelde          — inimigo comum com máquina de estados de animação
-    └── Chefao                  — chefão com animações próprias, herdando a IA do Inimigo
-telas
-    ├── TelaMenuPrincipal       — menu navegável com seleção por teclado e exibição de recorde
-    ├── TelaDeJogo              — loop principal: atualização, física, colisões, renderização
-    ├── TelaDeControle          — tela com os controles do teclado
-    ├── GamerOver               — tela de fim de jogo com contador regressivo
-    └── Hud                     — sobreposição de interface (vida, pontuação, vidas)
-```
-
-### Diagrama de classes simplificado
-
-```
-ObjetoJogo (abstract)
-├── Obstaculo
-├── Projetil
-├── Jogador
-└── Inimigo (abstract)
-    ├── SoldadoRebelde
-    └── Chefao
-
-Game (LibGDX)
-└── RnsJogo
-    ├── GerenciadorAudio
-    └── GerenciadorSave ──── DadosSalvos
-
-ScreenAdapter (LibGDX)
-├── TelaMenuPrincipal
-├── TelaDeJogo ──── GerenciadorFisica, Hud, Jogador, Inimigo[]
-├── TelaDeControle
-└── GamerOver
-```
-
----
-
-## Funcionalidades principais
-
-### Menu Principal
-- Navegação entre opções com W/S ou setas do teclado
-- Opções: Iniciar Missão, Controles e Sair
-- Exibição do melhor recorde salvo da sessão anterior
-
-### Tela de Controles
-- Lista completa dos controles do teclado
-- Retorno ao menu com ESPAÇO
-
-### Tela de Jogo
-- Cenário side-scrolling carregado via Tiled Map (`.tmx`)
-- Câmera que acompanha o jogador com limites nas bordas do mapa
-- Sistema de física com gravidade, pulo e colisão AABB
-- Jogador com 3 vidas; ao perder todas, vai para Game Over
-- Sistema de pontuação (+100 pontos por inimigo eliminado)
-- HUD com barra de vida, contador de vidas e pontuação formatada
-- Inimigos com patrulha automática e IA de avistamento com raio de visão
-- Dois tipos de inimigos: Soldado Rebelde (comum) e Chefão (boss)
-- Sistema de projéteis para o jogador e para os inimigos
-- Sons de tiro distintos por arma e passos sincronizados com o movimento
-- Tela de "Missão Completa" ao derrotar o chefão
-
-### Game Over
-- Exibe contador regressivo de 9 segundos
-- Permite retorno imediato ao menu com ENTER
-
-### Persistência
-- Recorde máximo salvo automaticamente ao terminar partida (vitória ou derrota)
-- Dados mantidos entre execuções do programa
-
----
-
-## Requisitos e configuração
-
-| Item | Versão recomendada |
+| Menu principal | Durante a partida |
 |---|---|
-| Java | 17 ou superior |
-| LibGDX | 1.12.x (incluído no JAR) |
-| Sistema operacional | Windows, Linux ou macOS |
+| ![Menu principal](screenshots/menu_principal.png) | ![Tela de jogo](screenshots/tela_de_jogo.png) |
 
-Nenhuma instalação adicional é necessária. O JAR já contém todas as dependências.
+| Game Over | Missão concluída |
+|---|---|
+| ![Game Over](screenshots/game_over.png) | ![Missão concluída](screenshots/missao_completa.png) |
 
----
+## Funcionalidades
+
+- Menu principal com navegação pelo teclado.
+- Movimentação lateral, pulo e disparos.
+- Cenário baseado em mapa do Tiled.
+- Câmera que acompanha o personagem.
+- Sistema de gravidade e colisões.
+- Sistema de vidas, pontos e interface de jogo (HUD).
+- Inimigos com patrulha e comportamento de combate.
+- Inimigo comum e chefe com comportamentos e animações próprios.
+- Efeitos sonoros, trilha sonora e sons de movimentação.
+- Tela de derrota e conclusão da missão.
+- Salvamento do recorde e das configurações de áudio entre execuções.
+
+## Tecnologias utilizadas
+
+- **Java** — linguagem de programação.
+- **LibGDX** — framework para desenvolvimento de jogos.
+- **Gradle** — automação de compilação e gerenciamento de dependências.
+- **Tiled** — criação do mapa do cenário.
+- **IntelliJ IDEA** — ambiente recomendado para desenvolvimento.
+
+## Estrutura do projeto
+
+```text
+Shellshocked2D/
+├── assets/
+│   ├── cenario2d/       # Mapa do cenário
+│   └── recursos/        # Imagens, animações, áudio e elementos visuais
+├── core/                # Código principal do jogo
+├── lwjgl3/              # Inicialização para desktop
+├── gradle/               # Arquivos do Gradle Wrapper
+├── screenshots/          # Capturas de tela do jogo
+├── build.gradle          # Configuração principal do Gradle
+└── settings.gradle       # Configuração dos módulos
+```
 
 ## Como executar
 
-### Via JAR (recomendado)
+### Requisitos
 
-1. Certifique-se de ter o Java instalado (`java -version`).
-2. Coloque o arquivo `Shellshocked2D.jar` e a pasta `recursos/` no mesmo diretório.
-3. Execute:
+- JDK 17 ou superior.
+- Git, para clonar o repositório.
+- IntelliJ IDEA ou outra IDE compatível com projetos Gradle, opcionalmente.
 
-```bash
-java -jar Shellshocked2D.jar
-```
-
-### Via IDE (para desenvolvimento)
+### Executar pelo terminal
 
 1. Clone o repositório:
 
-```bash
-git clone https://github.com/Luan-Silva-Ramos/Shellshocked2D.git
-cd Shellshocked2D
-```
+   ```bash
+   git clone https://github.com/Luan-Silva-Ramos/Shellshocked2D.git
+   cd Shellshocked2D
+   ```
 
-2. Abra o projeto com IntelliJ IDEA ou outra IDE com suporte a Gradle.
-3. Execute a classe `Lwjgl3Launcher` localizada em:
+2. Execute a configuração desktop do projeto.
 
-```
-lwjgl3/src/main/java/com/Badlogic/RunAndShoot/lwjgl3/Lwjgl3Launcher.java
-```
+   **Windows:**
 
-### Controles
+   ```bat
+   gradlew.bat lwjgl3:run
+   ```
+
+   **Linux ou macOS:**
+
+   ```bash
+   ./gradlew lwjgl3:run
+   ```
+
+A primeira execução pode demorar enquanto o Gradle baixa as dependências necessárias.
+
+### Executar pela IDE
+
+1. Abra a pasta do projeto na IDE.
+2. Aguarde a sincronização do Gradle.
+3. Localize a classe `Lwjgl3Launcher`, no módulo `lwjgl3`.
+4. Execute a classe para iniciar o jogo.
+
+## Controles
 
 | Tecla | Ação |
 |---|---|
-| A / D | Mover para esquerda / direita |
-| W | Pular |
-| F | Atirar |
-| ENTER | Confirmar / avançar |
-| ESPAÇO | Voltar ao menu |
+| `A` / `D` | Mover para a esquerda / direita |
+| `W` | Pular |
+| `F` | Atirar |
+| `ENTER` | Confirmar ou avançar |
+| `ESPAÇO` | Voltar ao menu na tela de controles |
 
----
+## Programação orientada a objetos
 
-## Conceitos de OO aplicados
+O projeto aplica diferentes conceitos de orientação a objetos:
 
-## Padrões de projeto aplicados
+- **Abstração:** classes como `ObjetoJogo` e `Inimigo` definem comportamentos comuns.
+- **Encapsulamento:** atributos e operações são organizados com acesso controlado.
+- **Herança:** personagens especializados reutilizam comportamentos das classes-base.
+- **Polimorfismo:** diferentes tipos de inimigos podem ser tratados por meio de uma estrutura comum.
+- **Composição:** as telas integram componentes de física, áudio, interface e personagens.
 
-### Facade — `GerenciadorAudio`
-Esconde a complexidade de gerenciar múltiplos objetos `Music` e `Sound`
-da LibGDX atrás de uma interface simples. As telas não precisam saber
-quantas músicas existem nem como o loop é configurado — chamam apenas
-`tocarMenu()`, `tocarGameplay()` ou `tocarGameOver()`.
+## Padrões de projeto
 
-### Template Method — `ObjetoJogo` e `Inimigo`
-`ObjetoJogo` define a estrutura comum a todo objeto do mundo (posição,
-hitbox, draw) e declara `update()` como abstrato. `Inimigo` segue o mesmo
-padrão: implementa a IA de patrulha e física em seu próprio `update()`,
-que as subclasses estendem via `super.update(delta)` antes de adicionar
-lógica de animação própria.
+### Facade
 
-### State — `SoldadoRebelde` e `Chefao`
-Cada inimigo mantém um enum de estados (`ANDANDO`, `PARADO`, `ATIRANDO`,
-`MORRENDO`) com transições explícitas e timer de animação resetado apenas
-na mudança de estado. Isso evita que animações comecem no meio e torna o
-comportamento visual previsível e fácil de depurar.
+O `GerenciadorAudio` centraliza operações de reprodução de música e efeitos sonoros, simplificando o acesso ao sistema de áudio.
 
-### Classes e Encapsulamento
-Atributos privados e protegidos com acesso controlado por getters/setters. Exemplo: `Jogador` expõe `getHpAtual()` e `tomarDano()` em vez de permitir acesso direto ao HP.
+### Template Method
 
-### Classe Abstrata
-`ObjetoJogo` define a estrutura comum a todo objeto do mundo do jogo (posição, velocidade, hitbox, textura) e declara `update(float delta)` como método abstrato, obrigando cada subclasse a implementar sua própria lógica de atualização.
+As classes-base estabelecem estruturas de comportamento que podem ser especializadas pelas subclasses.
 
-`Inimigo` estende `ObjetoJogo` e centraliza a IA de patrulha e visão, sendo também abstrata para que cada tipo de inimigo defina suas próprias animações.
+### State
 
-### Herança
-- `SoldadoRebelde` e `Chefao` herdam de `Inimigo`, reutilizando toda a lógica de física e IA e adicionando apenas comportamentos visuais específicos.
-- `Obstaculo`, `Projetil` e `Jogador` herdam de `ObjetoJogo`.
-- As telas herdam de `ScreenAdapter` da LibGDX.
-
-### Polimorfismo
-A lista `Array<Inimigo>` na `TelaDeJogo` armazena tanto `SoldadoRebelde` quanto `Chefao`. O método `inimigo.draw(batch)` chama a implementação correta de cada subclasse sem nenhum `instanceof` no loop de renderização. A verificação com `instanceof` é usada apenas para comportamentos específicos do `Chefao` (tipo de projétil, alcance, ativação de vitória).
-
-### Composição
-`TelaDeJogo` compõe `GerenciadorFisica`, `GerenciadorAudio`, `Hud` e listas de objetos ao invés de herdar dessas classes. `RnsJogo` compõe `GerenciadorSave` e `GerenciadorAudio` para disponibilizá-los a todas as telas.
-
----
+Os inimigos utilizam estados de comportamento e animação, como andar, parar, atirar e morrer, para organizar as transições durante o jogo.
 
 ## Persistência de dados
 
-O jogo salva e carrega dados entre execuções usando a API `Preferences` da LibGDX, que escreve em disco em formato JSON.
+O sistema de salvamento utiliza `Preferences` da LibGDX para manter informações entre execuções, incluindo:
 
-**O que é salvo:** pontuação máxima (recorde), volumes de música e efeitos sonoros.
+- Recorde de pontuação.
+- Volume da música.
+- Volume dos efeitos sonoros.
 
-**Quando é salvo:** automaticamente ao fim de cada partida (vitória ou derrota) e ao fechar o jogo.
+A lógica de persistência é centralizada nas classes `GerenciadorSave` e `DadosSalvos`.
 
-**Classe responsável:** `GerenciadorSave`, que serializa/desserializa o objeto `DadosSalvos` via `Json` da LibGDX.
+## Estado do projeto
+
+Projeto acadêmico de desenvolvimento de jogos, criado para praticar programação orientada a objetos e aplicar conceitos de arquitetura de software em um jogo funcional.
 
 ---
 
-
-## Screenshots
-
-| Menu Principal | Tela de Jogo |
-|---|---|
-| ![Menu](screenshots/menu_principal.png) | ![Jogo](screenshots/tela_de_jogo.png) |
-
-| Game Over | Missão Completa |
-|---|---|
-| ![GameOver](screenshots/game_over.png) | ![Vitoria](screenshots/missao_completa.png) |
+Desenvolvido como atividade acadêmica no IFPB — Campus Esperança.
